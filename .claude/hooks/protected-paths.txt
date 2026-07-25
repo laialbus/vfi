@@ -1,0 +1,17 @@
+# Protected paths, one per line, relative to the repo root.
+# Directories end with /. Blank lines and # comments are ignored.
+#
+# This list is the human decision behind M0 (see GOALS.md). Changing it, or
+# anything it names, requires human sign-off recorded in an ADR. The hook that
+# reads this file protects the file itself via the .claude/hooks/ entry.
+ANCHORS.md
+AGENTS.md
+GOALS.md
+WORKPLAN.md
+CLAUDE.md
+.claude/settings.json
+.claude/hooks/
+docs/adr/TEMPLATE.md
+# Not yet created; protected from the day they exist.
+scripts/gates.sh
+contracts/

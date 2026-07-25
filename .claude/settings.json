@@ -1,0 +1,49 @@
+{
+  "permissions": {
+    "defaultMode": "bypassPermissions"
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|NotebookEdit|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/protect_paths.py"
+          }
+        ]
+      }
+    ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true,
+    "excludedCommands": ["gh *"],
+    "network": {
+      "allowedDomains": [
+        "github.com",
+        "*.github.com",
+        "*.githubusercontent.com",
+        "api.anthropic.com",
+        "code.claude.com",
+        "crates.io",
+        "static.crates.io",
+        "index.crates.io",
+        "docs.rs",
+        "doc.rust-lang.org",
+        "rust-lang.github.io",
+        "pypi.org",
+        "files.pythonhosted.org",
+        "docs.python.org",
+        "arxiv.org",
+        "*.arxiv.org",
+        "papers.ssrn.com",
+        "ocw.mit.edu",
+        "en.wikipedia.org"
+      ]
+    }
+  }
+}

@@ -19,6 +19,24 @@ information you don't have, or if doing the task well would require changing an
 anchor, a contract, or a schema — stop, write an escalation, and exit. Do not
 pick the reading that lets you keep going.
 
+## How a run is contained
+
+Agents run with full permission inside the workspace and none outside it.
+Three layers hold that line:
+
+1. **The OS sandbox.** Shell commands write only inside the workspace and
+   reach only the domains allowlisted in `.claude/settings.json`. `gh` runs
+   outside the sandbox (a macOS TLS limitation) and relies on the other two
+   layers.
+2. **The pre-edit hook.** No editing tool writes a protected path or any file
+   outside the workspace. The list is `.claude/hooks/protected-paths.txt`;
+   changing anything on it requires human sign-off recorded in an ADR.
+3. **The server.** Main is branch-protected on GitHub: nothing merges without
+   the decider, and protected paths require human review.
+
+The hook is friction; the server is the boundary. An agent that hits a
+refusal stops and escalates. It does not look for a way around.
+
 ## What you may not decide alone
 
 These require an ADR, written and approved, before any code:
