@@ -1,0 +1,65 @@
+# Server-side guard for the constitution. Fails any PR that touches a
+# protected path unless a human applied the `human-approved` label. Marked as
+# a required status check in the ruleset, so GitHub refuses the merge button
+# until it passes. Agents never apply that label — the client hook refuses the
+# command, and doing it anyway is a constitution violation by definition.
+#
+# The protected list is read from the PR's BASE branch, not its head — a PR
+# cannot unprotect a path by editing the list in the same diff.
+name: protected-paths
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+jobs:
+  protected-paths:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: check protected paths against base-branch list
+        env:
+          BASE_REF: ${{ github.base_ref }}
+          LABELS: ${{ toJson(github.event.pull_request.labels.*.name) }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_REF" --quiet
+          base="origin/$BASE_REF"
+
+          list=$(git show "$base:.claude/hooks/protected-paths.txt" \
+                 | grep -v '^[[:space:]]*#' | grep -v '^[[:space:]]*$' || true)
+          changed=$(git diff --name-only "$(git merge-base "$base" HEAD)" HEAD)
+
+          touched=""
+          while IFS= read -r entry; do
+            [ -z "$entry" ] && continue
+            bare="${entry%/}"
+            while IFS= read -r f; do
+              case "$f" in
+                "$bare"|"$bare"/*) touched="$touched$f"$'\n' ;;
+              esac
+            done <<EOF2
+          $changed
+          EOF2
+          done <<EOF
+          $list
+          EOF
+
+          if [ -z "$touched" ]; then
+            echo "no protected paths touched"
+            exit 0
+          fi
+
+          echo "protected paths touched:"
+          printf '%s' "$touched"
+
+          if printf '%s' "$LABELS" | jq -e 'index("human-approved")' >/dev/null; then
+            echo "human-approved label present — allowed"
+            exit 0
+          fi
+
+          echo "::error::protected paths modified without the human-approved label"
+          exit 1

@@ -1,0 +1,17 @@
+# The gate runner. Trivially green until M2 replaces the body with the real
+# gates (build, tests, fixtures, dependency direction, purity deny-list,
+# contract compatibility, benchmark). The job name `gates` is what the ruleset
+# marks as a required status check — keep it stable.
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: placeholder
+        run: echo "no gates yet — M2 makes this real"
