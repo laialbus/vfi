@@ -12,6 +12,7 @@ CLAUDE.md
 .claude/settings.json
 .claude/hooks/
 docs/adr/TEMPLATE.md
+.github/
 # Not yet created; protected from the day they exist.
 scripts/gates.sh
 contracts/

@@ -1,14 +1,19 @@
 #!/usr/bin/env python3
 """PreToolUse guard for VFI (GOALS.md, M0).
 
-Refuses two things:
+Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
      any location outside the project directory.
   2. Any Bash command that names a protected path alongside a write-capable
      operation, and any git push to main.
+  3. Merging a PR unless the run carries VFI_ROLE=decider. The wrapper sets
+     the role outside the repo, so no agent can grant itself merge authority.
+  4. Applying the human-approved label, from any agent, decider included.
+     That label is the human sign-off for protected-path changes; only a
+     human hand applies it.
 
 This is friction, not a security boundary. The OS sandbox confines shell
-commands; the server (branch protection, required review) is the backstop.
+commands; the server (ruleset, required checks) is the backstop.
 
 Exit 0 allows the tool call. Exit 2 blocks it; stderr is shown to the agent.
 """
@@ -25,6 +30,12 @@ BASH_WRITE_HINTS = re.compile(
     r"|\bgit\s+(mv|rm|checkout|restore|apply|clean)\b)"
 )
 PUSH_TO_MAIN = re.compile(r"\bgit\b[^\n;|&]*\bpush\b[^\n;|&]*\b(main|master)\b")
+MERGE_COMMAND = re.compile(
+    r"\bgh\s+pr\s+merge\b|\bgh\s+api\b[^\n;|&]*/pulls/[^\n;|&]*/merge\b"
+)
+APPROVAL_LABEL = re.compile(
+    r"(--add-label\s+\S*human-approved|labels\b[^\n;|&]*human-approved)"
+)
 
 
 def deny(message: str) -> None:
@@ -91,6 +102,18 @@ def main() -> None:
             deny(
                 "Pushing to main is forbidden. Work on a task branch and open "
                 "a PR; the decider merges."
+            )
+        if MERGE_COMMAND.search(command) and os.environ.get("VFI_ROLE") != "decider":
+            deny(
+                "Merging is the decider's job. This run is not the decider "
+                "(VFI_ROLE is not 'decider'), so it merges nothing. Open a PR "
+                "and stop."
+            )
+        if APPROVAL_LABEL.search(command):
+            deny(
+                "The human-approved label is the human's signature. No agent "
+                "applies it, ever. If a protected-path change needs approval, "
+                "write an escalation and wait."
             )
         if BASH_WRITE_HINTS.search(command):
             for entry in protected:
