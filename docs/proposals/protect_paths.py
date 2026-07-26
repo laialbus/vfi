@@ -1,22 +1,16 @@
 #!/usr/bin/env python3
 """PreToolUse guard for VFI (GOALS.md, M0).
 
-PROPOSED REVISION — adds the merge-guard (see "NEW in this revision" below).
-Install: review, then cp docs/proposals/protect_paths.py .claude/hooks/
-This file is protected, so only a human can install it; that is the point.
-
 Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
      any location outside the project directory.
   2. Any Bash command that names a protected path alongside a write-capable
      operation, and any git push to main.
-  3. NEW in this revision:
-     a. Merging a PR (gh pr merge, or the merge endpoint via gh api) unless
-        the run carries VFI_ROLE=decider. The wrapper sets the role outside
-        the repo, so no agent can grant itself merge authority.
-     b. Applying the human-approved label from any agent, decider included.
-        That label is the human sign-off for protected-path changes; only a
-        human hand applies it.
+  3. Merging a PR unless the run carries VFI_ROLE=decider. The wrapper sets
+     the role outside the repo, so no agent can grant itself merge authority.
+  4. Applying the human-approved label, from any agent, decider included.
+     That label is the human sign-off for protected-path changes; only a
+     human hand applies it.
 
 This is friction, not a security boundary. The OS sandbox confines shell
 commands; the server (ruleset, required checks) is the backstop.

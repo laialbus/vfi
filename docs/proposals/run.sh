@@ -1,19 +1,10 @@
 #!/usr/bin/env bash
 #
-# VFI agent run wrapper — PROPOSED REVISION (v2).
-# Install: cp docs/proposals/run.sh ../run.sh (outside the repo, on purpose:
-# an agent that can edit its own wrapper has no wrapper).
+# VFI agent run wrapper.
 #
-# Changes from v1, all found during M0 verification on macOS:
-#   - PATH exports Homebrew explicitly; launchd and bash -lc don't load zsh's.
-#   - flock does not exist on macOS: mkdir lock with a PID staleness check.
-#   - Repo URL defaults to HTTPS: SSH does not pass the Claude Code sandbox
-#     proxy; HTTPS does, authenticated via gh's credential helper.
-#   - Claims use plain `git push`, never --set-upstream: the sandbox denies
-#     the .git/config write, which poisons the exit code after the ref lands.
-#   - VFI_ROLE is exported for every role: the PreToolUse hook reads it to
-#     refuse merges from anything that is not the decider.
-#   - The lead role can run headless (VFI_HEADLESS=1) — verified working.
+# This script owns the guardrails. The agent runs inside it, not around it.
+# It lives OUTSIDE the repository on purpose: an agent that can edit its own
+# wrapper has no wrapper. Keep it short and stable.
 #
 # Roles:
 #   worker  — fleet mode: claims one task by branch, works it, opens a PR.
@@ -23,12 +14,14 @@
 
 set -euo pipefail
 
+# launchd and bash -lc don't see Homebrew's PATH (timeout, shuf live there).
 export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
 
+# HTTPS, not SSH: the sandbox proxy cannot relay SSH.
 REPO_URL="${VFI_REPO_URL:-https://github.com/laialbus/vfi.git}"
 WORK_ROOT="${VFI_WORK_ROOT:-$HOME/vfi-work}"
 WORKER_ID="${VFI_WORKER_ID:-1}"           # distinct per parallel worker
@@ -129,7 +122,6 @@ fi
 # ---------------------------------------------------------------------------
 
 if [[ "$ROLE" == "lead" ]]; then
-  export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
   if [[ "$HEADLESS" == "1" ]]; then
     timeout --signal=TERM --kill-after=60 "$TIMEOUT_SECONDS" \
       claude -p "$(cat "$PROMPTS/lead.md")"
@@ -150,6 +142,8 @@ if [[ -z "$TASK_ID" ]]; then
 fi
 
 git checkout -b "$TASK_ID"
+# Plain push, never --set-upstream: the sandbox denies the .git/config write,
+# which poisons the exit code after the ref has already landed.
 if ! git push origin "$TASK_ID"; then
   echo "claim lost on $TASK_ID; another worker has it"
   exit 0
