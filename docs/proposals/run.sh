@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+#
+# VFI agent run wrapper — PROPOSED REVISION (v2).
+# Install: cp docs/proposals/run.sh ../run.sh (outside the repo, on purpose:
+# an agent that can edit its own wrapper has no wrapper).
+#
+# Changes from v1, all found during M0 verification on macOS:
+#   - PATH exports Homebrew explicitly; launchd and bash -lc don't load zsh's.
+#   - flock does not exist on macOS: mkdir lock with a PID staleness check.
+#   - Repo URL defaults to HTTPS: SSH does not pass the Claude Code sandbox
+#     proxy; HTTPS does, authenticated via gh's credential helper.
+#   - Claims use plain `git push`, never --set-upstream: the sandbox denies
+#     the .git/config write, which poisons the exit code after the ref lands.
+#   - VFI_ROLE is exported for every role: the PreToolUse hook reads it to
+#     refuse merges from anything that is not the decider.
+#   - The lead role can run headless (VFI_HEADLESS=1) — verified working.
+#
+# Roles:
+#   worker  — fleet mode: claims one task by branch, works it, opens a PR.
+#   decider — reviews and merges. The only role the merge-guard lets through.
+#   lead    — team mode: spawns teammates, each in its own worktree, each
+#             claiming its own task by pushing the branch. Never merges.
+
+set -euo pipefail
+
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+
+# ---------------------------------------------------------------------------
+# Configuration
+# ---------------------------------------------------------------------------
+
+REPO_URL="${VFI_REPO_URL:-https://github.com/laialbus/vfi.git}"
+WORK_ROOT="${VFI_WORK_ROOT:-$HOME/vfi-work}"
+WORKER_ID="${VFI_WORKER_ID:-1}"           # distinct per parallel worker
+ROLE="${VFI_ROLE:-worker}"                # worker | decider | lead
+TIMEOUT_SECONDS="${VFI_TIMEOUT:-3600}"    # hard wall clock
+HEADLESS="${VFI_HEADLESS:-0}"             # lead only: 1 = claude -p
+
+export VFI_ROLE="$ROLE"                   # the merge-guard hook reads this
+
+WORKTREE="$WORK_ROOT/worker-$WORKER_ID"
+LOCKDIR="$WORK_ROOT/.lock-$WORKER_ID"
+PROMPTS="$(cd "$(dirname "$0")" && pwd)/prompts"
+
+mkdir -p "$WORK_ROOT"
+
+# ---------------------------------------------------------------------------
+# Logging: one file per run, pruned to the last 30.
+# ---------------------------------------------------------------------------
+
+LOG_DIR="$WORK_ROOT/logs"
+mkdir -p "$LOG_DIR"
+RUN_LOG="$LOG_DIR/$ROLE-$WORKER_ID-$(date +%Y%m%d-%H%M%S).log"
+exec >>"$RUN_LOG" 2>&1
+echo "=== run start $(date) role=$ROLE worker=$WORKER_ID ==="
+ls -1t "$LOG_DIR/$ROLE-$WORKER_ID"-*.log 2>/dev/null | tail -n +31 | xargs rm -f --
+
+# ---------------------------------------------------------------------------
+# One run per worker at a time. mkdir is atomic; a stale lock (dead PID) is
+# reclaimed, because unlike flock, mkdir does not release on process death.
+# ---------------------------------------------------------------------------
+
+if ! mkdir "$LOCKDIR" 2>/dev/null; then
+  old_pid="$(cat "$LOCKDIR/pid" 2>/dev/null || true)"
+  if [[ -n "$old_pid" ]] && kill -0 "$old_pid" 2>/dev/null; then
+    echo "worker $WORKER_ID still running (pid $old_pid); exiting"
+    exit 0
+  fi
+  echo "reclaiming stale lock (pid ${old_pid:-unknown} is gone)"
+  rm -rf "$LOCKDIR"
+  mkdir "$LOCKDIR"
+fi
+echo $$ >"$LOCKDIR/pid"
+
+CLAIMED_BRANCH=""
+HANDED_OFF=0
+
+cleanup() {
+  local code=$?
+  if [[ -n "$CLAIMED_BRANCH" && "$HANDED_OFF" -eq 0 ]]; then
+    echo "releasing claim on $CLAIMED_BRANCH"
+    git -C "$WORKTREE" push origin --delete "$CLAIMED_BRANCH" || true
+  fi
+  rm -rf "$LOCKDIR"
+  exit "$code"
+}
+trap cleanup EXIT
+
+# ---------------------------------------------------------------------------
+# Preflight. Never build on a broken base.
+# ---------------------------------------------------------------------------
+
+if [[ ! -d "$WORKTREE/.git" ]]; then
+  git clone "$REPO_URL" "$WORKTREE"
+fi
+
+cd "$WORKTREE"
+git fetch --prune origin
+git checkout main
+git reset --hard origin/main
+git clean -fd
+
+if [[ -n "$(git status --porcelain)" ]]; then
+  echo "working tree dirty after reset; escalating"
+  exit 1
+fi
+
+if ! ./scripts/ci-status.sh main; then
+  echo "CI is not green on main; refusing to start"
+  exit 1
+fi
+
+# ---------------------------------------------------------------------------
+# Decider: reviews and merges. Merge authority comes from VFI_ROLE=decider,
+# which the hook checks; the wrapper is outside the repo, so no agent can
+# grant itself the role.
+# ---------------------------------------------------------------------------
+
+if [[ "$ROLE" == "decider" ]]; then
+  timeout --signal=TERM --kill-after=60 "$TIMEOUT_SECONDS" \
+    claude -p "$(cat "$PROMPTS/decider.md")"
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Lead: spawns teammates, assigns tasks, never merges. Headless verified
+# (TEAMS_HEADLESS_OK canary); interactive remains the default for supervised
+# sessions.
+# ---------------------------------------------------------------------------
+
+if [[ "$ROLE" == "lead" ]]; then
+  export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+  if [[ "$HEADLESS" == "1" ]]; then
+    timeout --signal=TERM --kill-after=60 "$TIMEOUT_SECONDS" \
+      claude -p "$(cat "$PROMPTS/lead.md")"
+  else
+    claude "$(cat "$PROMPTS/lead.md")"
+  fi
+  exit 0
+fi
+
+# ---------------------------------------------------------------------------
+# Worker (fleet mode): claim exactly one task. Branch creation is the lock.
+# ---------------------------------------------------------------------------
+
+TASK_ID="$(./scripts/tasks.sh available | shuf -n 1 || true)"
+if [[ -z "$TASK_ID" ]]; then
+  echo "no claimable work"
+  exit 0
+fi
+
+git checkout -b "$TASK_ID"
+if ! git push origin "$TASK_ID"; then
+  echo "claim lost on $TASK_ID; another worker has it"
+  exit 0
+fi
+CLAIMED_BRANCH="$TASK_ID"
+
+set +e
+timeout --signal=TERM --kill-after=60 "$TIMEOUT_SECONDS" \
+  claude -p "Work task $TASK_ID. Read CLAUDE.md first. One task only."
+AGENT_CODE=$?
+set -e
+
+if [[ "$AGENT_CODE" -ne 0 ]]; then
+  echo "agent exited $AGENT_CODE (124 means it hit the timeout)"
+  ./scripts/escalate.sh "$TASK_ID" "agent exited $AGENT_CODE" || true
+  exit 1
+fi
+
+if ! ./scripts/gates.sh; then
+  echo "gates failed; preserving branch as escalated/$TASK_ID"
+  ./scripts/escalate.sh "$TASK_ID" "gates failed" || true
+  git add -A && git commit -m "escalation: gates failed on $TASK_ID" || true
+  git push origin "HEAD:refs/heads/escalated/$TASK_ID" || true
+  exit 1
+fi
+
+git push origin "$TASK_ID"
+HANDED_OFF=1
+
+if ! gh pr create --fill --base main --head "$TASK_ID"; then
+  echo "PR creation failed; branch is pushed and safe. Escalating."
+  ./scripts/escalate.sh "$TASK_ID" "pushed but PR creation failed" || true
+  exit 1
+fi
+
+echo "task $TASK_ID handed off"
