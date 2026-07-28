@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Scheduled team lead: spawns teammates over the task queue, headless.
+
+  Install to ~/Library/LaunchAgents/com.vfi.agent.lead.plist
+  Load:   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.vfi.agent.lead.plist
+  Unload: launchctl bootout gui/$(id -u)/com.vfi.agent.lead
+
+  Do not install until M2's gates exist and a supervised dry run has passed.
+
+  No absolute personal paths in this file: bash expands $HOME in the program
+  string, and run.sh derives its work root (vfi-work/, beside it in the
+  workspace) from its own location. Runtime logs live in that work root;
+  the /tmp files below catch only failures before run.sh takes over.
+
+  A LaunchAgent runs in the logged-in user session; if the machine is logged
+  out it does not run. That is required here: claude and gh authenticate from
+  the login keychain/keyring.
+
+  No secrets in this file. It is world-readable.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>com.vfi.agent.lead</string>
+
+  <key>ProgramArguments</key>
+  <array>
+    <string>/bin/bash</string>
+    <string>-lc</string>
+    <string>$HOME/projects/systems/vfi_ws/run.sh</string>
+  </array>
+
+  <key>EnvironmentVariables</key>
+  <dict>
+    <key>VFI_ROLE</key>
+    <string>lead</string>
+    <key>VFI_HEADLESS</key>
+    <string>1</string>
+    <key>VFI_WORKER_ID</key>
+    <string>1</string>
+    <key>VFI_TIMEOUT</key>
+    <string>3600</string>
+  </dict>
+
+  <key>StartCalendarInterval</key>
+  <array>
+    <dict>
+      <key>Hour</key><integer>3</integer>
+      <key>Minute</key><integer>0</integer>
+    </dict>
+  </array>
+
+  <key>RunAtLoad</key>
+  <false/>
+
+  <key>StandardOutPath</key>
+  <string>/tmp/com.vfi.agent.lead.out.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/com.vfi.agent.lead.err.log</string>
+</dict>
+</plist>
