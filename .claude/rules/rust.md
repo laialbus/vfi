@@ -1,8 +1,10 @@
-# Rust
+---
+paths:
+  - "crates/**/*"
+  - "contracts/**/*"
+---
 
-Not yet scoped to paths. Once the workspace layout is fixed in M1, this file gets
-`paths` frontmatter so it loads only when Rust files are being worked on. Until
-then it loads every session.
+# Rust
 
 ## Guides
 
