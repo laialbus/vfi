@@ -1,8 +1,9 @@
-# Python
+---
+paths:
+  - "shell/**/*"
+---
 
-Not yet scoped to paths. Once the workspace layout is fixed in M1, this file gets
-`paths` frontmatter so it loads only when Python files are being worked on. Until
-then it loads every session.
+# Python
 
 ## Guide
 
