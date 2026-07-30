@@ -16,9 +16,9 @@ explaining that it must not be created. Workers learned to reword messages or
 route text through `--body-file` / `commit -F`, which hides exactly the words a
 reviewer most needs to see.
 
-**Fix:** parse the command for actual filesystem-write targets (or at minimum
-exempt quoted message/body argument positions) instead of substring-matching
-the whole string. Protected: needs human sign-off recorded in an ADR.
+**Fix:** parse the command for actual filesystem-write targets instead of
+substring-matching the whole string. Written and tested; needs human sign-off.
+See `docs/adr/protect-paths-hook-matching.md` and the two files it names.
 
 ## 2. Sessions silently change worktree, and the sandbox does not follow
 
@@ -36,20 +36,28 @@ Three related behaviors, all observed:
   what looked like a stale directory was nearly an `rm -rf` of a live worktree
   (the sandbox blocked it).
 
-**Fix:** spawn each teammate with cwd already in its own worktree; repoint the
-sandbox allowlist when the worktree changes; never relocate a session's cwd
-without surfacing it. All harness-side, outside the repository. Until fixed,
-worker prompts should carry the workarounds explicitly, and any `rm` of a
-worktree path should be treated as touching a live checkout.
+**Fix, upstream:** all three are Claude Code behaviour, and no change in this
+repository fixes them. Report them to the tool vendor: spawn each teammate with
+cwd already in its own worktree; repoint the sandbox write allowlist when the
+session's worktree changes; never relocate a session's cwd without surfacing
+it.
+
+**Fix, here:** stop sharing one checkout. `docs/proposals/lead-prompt.md` gives
+each teammate its own clone instead of a worktree, which removes the shared
+`.git` and the EnterWorktree dance that the relocations happen inside of. It
+carries the workarounds explicitly, and it forbids deleting any directory that
+might be a live checkout.
 
 ## 3. Smaller, same theme
 
-- EnterWorktree creates a branch named `worktree-<name>`; claiming requires a
-  branch named exactly for the task id, so every worker renames. A worktree
-  flag for the branch name would remove a step every run repeats.
-- `gh` inside a sandboxed script hits a TLS failure even though the same `gh`
-  invocation works when run directly; anything that layers scripts over `gh`
-  (as the operational scripts do) inherits this.
+- **Upstream.** EnterWorktree creates a branch named `worktree-<name>`;
+  claiming requires a branch named exactly for the task id, so every worker
+  renames. A worktree flag for the branch name would remove a step every run
+  repeats. Moot for teammates once they use clones, but still true for any
+  session that makes a worktree.
+- **Upstream.** `gh` inside a sandboxed script hits a TLS failure even though
+  the same `gh` invocation works when run directly; anything that layers
+  scripts over `gh` (as the operational scripts do) inherits this.
 - Worktrees accumulate under `.claude/worktrees/` with no cleanup rule — one
   is currently parked on a branch that no longer exists on origin. A sweep
   policy (delete when the branch is merged or gone, as the abandoned-claims
@@ -57,6 +65,20 @@ worktree path should be treated as touching a live checkout.
 
 ## What is being asked
 
-Human sign-off to fix the hook (item 1, ADR required), and harness changes for
-items 2–3. Until then this file is the record that keeps the next session from
-rediscovering these one worker at a time.
+Item 1 is written and waiting on a human:
+
+| Artifact | What it is |
+| :--- | :--- |
+| `docs/adr/protect-paths-hook-matching.md` | The decision. Constitutional — it changes protected-path enforcement, so the decider does not accept it. |
+| `docs/proposals/protect_paths.py` | The replacement hook, a drop-in for `.claude/hooks/protect_paths.py`. |
+| `docs/proposals/protect_paths_tests.py` | 32 tool calls run through both the installed hook and the replacement. Run it before installing. |
+
+Item 2's repo-side half is `docs/proposals/lead-prompt.md`, replacing
+`../prompts/lead.md`; its header lists the two prerequisites that go in with
+it, one of them a change to `run.sh`. Everything marked **Upstream** above is
+Claude Code behaviour that no change here can reach — those go to the tool
+vendor as bug reports, not into this queue.
+
+This file drains when the remedies are installed, not before. Until then it is
+the record that keeps the next session from rediscovering these one worker at a
+time.
