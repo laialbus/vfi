@@ -40,8 +40,14 @@ merge guard, the push-to-main guard, and the human-approved label guard keep
 their behaviour and are applied to `git` and `gh` commands rather than to
 arbitrary text.
 
+One boundary moves with this. The run's scratch directory becomes writable by
+every tool rather than by bash alone: the harness designates it for temp files,
+and the file tools refusing it is what pushes agents into writing through shell
+heredocs instead. A temp root that contains the checkout is not treated as
+scratch, so this cannot become a way out of the workspace.
+
 The replacement is written and tested: `docs/proposals/protect_paths.py`, with
-`docs/proposals/protect_paths_tests.py` running 32 tool calls through both the
+`docs/proposals/protect_paths_tests.py` running 35 tool calls through both the
 installed hook and the replacement. Nothing is installed by this ADR. A human
 installs the file, because it is a protected path and because a guard an agent
 can replace is not a guard.
@@ -67,8 +73,14 @@ cannot merge. The hook's value is stopping it at the keystroke.
 Commit messages and PR bodies may name protected paths, so reviewers see the
 reasoning. Three classes of real write that the guard missed are now refused.
 `cp` of a protected file to a scratch path is allowed, since a read is not a
-write. Scratch writes are exempt only under the run's own `TMPDIR`; a run with
-no `TMPDIR` falls back to `/tmp`.
+write. Writes to the run's temp directory stop needing a shell.
+
+The push guard still reads a branch name, not the repository it belongs to, so
+`git -C <somewhere-else> push origin refs/heads/main` is refused even though
+that main is not ours. Left as is deliberately: telling the two apart means
+believing the `-C` path, which is the one argument an agent would forge. The
+corpus keeps it as a named case so the limitation stays visible rather than
+being rediscovered as a bug.
 
 The guard is now roughly three times the code, and it is parsing shell, which
 is a thing that is never finished. It stays friction, not a boundary: an agent

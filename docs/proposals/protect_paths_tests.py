@@ -62,6 +62,10 @@ CASES = [
     ("chained mkdir and write", ALLOW, "Bash", {
         "command": "mkdir -p docs/adr && echo x > docs/adr/foo.md"}, {}),
     ("file tool write inside the repo", ALLOW, "Write", {"file_path": "docs/notes.md"}, {}),
+    ("file tool write to the scratch directory", ALLOW, "Write", {
+        "file_path": "{scratch}/draft.md"}, {}),
+    ("file tool write to a scratch file named like an anchor", ALLOW, "Write", {
+        "file_path": "{scratch}/ANCHORS.md"}, {}),
 
     # Protected paths, by any route.
     ("rm a hook file", DENY, "Bash", {"command": "rm .claude/hooks/protect_paths.py"}, {}),
@@ -97,6 +101,13 @@ CASES = [
         "command": "gh pr edit 3 --add-label human-approved"}, {}),
     ("apply the approval label as the decider", DENY, "Bash", {
         "command": "gh pr edit 3 --add-label human-approved"}, {"VFI_ROLE": "decider"}),
+
+    # Known limitation, kept as a case so it stays visible: the push guard
+    # reads the branch name, not which repository it belongs to. A push to
+    # main in some other checkout is refused too. Widening it would mean
+    # trusting `git -C <path>`, which is the argument an agent would forge.
+    ("push to main in an unrelated checkout", DENY, "Bash", {
+        "command": "git -C {scratch}/other push origin refs/heads/main"}, {}),
 ]
 
 

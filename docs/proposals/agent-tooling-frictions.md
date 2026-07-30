@@ -14,11 +14,24 @@ merely contains a protected path as a substring. Observed false positives: a
 message mentioned `contracts/`, and a PR body naming `scripts/gates.sh` while
 explaining that it must not be created. Workers learned to reword messages or
 route text through `--body-file` / `commit -F`, which hides exactly the words a
-reviewer most needs to see.
+reviewer most needs to see. A later worker hit the same matching from another
+side: a command containing the literal `refs/heads/main`, pushing the base
+branch of a scratch repository that has nothing to do with this one, was read
+as a push to our main and refused.
+
+The same file draws its other boundary too tightly. It refuses every write
+outside the workspace, including the session scratchpad the harness itself
+designates for temp files, so workers fall back to bash heredocs into `$TMPDIR`
+to write a scratch file — shell as a workaround for the file tools.
 
 **Fix:** parse the command for actual filesystem-write targets instead of
-substring-matching the whole string. Written and tested; needs human sign-off.
-See `docs/adr/protect-paths-hook-matching.md` and the two files it names.
+substring-matching the whole string, and let every tool write to the run's
+scratch directory, not just bash. Written and tested; needs human sign-off. See
+`docs/adr/protect-paths-hook-matching.md` and the two files it names. The
+`refs/heads/main` case survives as a documented limitation with a test of its
+own: the guard reads the branch name, not which repository owns it, and
+believing a `git -C` path would be trusting the one argument an agent could
+forge.
 
 ## 2. Sessions silently change worktree, and the sandbox does not follow
 
@@ -55,6 +68,10 @@ might be a live checkout.
   renames. A worktree flag for the branch name would remove a step every run
   repeats. Moot for teammates once they use clones, but still true for any
   session that makes a worktree.
+- **Upstream.** `$TMPDIR` is not the same directory in sandboxed and
+  unsandboxed bash, so a file written in one mode is invisible to the other
+  through `$TMPDIR`. Absolute paths are the workaround, and are worth using
+  for any scratch file that outlives a single command.
 - **Upstream.** `gh` inside a sandboxed script hits a TLS failure even though
   the same `gh` invocation works when run directly; anything that layers
   scripts over `gh` (as the operational scripts do) inherits this.
@@ -71,7 +88,7 @@ Item 1 is written and waiting on a human:
 | :--- | :--- |
 | `docs/adr/protect-paths-hook-matching.md` | The decision. Constitutional — it changes protected-path enforcement, so the decider does not accept it. |
 | `docs/proposals/protect_paths.py` | The replacement hook, a drop-in for `.claude/hooks/protect_paths.py`. |
-| `docs/proposals/protect_paths_tests.py` | 32 tool calls run through both the installed hook and the replacement. Run it before installing. |
+| `docs/proposals/protect_paths_tests.py` | 35 tool calls run through both the installed hook and the replacement. Run it before installing. |
 
 Item 2's repo-side half is `docs/proposals/lead-prompt.md`, replacing
 `../prompts/lead.md`; its header lists the two prerequisites that go in with

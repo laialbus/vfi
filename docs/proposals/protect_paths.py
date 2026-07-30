@@ -7,7 +7,8 @@ is approved. Re-verify first with `docs/proposals/protect_paths_tests.py`.
 
 Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
-     any location outside the project directory.
+     any location outside the project directory. Scratch is the exception:
+     the run's temp directory is writable by every tool, not only by bash.
   2. Any Bash command that writes to a protected path or outside the project
      directory, and any git push to main.
   3. Merging a PR unless the run carries VFI_ROLE=decider. The wrapper sets
@@ -153,14 +154,24 @@ def names_protected(text: str, protected: list[str]) -> str | None:
     return None
 
 
-def temp_prefixes() -> list[str]:
-    """Scratch space a write may land in. A run with its own TMPDIR gets that
-    one and no more; exempting all of /tmp would exempt whatever else is
-    parked there, including a checkout."""
+def scratch_prefixes(root: str) -> list[str]:
+    """Where a write outside the checkout is allowed to land: this run's temp
+    directory and the system's. A temp root that contains the checkout is not
+    scratch for this run — otherwise a checkout living under /tmp would exempt
+    everything beside it."""
+    candidates = ["/tmp", "/private/tmp", "/var/folders", "/private/var/folders", "/dev"]
     tmpdir = os.environ.get("TMPDIR")
     if tmpdir:
-        return [os.path.realpath(tmpdir).rstrip(os.sep), "/dev"]
-    return ["/tmp", "/private/tmp", "/dev"]
+        candidates.append(os.path.realpath(tmpdir))
+    return [
+        prefix.rstrip(os.sep)
+        for prefix in candidates
+        if not root.startswith(prefix.rstrip(os.sep) + os.sep)
+    ]
+
+
+def is_scratch(resolved: str, root: str) -> bool:
+    return any(resolved.startswith(prefix + os.sep) for prefix in scratch_prefixes(root))
 
 
 def newlines_to_separators(command: str) -> str:
@@ -394,7 +405,7 @@ def check_command(command: str, root: str, cwd: str, protected: list[str], depth
         for target in segment.targets:
             for resolved in resolve(target, cwd):
                 if resolved != root and not resolved.startswith(root + os.sep):
-                    if any(resolved.startswith(p + os.sep) for p in temp_prefixes()):
+                    if is_scratch(resolved, root):
                         continue
                     deny(
                         f"This command writes outside the project directory: "
@@ -447,6 +458,8 @@ def main() -> None:
             sys.exit(0)
         resolved = os.path.realpath(path if os.path.isabs(path) else os.path.join(cwd, path))
         if resolved != root and not resolved.startswith(root + os.sep):
+            if is_scratch(resolved, root):
+                sys.exit(0)
             deny(
                 f"Write outside the project directory refused: {resolved}. "
                 "Agents work only inside the workspace."
