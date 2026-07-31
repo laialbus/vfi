@@ -9,124 +9,107 @@ Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
      any location outside the project directory. Scratch is the exception:
      the run's temp directory is writable by every tool, not only by bash.
-  2. Any Bash command whose write targets, as modelled below, land on a
-     protected path or outside the project directory, and any git push to main.
+  2. Any Bash command the installed guard refuses, judged on its text with the
+     prose arguments of a short whitelist of flags blanked out.
   3. Merging a PR unless the run carries VFI_ROLE=decider. The wrapper sets
      the role outside the repo, so no agent can grant itself merge authority.
   4. Applying the human-approved label, from any agent, decider included.
      That label is the human sign-off for protected-path changes; only a
      human hand applies it.
 
-Difference from the installed version: a Bash command is judged by what it
-writes, not by what its text contains. Targets come from redirections and from
-the operands of commands that write; text carried in a message or body
-argument, or in a heredoc body, is never treated as a path. A command whose
-targets cannot be seen (a patch, an interpreter, an unquotable string) falls
-back to the old name matching, so the unparseable case stays refused.
+## The guarantee
 
-Protected paths are matched relative to the git checkout the target sits in,
-so a write to a worktree's own ANCHORS.md is refused like any other.
+For a Bash command, this hook allows only what the installed hook allows on the
+same text with prose redacted:
 
-Parse anomalies fail closed: a command that will not tokenize keeps the old
-name matching, and a heredoc that is never terminated is refused outright
-rather than having the rest of the command silently discarded.
+    allows(this)  ⊆  allows(installed applied to prose-redacted text)
 
-What this does not model, stated so the claim above is not read too widely:
+That is the whole design. The installed hook's substring matching is the floor;
+this hook never reasons about what a command *writes*, so there is no parser
+whose gaps could let a write through. The single exemption is redaction: the
+span between the quotes of an operand of `git commit -m/--message` and of
+`gh pr create|comment|edit --body/--title` is blanked before the protected-name
+scan runs — and before nothing else. A refusal is waived only when it is
+positively attributable to prose in one of those arguments.
 
-  - An interpreter writing *outside* the workspace. `python3 -c` and its kin
-    produce no visible targets, so only the protected-name fallback applies to
-    them, and a path outside the checkout has no protected name to match.
-  - Any writer not in WRITERS, and any write reached through a shape the
-    parser does not follow — a wrapper script, a `$VAR` path, a shell function.
-  - `git config --global` and other writes whose target is implied by a flag
-    rather than named. Only `git config -f/--file` is seen.
+Concretely, the hook refuses a Bash command when either of these holds:
+
+  - the installed hook's push-to-main, merge, or approval-label guard matches
+    the original text *or* the redacted text; or
+  - the installed hook's write-hint-plus-protected-name scan matches the
+    redacted text.
+
+Redaction is skipped, leaving the floor untouched, whenever it cannot be done
+soundly: a command containing a command substitution (`$(` or a backtick) is
+never redacted, since a quoted argument can execute; an operand that is not
+exactly one quoted string is never redacted; a flag is attributed only when the
+segment's first words are the unquoted command that gives it its meaning; and a
+command whose quotes the walk cannot close exempts nothing at all.
+
+The predecessor of this draft modelled write targets instead, and an adversarial
+review found twelve commands the installed hook refuses and that draft allowed,
+across five mechanisms — glued separators, command substitution, wrapper flags,
+`~`, and a heredoc marker in a comment. Every one of them was refused by the
+installed hook for naming a protected path. That is the evidence behind starting
+from refusal and subtracting, rather than from parsing and hoping.
+
+## What this does not do
+
+  - It does not see writes. `python3 -c "open('ANCHORS.md','w')"`,
+    `ed ANCHORS.md < script`, `git config -f WORKPLAN.md`, and a redirect to
+    `../prompts/` are all allowed here, exactly as the installed hook allows
+    them. The sandbox is the layer that covers them.
+  - Heredoc bodies are not redacted. Delimiting a body soundly needs the same
+    shell parsing this design exists to avoid — the review's comment-marker
+    bypass was a mis-delimited body — so a heredoc whose body names a protected
+    path beside a write-capable word is still refused. Write the file with the
+    Write tool and pass it as `--body-file`/`commit -F` instead.
+  - A read-only command that names a protected path is still refused when it
+    carries a write-capable word: `cp ANCHORS.md /tmp/` is a read, and it is
+    refused. That is the cost of the floor, paid deliberately.
+  - Prose outside the whitelisted flags is not exempt, including `git tag -m`,
+    `gh issue`, and any body passed positionally.
 
 This is friction, not a security boundary. The OS sandbox confines shell
-commands; the server (ruleset, required checks) is the backstop. The list
-above is what is known to be missing, not a promise that nothing else is.
+commands; the server (ruleset, required checks) is the backstop.
 
 Exit 0 allows the tool call. Exit 2 blocks it; stderr is shown to the agent.
 """
 
-import glob
 import json
 import os
 import re
-import shlex
 import sys
 
 WRITE_TOOLS = ("Edit", "Write", "NotebookEdit")
 
-# How a command's operands relate to what it writes.
-ALL_OPERANDS = "all"  # every operand is created, changed, or removed
-DESTINATION = "dest"  # only the last operand (or -t's value) is written
-UNSEEN = "unseen"  # writes targets not visible in the argument list
-
-WRITERS = {
-    "rm": ALL_OPERANDS,
-    "rmdir": ALL_OPERANDS,
-    "mv": ALL_OPERANDS,
-    "touch": ALL_OPERANDS,
-    "truncate": ALL_OPERANDS,
-    "mkdir": ALL_OPERANDS,
-    "chmod": ALL_OPERANDS,
-    "chown": ALL_OPERANDS,
-    "chgrp": ALL_OPERANDS,
-    "shred": ALL_OPERANDS,
-    "tee": ALL_OPERANDS,
-    # Editors that can be driven from a script: `ed FILE < commands`,
-    # `ex -sc wq FILE`, `vim -es -c wq FILE`. The file they open is the file
-    # they write.
-    "ed": ALL_OPERANDS,
-    "ex": ALL_OPERANDS,
-    "vi": ALL_OPERANDS,
-    "vim": ALL_OPERANDS,
-    "nvim": ALL_OPERANDS,
-    "emacs": ALL_OPERANDS,
-    "nano": ALL_OPERANDS,
-    "cp": DESTINATION,
-    "ln": DESTINATION,
-    "install": DESTINATION,
-    "patch": UNSEEN,
-    "tar": UNSEEN,
-    "unzip": UNSEEN,
-    "rsync": UNSEEN,
-    "python": UNSEEN,
-    "python3": UNSEEN,
-    "perl": UNSEEN,
-    "ruby": UNSEEN,
-    "node": UNSEEN,
-    "awk": UNSEEN,
-    "find": UNSEEN,
-}
-GIT_WRITERS = {
-    "mv": ALL_OPERANDS,
-    "rm": ALL_OPERANDS,
-    "checkout": UNSEEN,
-    "restore": UNSEEN,
-    "apply": UNSEEN,
-    "am": UNSEEN,
-    "clean": UNSEEN,
-    "stash": UNSEEN,
-}
-SHELLS = ("bash", "sh", "zsh", "dash", "ksh", "eval")
-WRAPPERS = ("env", "timeout", "nice", "nohup", "sudo", "command", "stdbuf", "time", "xargs")
-# Arguments that carry prose, not paths. Only for git and gh, where they are
-# unambiguous; elsewhere a short flag of the same name means something else.
-TEXT_FLAGS = (
-    "-m", "--message", "-b", "--body", "-t", "--title",
-    "--notes", "--subject", "--body-file", "-F", "--file",
+# The installed hook's patterns, verbatim. They are the floor; changing one
+# here would change what this hook is measured against.
+BASH_WRITE_HINTS = re.compile(
+    r"(>>?|\btee\b|\brm\b|\bmv\b|\bcp\b|\bsed\s+(-\S+\s+)*-i|\btruncate\b"
+    r"|\bln\b|\bchmod\b|\bpatch\b|\bdd\b|\btouch\b"
+    r"|\bgit\s+(mv|rm|checkout|restore|apply|clean)\b)"
 )
-SEPARATORS = (";", "&&", "||", "|", "&", "|&", "(", ")", "{", "}")
+PUSH_TO_MAIN = re.compile(r"\bgit\b[^\n;|&]*\bpush\b[^\n;|&]*\b(main|master)\b")
+MERGE_COMMAND = re.compile(
+    r"\bgh\s+pr\s+merge\b|\bgh\s+api\b[^\n;|&]*/pulls/[^\n;|&]*/merge\b"
+)
+APPROVAL_LABEL = re.compile(
+    r"(--add-label\s+\S*human-approved|labels\b[^\n;|&]*human-approved)"
+)
 
-PUSH_TO_MAIN = re.compile(r"\bpush\b.*\b(main|master)\b")
-MERGE_COMMAND = re.compile(r"\bpr\s+merge\b|\bapi\b.*/pulls/.*/merge\b")
-APPROVAL_LABEL = re.compile(r"(--add-label\s+\S*human-approved|labels\b.*human-approved)")
-HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1")
-UNRESOLVABLE = re.compile(r"[$`]")
-# GNU sed takes the backup suffix attached to the flag, so `-i` is a prefix of
-# the option, not the whole of it: -i, -i.bak, -ni.bak, --in-place=.bak.
-SED_IN_PLACE = re.compile(r"--in-place(=.*)?|-[a-zA-Z]*i.*")
+# Flags whose quoted operand is prose. Keyed by the command that gives them
+# that meaning, because `-m` and `-t` mean other things elsewhere.
+COMMIT_FLAGS = ("-m", "--message")
+GH_TEXT_FLAGS = ("--body", "--title")
+GH_TEXT_SUBCOMMANDS = ("create", "comment", "edit")
+GIT_GLOBALS_WITH_VALUE = ("-C", "-c", "--git-dir", "--work-tree", "--namespace")
+GIT_GLOBALS_ALONE = ("-P", "--no-pager", "--paginate", "--bare")
+
+# A quoted argument that contains one of these runs a command when the shell
+# expands it, so its span is text the shell executes and must not be blanked.
+SUBSTITUTION = re.compile(r"\$\(|`")
+SEGMENT_BREAKS = ";|&()\n"
 
 
 def deny(message: str) -> None:
@@ -152,6 +135,169 @@ def load_protected(root: str) -> list[str]:
     return []  # unreachable
 
 
+class Word:
+    """One shell word, with the span of its quotes when it has exactly one pair.
+
+    `plain` is the word's text when nothing in it was quoted, and None
+    otherwise; attribution reads only plain words, so a quoted `"git"` never
+    passes for the command name.
+    """
+
+    def __init__(self, text: str, prefix: str, span: tuple[int, int] | None) -> None:
+        self.text = text
+        self.prefix = prefix
+        self.span = span
+
+    @property
+    def plain(self) -> str | None:
+        return self.text if self.span is None and self.prefix == self.text else None
+
+
+def walk(command: str) -> tuple[list[list[Word]], bool]:
+    """Split the text into segments of words, tracking quote state.
+
+    The second value is False when a quote is never closed. Segments break on
+    unquoted `;`, `|`, `&`, parentheses, and newlines; that split is used only
+    to attribute a flag to the command it belongs to, never to decide a refusal,
+    so a segmentation this misses cannot hide anything.
+    """
+    segments: list[list[Word]] = [[]]
+    chars: list[str] = []
+    prefix: list[str] = []
+    quoted: list[tuple[int, int]] = []
+    mixed = False
+
+    def flush() -> None:
+        nonlocal chars, prefix, quoted, mixed
+        if chars:
+            span = quoted[0] if len(quoted) == 1 and not mixed else None
+            segments[-1].append(Word("".join(chars), "".join(prefix), span))
+        chars, prefix, quoted, mixed = [], [], [], False
+
+    index = 0
+    length = len(command)
+    while index < length:
+        char = command[index]
+        if char == "#" and not chars:
+            while index < length and command[index] != "\n":
+                index += 1
+            continue
+        if char in " \t":
+            flush()
+            index += 1
+            continue
+        if char in SEGMENT_BREAKS:
+            flush()
+            segments.append([])
+            index += 1
+            continue
+        if char == "\\" and index + 1 < length:
+            chars.append(command[index : index + 2])
+            if not quoted:
+                prefix.append(command[index : index + 2])
+            else:
+                mixed = True
+            index += 2
+            continue
+        if char in "'\"":
+            start = index + 1
+            index += 1
+            while index < length:
+                if char == '"' and command[index] == "\\" and index + 1 < length:
+                    index += 2
+                    continue
+                if command[index] == char:
+                    break
+                index += 1
+            if index >= length:
+                return segments, False
+            quoted.append((start, index))
+            chars.append(command[start - 1 : index + 1])
+            index += 1
+            continue
+        chars.append(char)
+        if not quoted:
+            prefix.append(char)
+        else:
+            mixed = True
+        index += 1
+    flush()
+    return segments, True
+
+
+def prose_flags(words: list[Word]) -> tuple[str, ...]:
+    """The flags whose operand is prose in this segment, or () when the segment
+    is not one of the whitelisted commands. Anything unrecognised gives ()."""
+    names = [word.plain for word in words]
+    if not names or not names[0]:
+        return ()
+    command = os.path.basename(names[0])
+    if command == "git":
+        index = 1
+        while index < len(names) and names[index] and names[index].startswith("-"):
+            option = names[index]
+            if option in GIT_GLOBALS_WITH_VALUE:
+                index += 2
+            elif option in GIT_GLOBALS_ALONE or "=" in option:
+                index += 1
+            else:
+                return ()
+        if index < len(names) and names[index] == "commit":
+            return COMMIT_FLAGS
+        return ()
+    if command == "gh":
+        if len(names) >= 3 and names[1] == "pr" and names[2] in GH_TEXT_SUBCOMMANDS:
+            return GH_TEXT_FLAGS
+    return ()
+
+
+def redaction_spans(command: str) -> list[tuple[int, int]]:
+    """Spans between the quotes of whitelisted prose operands.
+
+    An empty list means nothing is exempt and the floor applies to the text as
+    written. That is what an unwalkable command gets: a quote the walk never
+    closes exempts nothing, rather than being refused. Refusing would add no
+    safety — the floor is already the verdict — and it would cost the common
+    case of an apostrophe inside a heredoc body, which the walk reads as an
+    unclosed quote and bash runs without complaint.
+    """
+    if SUBSTITUTION.search(command):
+        return []
+    segments, closed = walk(command)
+    if not closed:
+        return []
+    spans: list[tuple[int, int]] = []
+    for words in segments:
+        flags = prose_flags(words)
+        if not flags:
+            continue
+        for position, word in enumerate(words):
+            if word.span and any(word.prefix == flag + "=" for flag in flags):
+                spans.append(word.span)
+                continue
+            if word.plain not in flags or position + 1 >= len(words):
+                continue
+            operand = words[position + 1]
+            if operand.span and operand.prefix == "":
+                spans.append(operand.span)
+    return spans
+
+
+def redact(command: str, spans: list[tuple[int, int]]) -> str:
+    """Blank each span, keeping the quotes around it so no two characters that
+    were apart become adjacent — redaction can only remove a match, never make
+    one."""
+    if not spans:
+        return command
+    kept: list[str] = []
+    cursor = 0
+    for start, end in sorted(spans):
+        kept.append(command[cursor:start])
+        cursor = max(cursor, end)
+    kept.append(command[cursor:])
+    return "".join(kept)
+
+
 def checkout_root(path: str, fallback: str) -> str:
     """The git checkout a path belongs to, so worktrees match their own list."""
     directory = path if os.path.isdir(path) else os.path.dirname(path)
@@ -164,20 +310,11 @@ def checkout_root(path: str, fallback: str) -> str:
         directory = parent
 
 
-def protected_match(resolved: str, root: str, protected: list[str]) -> str | None:
-    rel = os.path.relpath(resolved, checkout_root(resolved, root))
+def protected_match(resolved: str, base: str, protected: list[str]) -> str | None:
+    rel = os.path.relpath(resolved, base)
     for entry in protected:
         bare = entry.rstrip("/")
         if rel == bare or rel.startswith(bare + os.sep):
-            return entry
-    return None
-
-
-def names_protected(text: str, protected: list[str]) -> str | None:
-    for entry in protected:
-        bare = entry.rstrip("/")
-        base = os.path.basename(bare)
-        if bare in text or (base and re.search(r"(?<![\w/.-])" + re.escape(base), text)):
             return entry
     return None
 
@@ -202,328 +339,46 @@ def is_scratch(resolved: str, root: str) -> bool:
     return any(resolved.startswith(prefix + os.sep) for prefix in scratch_prefixes(root))
 
 
-def newlines_to_separators(command: str) -> str:
-    """Unquoted newlines separate commands; quoted ones are part of a string."""
-    out: list[str] = []
-    quote = None
-    escaped = False
-    for ch in command:
-        if escaped:
-            out.append(ch)
-            escaped = False
-        elif ch == "\\" and quote != "'":
-            out.append(ch)
-            escaped = True
-        elif quote:
-            out.append(ch)
-            if ch == quote:
-                quote = None
-        elif ch in "'\"":
-            out.append(ch)
-            quote = ch
-        else:
-            out.append(";" if ch == "\n" else ch)
-    return "".join(out)
-
-
-def heredoc_openers(line: str, quote: str | None) -> tuple[list[str], str | None]:
-    """Markers opened by an unquoted `<<` on this line, and the quote state the
-    line ends in. A `<<` inside a string is prose; only a bare one redirects."""
-    markers: list[str] = []
-    escaped = False
-    index = 0
-    while index < len(line):
-        ch = line[index]
-        if escaped:
-            escaped = False
-        elif ch == "\\" and quote != "'":
-            escaped = True
-        elif quote:
-            if ch == quote:
-                quote = None
-        elif ch in "'\"":
-            quote = ch
-        elif line.startswith("<<<", index):  # here-string: no body follows
-            index += 3
-            continue
-        elif line.startswith("<<", index):
-            opener = HEREDOC.match(line, index)
-            if opener:
-                markers.append(opener.group(2))
-                index = opener.end()
-                continue
-            index += 2
-            continue
-        index += 1
-    return markers, quote
-
-
-def strip_heredocs(command: str) -> str | None:
-    """Drop heredoc bodies: they are input text, never write targets.
-
-    None means a heredoc was opened and never terminated. Dropping the rest of
-    the command would hide whatever follows it, so the caller refuses instead.
-    """
-    lines = command.split("\n")
-    kept: list[str] = []
-    quote: str | None = None
-    index = 0
-    while index < len(lines):
-        line = lines[index]
-        index += 1
-        markers, quote = heredoc_openers(line, quote)
-        kept.append(line)
-        for marker in markers:
-            while index < len(lines) and lines[index].strip() != marker:
-                index += 1
-            if index >= len(lines):
-                return None
-            index += 1
-    return "\n".join(kept)
-
-
-def tokenize(command: str) -> list[str] | None:
-    lexer = shlex.shlex(newlines_to_separators(command), posix=True, punctuation_chars=True)
-    lexer.whitespace_split = True
-    try:
-        return list(lexer)
-    except ValueError:
-        return None
-
-
-def is_redirect(token: str) -> bool:
-    return ">" in token and set(token) <= set("<>&|")
-
-
-def split_segments(tokens: list[str]) -> list[list[str]]:
-    segments: list[list[str]] = [[]]
-    for token in tokens:
-        if token in SEPARATORS:
-            segments.append([])
-        else:
-            segments[-1].append(token)
-    return [s for s in segments if s]
-
-
-def scannable(words: list[str]) -> str:
-    """Segment text with prose arguments removed, for the git and gh guards."""
-    kept: list[str] = []
-    skip = False
-    for word in words:
-        if skip:
-            skip = False
-            continue
-        if word in TEXT_FLAGS:
-            skip = True
-            continue
-        if any(word.startswith(flag + "=") for flag in TEXT_FLAGS):
-            continue
-        kept.append(word)
-    return " ".join(kept)
-
-
-def flag_values(args: list[str], flags: tuple[str, ...]) -> list[str]:
-    """The values given to any of `flags`, spelled apart or with an `=`."""
-    values: list[str] = []
-    for position, arg in enumerate(args):
-        if arg in flags and position + 1 < len(args):
-            values.append(args[position + 1])
-        for flag in flags:
-            if arg.startswith(flag + "="):
-                values.append(arg.split("=", 1)[1])
-    return values
-
-
-def resolve(target: str, cwd: str) -> list[str]:
-    if UNRESOLVABLE.search(target):
-        return []
-    absolute = target if os.path.isabs(target) else os.path.join(cwd, target)
-    if any(ch in target for ch in "*?["):
-        matches = glob.glob(absolute)
-        return [os.path.realpath(m) for m in matches]
-    return [os.path.realpath(absolute)]
-
-
-class Segment:
-    """One simple command: what it writes, and whether we could see it all."""
-
-    def __init__(self) -> None:
-        self.targets: list[str] = []
-        self.unseen = False
-        self.nested: list[str] = []
-        self.guard_text = ""
-
-
-def analyze_segment(tokens: list[str]) -> Segment:
-    result = Segment()
-    words: list[str] = []
-    index = 0
-    while index < len(tokens):
-        token = tokens[index]
-        if is_redirect(token):
-            index += 1
-            if index < len(tokens):
-                target = tokens[index]
-                if not ("&" in token and target.isdigit()):
-                    result.targets.append(target)
-                index += 1
-            continue
-        words.append(token)
-        index += 1
-
-    while words and (os.path.basename(words[0]) in WRAPPERS or "=" in words[0]):
-        popped = os.path.basename(words[0])
-        words = words[1:]
-        if popped in ("env", "xargs"):
-            while words and words[0].startswith("-"):
-                words = words[1:]
-        elif popped == "timeout":
-            while words and (words[0].startswith("-") or words[0].replace(".", "").isdigit()):
-                words = words[1:]
-    if not words:
-        return result
-
-    command = os.path.basename(words[0])
-    args = words[1:]
-
-    if command in SHELLS:
-        for position, arg in enumerate(args):
-            if arg in ("-c", "-lc", "-ic") and position + 1 < len(args):
-                result.nested.append(args[position + 1])
-                return result
-        if command == "eval" and args:
-            result.nested.append(" ".join(args))
-            return result
-        result.unseen = True
-        return result
-
-    if command in ("git", "gh"):
-        result.guard_text = scannable(words)
-        if command == "gh":
-            return result
-        subcommand = next((a for a in args if not a.startswith("-")), "")
-        if subcommand == "config":
-            result.targets += flag_values(args, ("-f", "--file"))
-            return result
-        rule = GIT_WRITERS.get(subcommand)
-        if rule == ALL_OPERANDS:
-            rest = args[args.index(subcommand) + 1:]
-            result.targets += [a for a in rest if not a.startswith("-")]
-        elif rule == UNSEEN:
-            result.unseen = True
-        return result
-
-    if command == "dd":
-        result.targets += [a.split("=", 1)[1] for a in args if a.startswith("of=")]
-        return result
-
-    if command == "sed":
-        if any(SED_IN_PLACE.fullmatch(a) for a in args):
-            result.targets += [a for a in args if not a.startswith("-")]
-        return result
-
-    rule = WRITERS.get(command)
-    if rule is None:
-        return result
-    if rule == UNSEEN:
-        result.unseen = True
-        return result
-
-    operands = [a for a in args if not a.startswith("-")]
-    if rule == ALL_OPERANDS:
-        result.targets += operands
-        if command in ("rm", "tee") and not operands:
-            result.unseen = True
-    elif rule == DESTINATION:
-        for position, arg in enumerate(args):
-            if arg in ("-t", "--target-directory") and position + 1 < len(args):
-                result.targets.append(args[position + 1])
-                return result
-            if arg.startswith("--target-directory="):
-                result.targets.append(arg.split("=", 1)[1])
-                return result
-        if operands:
-            result.targets.append(operands[-1])
-    return result
-
-
-def check_command(command: str, root: str, cwd: str, protected: list[str], depth: int = 0) -> None:
-    if depth > 3:
-        return
-    stripped = strip_heredocs(command)
-    if stripped is None:
+def check_authority(text: str) -> None:
+    if PUSH_TO_MAIN.search(text):
         deny(
-            "This command opens a heredoc that is never terminated, so the guard "
-            "cannot tell where its body ends and what follows it; refused. "
-            "Terminate the heredoc, or write the command without one."
+            "Pushing to main is forbidden. Work on a task branch and open "
+            "a PR; the decider merges."
         )
-    tokens = tokenize(stripped)
-    if tokens is None:
-        # Unparseable: keep the old, blunt behaviour rather than allow blind.
-        if names_protected(command, protected):
-            deny(
-                "This command could not be parsed and names a protected path; "
-                "refused. Rewrite it as a simpler command."
-            )
+    if MERGE_COMMAND.search(text) and os.environ.get("VFI_ROLE") != "decider":
+        deny(
+            "Merging is the decider's job. This run is not the decider "
+            "(VFI_ROLE is not 'decider'), so it merges nothing. Open a PR "
+            "and stop."
+        )
+    if APPROVAL_LABEL.search(text):
+        deny(
+            "The human-approved label is the human's signature. No agent "
+            "applies it, ever. If a protected-path change needs approval, "
+            "write an escalation and wait."
+        )
+
+
+def check_bash(command: str, protected: list[str]) -> None:
+    redacted = redact(command, redaction_spans(command))
+    check_authority(command)
+    if redacted != command:
+        check_authority(redacted)
+    if not BASH_WRITE_HINTS.search(redacted):
         return
-
-    for segment_tokens in split_segments(tokens):
-        segment = analyze_segment(segment_tokens)
-        text = segment.guard_text
-        if text:
-            if PUSH_TO_MAIN.search(text):
-                deny(
-                    "Pushing to main is forbidden. Work on a task branch and open "
-                    "a PR; the decider merges."
-                )
-            if MERGE_COMMAND.search(text) and os.environ.get("VFI_ROLE") != "decider":
-                deny(
-                    "Merging is the decider's job. This run is not the decider "
-                    "(VFI_ROLE is not 'decider'), so it merges nothing. Open a PR "
-                    "and stop."
-                )
-            if APPROVAL_LABEL.search(text):
-                deny(
-                    "The human-approved label is the human's signature. No agent "
-                    "applies it, ever. If a protected-path change needs approval, "
-                    "write an escalation and wait."
-                )
-
-        for target in segment.targets:
-            for resolved in resolve(target, cwd):
-                if resolved != root and not resolved.startswith(root + os.sep):
-                    if is_scratch(resolved, root):
-                        continue
-                    deny(
-                        f"This command writes outside the project directory: "
-                        f"{resolved}. Agents work only inside the workspace."
-                    )
-                entry = protected_match(resolved, root, protected)
-                if entry:
-                    deny(
-                        f"This command writes to the protected path '{entry}'; "
-                        "refused. Changing a protected path requires human "
-                        "sign-off recorded in an ADR. Write an escalation instead."
-                    )
-            if not resolve(target, cwd):
-                entry = names_protected(target, protected)
-                if entry:
-                    deny(
-                        f"This command writes to a target naming the protected "
-                        f"path '{entry}'; refused. Write an escalation instead."
-                    )
-
-        if segment.unseen:
-            entry = names_protected(scannable(segment_tokens), protected)
-            if entry:
-                deny(
-                    f"This command names the protected path '{entry}' and writes "
-                    "targets the guard cannot see; refused. Use an explicit "
-                    "command if a write elsewhere was intended."
-                )
-
-        for nested in segment.nested:
-            check_command(nested, root, cwd, protected, depth + 1)
+    for entry in protected:
+        bare = entry.rstrip("/")
+        base = os.path.basename(bare)
+        named_base = base and re.search(r"(?<![\w/.-])" + re.escape(base), redacted)
+        if bare in redacted or named_base:
+            deny(
+                f"This command names the protected path '{entry}' and "
+                "contains a write-capable operation; refused. Use a "
+                "read-only command if a read was intended. A commit message "
+                "or a PR body may name it; other prose may not, so pass it "
+                "with --body-file or commit -F. Changing protected paths "
+                "requires human sign-off."
+            )
 
 
 def main() -> None:
@@ -534,7 +389,6 @@ def main() -> None:
 
     root = os.environ.get("CLAUDE_PROJECT_DIR") or data.get("cwd") or os.getcwd()
     root = os.path.realpath(root)
-    cwd = os.path.realpath(data.get("cwd") or root)
     protected = load_protected(root)
     tool = data.get("tool_name", "")
     tool_input = data.get("tool_input") or {}
@@ -543,7 +397,9 @@ def main() -> None:
         path = tool_input.get("file_path") or tool_input.get("notebook_path") or ""
         if not path:
             sys.exit(0)
-        resolved = os.path.realpath(path if os.path.isabs(path) else os.path.join(cwd, path))
+        resolved = os.path.realpath(
+            path if os.path.isabs(path) else os.path.join(root, path)
+        )
         if resolved != root and not resolved.startswith(root + os.sep):
             if is_scratch(resolved, root):
                 sys.exit(0)
@@ -551,18 +407,20 @@ def main() -> None:
                 f"Write outside the project directory refused: {resolved}. "
                 "Agents work only inside the workspace."
             )
-        entry = protected_match(resolved, root, protected)
-        if entry:
-            rel = os.path.relpath(resolved, checkout_root(resolved, root))
-            deny(
-                f"'{rel}' is a protected path (matches '{entry}'). "
-                "Changing it requires human sign-off recorded in an ADR. "
-                "Stop and write an escalation instead."
-            )
+        # Against the project root, as the installed hook does, and against the
+        # checkout the path sits in, so a worktree's own ANCHORS.md is covered.
+        for base in (root, checkout_root(resolved, root)):
+            entry = protected_match(resolved, base, protected)
+            if entry:
+                deny(
+                    f"'{os.path.relpath(resolved, base)}' is a protected path "
+                    f"(matches '{entry}'). Changing it requires human sign-off "
+                    "recorded in an ADR. Stop and write an escalation instead."
+                )
         sys.exit(0)
 
     if tool == "Bash":
-        check_command(tool_input.get("command", "") or "", root, cwd, protected)
+        check_bash(tool_input.get("command", "") or "", protected)
         sys.exit(0)
 
     sys.exit(0)
