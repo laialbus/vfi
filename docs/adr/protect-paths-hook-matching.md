@@ -1,6 +1,6 @@
 # The protect-paths hook keeps its refusals and exempts prose
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Constitutional
 - **Proposed:** 2026-07-30, by `frictions-remedies`. Rewritten the same day,
   after two adversarial reviews of PR #19 rejected the design first proposed

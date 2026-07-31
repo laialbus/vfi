@@ -37,18 +37,20 @@ should escalate rather than interpret it.
 
 ### Example
 
-```
-id:         M1-02
-title:      Create the Rust workspace, one crate per stage
-milestone:  M1
-owns:       Cargo.toml, crates/
-depends on: M1-01
-exclusive:  no
+---
+id: M1-02
+title: Create the Rust workspace, one crate per stage
+milestone: M1
+owns:
+  - Cargo.toml
+  - crates/
+depends_on: [M1-01]
+exclusive: no
 acceptance:
   - The workspace compiles, with one empty crate per pipeline stage.
   - Crate names follow one stated convention, recorded in the layout doc.
   - No crate depends on another yet; edges are added only by later tasks.
-```
+---
 
 ## Claiming a task
 
