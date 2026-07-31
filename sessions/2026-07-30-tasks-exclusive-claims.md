@@ -13,3 +13,10 @@ on the same fixtures.
 Follow-up, per the decider's review: an unrecognised `exclusive` value now
 refuses the whole listing on stderr with exit 3 instead of silently reading as
 no. Only `yes`, `no`, and absent or empty are accepted.
+
+Second follow-up, per the delta re-review: frontmatter is parsed and validated
+in one view. Records carry a placeholder for empty fields so tabs cannot shift
+them, tabs inside values become spaces before validation, every `exclusive`
+occurrence is checked as it is seen, and a file that opens frontmatter without
+an `id`, an unreadable task file, or a missing `tasks/` directory all refuse
+the listing at exit 3 instead of reading as no work.

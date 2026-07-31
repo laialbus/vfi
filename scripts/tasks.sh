@@ -21,8 +21,21 @@ dependencies_merged() {
 	return 0
 }
 
+# One view of the frontmatter, validated where the whole line is visible. The
+# record is id<TAB>depends<TAB>exclusive with "-" standing for an empty field,
+# so consecutive tabs never collapse and the fields cannot shift. Tabs inside
+# values become spaces before anything reads them, so the value that is
+# validated is the value that is compared. Every exclusive line is checked as
+# it is seen — a malformed value on a duplicated key cannot hide behind a later
+# valid one. A file that opens frontmatter must carry an id; one the parser
+# cannot key would otherwise be invisible, and an invisible guard is no guard.
 read_frontmatter() {
-	awk '
+	awk -v prog="$(basename "$0")" '
+		function fail(msg) {
+			printf "%s: %s: %s\n", prog, FILENAME, msg > "/dev/stderr"
+			failed = 1
+			exit 3
+		}
 		NR == 1 {
 			if ($0 !~ /^---[[:space:]]*$/) exit
 			in_frontmatter = 1
@@ -33,7 +46,7 @@ read_frontmatter() {
 		/^id:/ {
 			value = $0
 			sub(/^id:[[:space:]]*/, "", value)
-			gsub(/[[:space:]"]/, "", value)
+			gsub(/[[:space:]"'\''"]/, "", value)
 			id = value
 			in_depends = 0
 			next
@@ -41,19 +54,20 @@ read_frontmatter() {
 		/^depends_on:/ {
 			value = $0
 			sub(/^depends_on:[[:space:]]*/, "", value)
-			gsub(/\[/, " ", value)
-			gsub(/\]/, " ", value)
-			gsub(/,/, " ", value)
-			gsub(/"/, "", value)
+			gsub(/[\[\],\t]/, " ", value)
+			gsub(/["'\'']/, "", value)
 			depends = depends " " value
 			in_depends = 1
 			next
 		}
-		/^exclusive:/ {
+		/^[[:space:]]*exclusive:/ {
 			value = $0
-			sub(/^exclusive:[[:space:]]*/, "", value)
+			sub(/^[[:space:]]*exclusive:[[:space:]]*/, "", value)
+			gsub(/\t/, " ", value)
+			gsub(/["'\'']/, "", value)
 			sub(/[[:space:]]+$/, "", value)
-			gsub(/"/, "", value)
+			if (tolower(value) !~ /^(yes|no)?$/)
+				fail("exclusive must be yes or no, found: " value)
 			exclusive = tolower(value)
 			in_depends = 0
 			next
@@ -61,12 +75,24 @@ read_frontmatter() {
 		in_depends && /^[[:space:]]*-[[:space:]]*/ {
 			value = $0
 			sub(/^[[:space:]]*-[[:space:]]*/, "", value)
-			gsub(/"/, "", value)
+			gsub(/["'\'']/, "", value)
+			gsub(/\t/, " ", value)
 			depends = depends " " value
 			next
 		}
 		/^[^[:space:]-]/ { in_depends = 0 }
-		END { if (id != "") print id "\t" depends "\t" exclusive }
+		END {
+			if (failed) exit 3
+			if (!in_frontmatter) exit 0
+			if (id == "")
+				fail("frontmatter has no id")
+			if (failed) exit 3
+			sub(/^[[:space:]]+/, "", depends)
+			sub(/[[:space:]]+$/, "", depends)
+			if (depends == "") depends = "-"
+			if (exclusive == "") exclusive = "-"
+			print id "\t" depends "\t" exclusive
+		}
 	' "$1"
 }
 
@@ -81,24 +107,25 @@ fi
 
 tab="$(printf '\t')"
 
-# exclusive is a guard, so an unrecognised value is refused rather than read as
-# no: a guard that fails open stops guarding and says nothing. The refusal
-# covers the whole queue, since the malformed task may be the exclusive one.
+# exclusive is a guard, so anything the parser cannot vouch for is refused
+# rather than read as no: a guard that fails open stops guarding and says
+# nothing. The refusal covers the whole queue, since the malformed task may be
+# the exclusive one. Exit 3 keeps a broken queue distinct from a bad
+# invocation (2) and an unreachable origin (1). A file without frontmatter —
+# the README — is not a task and is skipped.
+if [ ! -d tasks ]; then
+	echo "$(basename "$0"): tasks/ directory missing" >&2
+	exit 3
+fi
+
 tasks=""
 for task_file in tasks/*.md; do
 	[ -e "$task_file" ] || continue
 
-	frontmatter="$(read_frontmatter "$task_file")"
-	[ -n "$frontmatter" ] || continue
-
-	exclusive_value="${frontmatter##*$tab}"
-	case "$exclusive_value" in
-	"" | yes | no) ;;
-	*)
-		echo "$(basename "$0"): $task_file: exclusive must be yes or no, found: $exclusive_value" >&2
+	if ! frontmatter="$(read_frontmatter "$task_file")"; then
 		exit 3
-		;;
-	esac
+	fi
+	[ -n "$frontmatter" ] || continue
 
 	tasks="$tasks$frontmatter
 "
@@ -136,6 +163,9 @@ printf '%s\n' "$tasks" | while IFS="$tab" read -r id depends exclusive; do
 		continue
 	fi
 
+	if [ "$depends" = "-" ]; then
+		depends=""
+	fi
 	if dependencies_merged "$depends"; then
 		echo "$id"
 	fi
