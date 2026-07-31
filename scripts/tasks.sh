@@ -29,6 +29,12 @@ dependencies_merged() {
 # it is seen — a malformed value on a duplicated key cannot hide behind a later
 # valid one. A file that opens frontmatter must carry an id; one the parser
 # cannot key would otherwise be invisible, and an invisible guard is no guard.
+# A line the parser can see as one of the three keys but would not read as one
+# — different case, a space before the colon, an indent — is refused rather
+# than ignored: a field that looks set and is not is the fail-open case. Only
+# case and surrounding whitespace are forgiven, and the key must be the whole
+# text before the colon, so exclusive_reason is untouched, and so is prose that
+# quotes or bullets a key inside a value.
 read_frontmatter() {
 	awk -v prog="$(basename "$0")" '
 		function fail(msg) {
@@ -71,6 +77,15 @@ read_frontmatter() {
 			exclusive = tolower(value)
 			in_depends = 0
 			next
+		}
+		/^[[:space:]]*[^[:space:]][^:]*:/ {
+			key = $0
+			sub(/:.*$/, "", key)
+			sub(/^[[:space:]]+/, "", key)
+			sub(/[[:space:]]+$/, "", key)
+			spelling = tolower(key)
+			if (spelling == "id" || spelling == "depends_on" || spelling == "exclusive")
+				fail("frontmatter key must be written exactly \"" spelling ":\", found: " $0)
 		}
 		in_depends && /^[[:space:]]*-[[:space:]]*/ {
 			value = $0
