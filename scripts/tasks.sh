@@ -52,7 +52,8 @@ read_frontmatter() {
 		/^exclusive:/ {
 			value = $0
 			sub(/^exclusive:[[:space:]]*/, "", value)
-			gsub(/[[:space:]"]/, "", value)
+			sub(/[[:space:]]+$/, "", value)
+			gsub(/"/, "", value)
 			exclusive = tolower(value)
 			in_depends = 0
 			next
@@ -78,6 +79,11 @@ if ! branches="$(git ls-remote --heads origin 2>/dev/null | awk '{print $2}')"; 
 	exit 1
 fi
 
+tab="$(printf '\t')"
+
+# exclusive is a guard, so an unrecognised value is refused rather than read as
+# no: a guard that fails open stops guarding and says nothing. The refusal
+# covers the whole queue, since the malformed task may be the exclusive one.
 tasks=""
 for task_file in tasks/*.md; do
 	[ -e "$task_file" ] || continue
@@ -85,11 +91,18 @@ for task_file in tasks/*.md; do
 	frontmatter="$(read_frontmatter "$task_file")"
 	[ -n "$frontmatter" ] || continue
 
+	exclusive_value="${frontmatter##*$tab}"
+	case "$exclusive_value" in
+	"" | yes | no) ;;
+	*)
+		echo "$(basename "$0"): $task_file: exclusive must be yes or no, found: $exclusive_value" >&2
+		exit 3
+		;;
+	esac
+
 	tasks="$tasks$frontmatter
 "
 done
-
-tab="$(printf '\t')"
 
 # A claim is in flight while a task still in the queue has its branch on origin.
 # An exclusive task runs alone, so it is claimable only when no claim is in

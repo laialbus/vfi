@@ -9,3 +9,7 @@ task's own claim is in flight it prints nothing at all. A stale branch whose
 task file is gone is not a claim, so merged work does not block the queue.
 Non-exclusive availability is unchanged, verified against the previous script
 on the same fixtures.
+
+Follow-up, per the decider's review: an unrecognised `exclusive` value now
+refuses the whole listing on stderr with exit 3 instead of silently reading as
+no. Only `yes`, `no`, and absent or empty are accepted.
