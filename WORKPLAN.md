@@ -37,6 +37,7 @@ should escalate rather than interpret it.
 
 ### Example
 
+```
 ---
 id: M1-02
 title: Create the Rust workspace, one crate per stage
@@ -51,6 +52,7 @@ acceptance:
   - Crate names follow one stated convention, recorded in the layout doc.
   - No crate depends on another yet; edges are added only by later tasks.
 ---
+```
 
 ## Claiming a task
 
