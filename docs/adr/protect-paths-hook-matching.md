@@ -61,10 +61,17 @@ Redaction is skipped, leaving the floor untouched, wherever it cannot be done
 soundly. A command containing `$(` or a backtick is never redacted, because a
 quoted argument can execute. An operand that is not exactly one quoted string is
 never redacted. A flag is attributed only when the segment's first word is the
-bare, unpathed, unquoted command that gives it its meaning — a `./git` or
-`tools/git` is an arbitrary executable and earns no exemption, and a genuinely
-pathed `/usr/bin/git` loses it too, falling back to the floor's refusal, which
-is the safe direction. A command whose quotes the walk
+bare, unpathed, unquoted name `git` or `gh` — a `./git` or `tools/git` is an
+arbitrary executable and earns no exemption, and a genuinely pathed
+`/usr/bin/git` loses it too, falling back to the floor's refusal, which is the
+safe direction. Attribution reads the name as written, not what it resolves
+to: a command that rebinds the word `git` in its own text (a shell function, a
+`PATH=.` prefix, a `hash -p`) still earns the exemption. That limit is stated
+in the hook header rather than patched, because a blocklist of rebinding
+spellings is the same losing game this decision rejects, and the same
+deliberate circumvention is already available through an interpreter
+assembling a protected name at runtime, which both hooks pass. A command whose
+quotes the walk
 cannot close exempts nothing at all, which is the whole of its penalty: refusing
 it outright would add no safety, since the floor is already the verdict, and it
 would cost the common case of an apostrophe in a heredoc body.

@@ -73,6 +73,14 @@ from refusal and subtracting, rather than from parsing and hoping.
     refused. That is the cost of the floor, paid deliberately.
   - Prose outside the whitelisted flags is not exempt, including `git tag -m`,
     `gh issue`, and any body passed positionally.
+  - Attribution reads the name, not the binary. A command that rebinds the
+    word `git` inside its own text — a shell function, a `PATH=.` prefix, a
+    `hash -p` — still earns the exemption for what is now an arbitrary
+    executable. A blocklist of rebinding spellings would be the same losing
+    game as parsing writes, so the limit is stated instead: this is deliberate
+    circumvention, of the same order as an interpreter assembling a protected
+    name at runtime, which both hooks already pass. The sandbox and the server
+    are the layers for an adversary; this hook is friction for an honest one.
 
 This is friction, not a security boundary. The OS sandbox confines shell
 commands; the server (ruleset, required checks) is the backstop.
