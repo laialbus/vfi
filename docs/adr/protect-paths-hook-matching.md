@@ -27,15 +27,18 @@ entirely. Reviewing the guard for the false positives surfaced all three.
 
 The hook will parse each Bash command into simple commands and derive its write
 targets: redirection targets, the operands of commands that write (`rm`, `mv`,
-`cp`'s destination, `sed -i`, `tee`, `dd of=`, `git mv|rm`, and the rest), and
-the same analysis recursively inside `bash -c` and `eval`. A target is refused
+`cp`'s destination, `sed -i`, `tee`, `dd of=`, `git mv|rm`, `git config -f`,
+the scriptable editors, and the rest), and the same analysis recursively inside
+`bash -c` and `eval`. A target is refused
 when it resolves inside a protected path or outside the project directory,
 where "inside a protected path" is judged relative to the git checkout the
 target sits in, so worktrees are covered by their own list. Arguments that
 carry prose — `-m`, `--body`, `--title` and their kin on `git` and `gh` — and
 heredoc bodies are never treated as paths. Where targets cannot be seen (a
 `patch`, an interpreter, a command that will not tokenize) the hook keeps the
-present name matching and refuses, so the unparseable case stays closed. The
+present name matching and refuses, so the unparseable case stays closed. Parse
+anomalies fail closed generally: a heredoc that is opened and never terminated
+is refused rather than having the rest of the command discarded as its body. The
 merge guard, the push-to-main guard, and the human-approved label guard keep
 their behaviour and are applied to `git` and `gh` commands rather than to
 arbitrary text.
@@ -46,8 +49,17 @@ and the file tools refusing it is what pushes agents into writing through shell
 heredocs instead. A temp root that contains the checkout is not treated as
 scratch, so this cannot become a way out of the workspace.
 
+"Judged by what it writes" is a rule about how the hook decides, not a claim
+that it sees every write. It sees the shapes the parser models, listed in the
+hook's header along with the ones known to be outside it — chiefly an
+interpreter writing to a path *outside* the checkout, which produces no visible
+target and has no protected name to fall back on. That one is left open
+deliberately: closing it means reading the code string an interpreter is
+handed, which is the name matching this ADR removes. The header states the gap,
+the corpus keeps a case for it, and the sandbox is the layer that covers it.
+
 The replacement is written and tested: `docs/proposals/protect_paths.py`, with
-`docs/proposals/protect_paths_tests.py` running 35 tool calls through both the
+`docs/proposals/protect_paths_tests.py` running 56 tool calls through both the
 installed hook and the replacement. Nothing is installed by this ADR. A human
 installs the file, because it is a protected path and because a guard an agent
 can replace is not a guard.
@@ -71,7 +83,10 @@ cannot merge. The hook's value is stopping it at the keystroke.
 ## Consequences
 
 Commit messages and PR bodies may name protected paths, so reviewers see the
-reasoning. Three classes of real write that the guard missed are now refused.
+reasoning. Eight classes of real write that the installed guard missed are now
+refused: an interpreter writing an anchor, a write into a worktree's own
+anchor, a redirect out of the workspace, `sed` in place under its suffixed and
+combined spellings, `ed`, `ex`, `vim` driven from a script, and `git config -f`.
 `cp` of a protected file to a scratch path is allowed, since a read is not a
 write. Writes to the run's temp directory stop needing a shell.
 

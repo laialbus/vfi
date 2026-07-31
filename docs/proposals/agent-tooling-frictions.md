@@ -88,7 +88,7 @@ Item 1 is written and waiting on a human:
 | :--- | :--- |
 | `docs/adr/protect-paths-hook-matching.md` | The decision. Constitutional — it changes protected-path enforcement, so the decider does not accept it. |
 | `docs/proposals/protect_paths.py` | The replacement hook, a drop-in for `.claude/hooks/protect_paths.py`. |
-| `docs/proposals/protect_paths_tests.py` | 35 tool calls run through both the installed hook and the replacement. Run it before installing. |
+| `docs/proposals/protect_paths_tests.py` | 56 tool calls run through both the installed hook and the replacement, including the decider's adversarial set from PR #19. Run it before installing. |
 
 Item 2's repo-side half is `docs/proposals/lead-prompt.md`, replacing
 `../prompts/lead.md`; its header lists the two prerequisites that go in with

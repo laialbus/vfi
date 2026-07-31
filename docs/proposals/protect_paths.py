@@ -9,8 +9,8 @@ Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
      any location outside the project directory. Scratch is the exception:
      the run's temp directory is writable by every tool, not only by bash.
-  2. Any Bash command that writes to a protected path or outside the project
-     directory, and any git push to main.
+  2. Any Bash command whose write targets, as modelled below, land on a
+     protected path or outside the project directory, and any git push to main.
   3. Merging a PR unless the run carries VFI_ROLE=decider. The wrapper sets
      the role outside the repo, so no agent can grant itself merge authority.
   4. Applying the human-approved label, from any agent, decider included.
@@ -27,8 +27,23 @@ back to the old name matching, so the unparseable case stays refused.
 Protected paths are matched relative to the git checkout the target sits in,
 so a write to a worktree's own ANCHORS.md is refused like any other.
 
+Parse anomalies fail closed: a command that will not tokenize keeps the old
+name matching, and a heredoc that is never terminated is refused outright
+rather than having the rest of the command silently discarded.
+
+What this does not model, stated so the claim above is not read too widely:
+
+  - An interpreter writing *outside* the workspace. `python3 -c` and its kin
+    produce no visible targets, so only the protected-name fallback applies to
+    them, and a path outside the checkout has no protected name to match.
+  - Any writer not in WRITERS, and any write reached through a shape the
+    parser does not follow — a wrapper script, a `$VAR` path, a shell function.
+  - `git config --global` and other writes whose target is implied by a flag
+    rather than named. Only `git config -f/--file` is seen.
+
 This is friction, not a security boundary. The OS sandbox confines shell
-commands; the server (ruleset, required checks) is the backstop.
+commands; the server (ruleset, required checks) is the backstop. The list
+above is what is known to be missing, not a promise that nothing else is.
 
 Exit 0 allows the tool call. Exit 2 blocks it; stderr is shown to the agent.
 """
@@ -59,6 +74,16 @@ WRITERS = {
     "chgrp": ALL_OPERANDS,
     "shred": ALL_OPERANDS,
     "tee": ALL_OPERANDS,
+    # Editors that can be driven from a script: `ed FILE < commands`,
+    # `ex -sc wq FILE`, `vim -es -c wq FILE`. The file they open is the file
+    # they write.
+    "ed": ALL_OPERANDS,
+    "ex": ALL_OPERANDS,
+    "vi": ALL_OPERANDS,
+    "vim": ALL_OPERANDS,
+    "nvim": ALL_OPERANDS,
+    "emacs": ALL_OPERANDS,
+    "nano": ALL_OPERANDS,
     "cp": DESTINATION,
     "ln": DESTINATION,
     "install": DESTINATION,
@@ -99,6 +124,9 @@ MERGE_COMMAND = re.compile(r"\bpr\s+merge\b|\bapi\b.*/pulls/.*/merge\b")
 APPROVAL_LABEL = re.compile(r"(--add-label\s+\S*human-approved|labels\b.*human-approved)")
 HEREDOC = re.compile(r"<<-?\s*(['\"]?)(\w+)\1")
 UNRESOLVABLE = re.compile(r"[$`]")
+# GNU sed takes the backup suffix attached to the flag, so `-i` is a prefix of
+# the option, not the whole of it: -i, -i.bak, -ni.bak, --in-place=.bak.
+SED_IN_PLACE = re.compile(r"--in-place(=.*)?|-[a-zA-Z]*i.*")
 
 
 def deny(message: str) -> None:
@@ -198,22 +226,59 @@ def newlines_to_separators(command: str) -> str:
     return "".join(out)
 
 
-def strip_heredocs(command: str) -> str:
-    """Drop heredoc bodies: they are input text, never write targets."""
-    pending = [m.group(2) for m in HEREDOC.finditer(command)]
-    if not pending:
-        return command
-    kept: list[str] = []
-    open_bodies: list[str] = []
-    for line in command.split("\n"):
-        if open_bodies:
-            if line.strip() == open_bodies[0]:
-                open_bodies.pop(0)
+def heredoc_openers(line: str, quote: str | None) -> tuple[list[str], str | None]:
+    """Markers opened by an unquoted `<<` on this line, and the quote state the
+    line ends in. A `<<` inside a string is prose; only a bare one redirects."""
+    markers: list[str] = []
+    escaped = False
+    index = 0
+    while index < len(line):
+        ch = line[index]
+        if escaped:
+            escaped = False
+        elif ch == "\\" and quote != "'":
+            escaped = True
+        elif quote:
+            if ch == quote:
+                quote = None
+        elif ch in "'\"":
+            quote = ch
+        elif line.startswith("<<<", index):  # here-string: no body follows
+            index += 3
             continue
+        elif line.startswith("<<", index):
+            opener = HEREDOC.match(line, index)
+            if opener:
+                markers.append(opener.group(2))
+                index = opener.end()
+                continue
+            index += 2
+            continue
+        index += 1
+    return markers, quote
+
+
+def strip_heredocs(command: str) -> str | None:
+    """Drop heredoc bodies: they are input text, never write targets.
+
+    None means a heredoc was opened and never terminated. Dropping the rest of
+    the command would hide whatever follows it, so the caller refuses instead.
+    """
+    lines = command.split("\n")
+    kept: list[str] = []
+    quote: str | None = None
+    index = 0
+    while index < len(lines):
+        line = lines[index]
+        index += 1
+        markers, quote = heredoc_openers(line, quote)
         kept.append(line)
-        for _ in HEREDOC.findall(line):
-            if pending:
-                open_bodies.append(pending.pop(0))
+        for marker in markers:
+            while index < len(lines) and lines[index].strip() != marker:
+                index += 1
+            if index >= len(lines):
+                return None
+            index += 1
     return "\n".join(kept)
 
 
@@ -255,6 +320,18 @@ def scannable(words: list[str]) -> str:
             continue
         kept.append(word)
     return " ".join(kept)
+
+
+def flag_values(args: list[str], flags: tuple[str, ...]) -> list[str]:
+    """The values given to any of `flags`, spelled apart or with an `=`."""
+    values: list[str] = []
+    for position, arg in enumerate(args):
+        if arg in flags and position + 1 < len(args):
+            values.append(args[position + 1])
+        for flag in flags:
+            if arg.startswith(flag + "="):
+                values.append(arg.split("=", 1)[1])
+    return values
 
 
 def resolve(target: str, cwd: str) -> list[str]:
@@ -325,6 +402,9 @@ def analyze_segment(tokens: list[str]) -> Segment:
         if command == "gh":
             return result
         subcommand = next((a for a in args if not a.startswith("-")), "")
+        if subcommand == "config":
+            result.targets += flag_values(args, ("-f", "--file"))
+            return result
         rule = GIT_WRITERS.get(subcommand)
         if rule == ALL_OPERANDS:
             rest = args[args.index(subcommand) + 1:]
@@ -338,7 +418,7 @@ def analyze_segment(tokens: list[str]) -> Segment:
         return result
 
     if command == "sed":
-        if any(a == "--in-place" or re.fullmatch(r"-[a-zA-Z]*i[a-zA-Z]*", a) for a in args):
+        if any(SED_IN_PLACE.fullmatch(a) for a in args):
             result.targets += [a for a in args if not a.startswith("-")]
         return result
 
@@ -370,7 +450,14 @@ def analyze_segment(tokens: list[str]) -> Segment:
 def check_command(command: str, root: str, cwd: str, protected: list[str], depth: int = 0) -> None:
     if depth > 3:
         return
-    tokens = tokenize(strip_heredocs(command))
+    stripped = strip_heredocs(command)
+    if stripped is None:
+        deny(
+            "This command opens a heredoc that is never terminated, so the guard "
+            "cannot tell where its body ends and what follows it; refused. "
+            "Terminate the heredoc, or write the command without one."
+        )
+    tokens = tokenize(stripped)
     if tokens is None:
         # Unparseable: keep the old, blunt behaviour rather than allow blind.
         if names_protected(command, protected):

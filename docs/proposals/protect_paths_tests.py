@@ -12,8 +12,17 @@ Run it before installing anything:
 It builds a throwaway checkout, feeds each case to both the installed hook and
 the draft as the harness does — the tool call as JSON on stdin — and compares
 the exit codes. Exit 0 means every case matched what the draft is supposed to
-do. The old column is informational: it shows which refusals change, and every
-one of those changes is a case the proposal argues is a false positive.
+do. The old column is informational: it shows which verdicts change, in both
+directions — eight refusals the proposal argues are false positives, and eleven
+commands the installed hook allows and this one refuses: ten real writes, plus
+an unterminated heredoc, which is refused because a parse anomaly fails closed.
+
+Passing is necessary and not sufficient. A guard's dangerous direction is the
+permissive one, so the cases that matter most are the ones expecting DENY on a
+command the installed hook already refuses; those are regression tests against
+this draft, not arguments for it. The adversarial block below came from the
+decider's review of PR #19, where an earlier draft of this hook failed three of
+them. Add a case for every refusal or escape found later.
 
 Each case runs with TMPDIR pointed at a scratch directory inside the fixture,
 so the guard's temp exemption covers that directory and not the fixture's own
@@ -50,9 +59,23 @@ CASES = [
                    "Adds a task to WORKPLAN.md and explains why .claude/hooks/ "
                    "and scripts/gates.sh are left alone.\nEOF"}, {}),
 
+    ("heredoc body carries a push to main", ALLOW, "Bash", {
+        "command": "cat > docs/notes.md <<'EOF'\n"
+                   "The fixture repo is set up with: git push origin main\nEOF"}, {}),
+    ("echo writes a test file that names an anchor", ALLOW, "Bash", {
+        "command": 'echo "ANCHORS.md" > docs/notes.md'}, {}),
+
     # Ordinary work must stay allowed.
     ("write inside the repo", ALLOW, "Bash", {"command": 'echo "note" > docs/notes.md'}, {}),
     ("read a protected file", ALLOW, "Bash", {"command": "cat ANCHORS.md"}, {}),
+    ("read a file in a protected directory", ALLOW, "Bash", {
+        "command": "cat .github/workflows/ci.yml | head"}, {}),
+    ("diff two protected files", ALLOW, "Bash", {"command": "git diff ANCHORS.md AGENTS.md"}, {}),
+    ("list a protected directory", ALLOW, "Bash", {"command": "ls -la .claude/hooks/"}, {}),
+    ("prose containing a bare arrow", ALLOW, "Bash", {
+        "command": 'gh pr comment 19 --body "the old count -> the new count"'}, {}),
+    ("here-string naming an anchor", ALLOW, "Bash", {
+        "command": 'grep -q x <<< "ANCHORS.md"'}, {}),
     ("copy a protected file out to temp", ALLOW, "Bash", {"command": "cp ANCHORS.md {scratch}/copy.md"}, {}),
     ("push a task branch", ALLOW, "Bash", {"command": "git push origin M1-04"}, {}),
     ("write to the run's scratch directory", ALLOW, "Bash", {
@@ -81,6 +104,37 @@ CASES = [
     ("interpreter writing an anchor", DENY, "Bash", {
         "command": "python3 -c \"open('ANCHORS.md','w').write('')\""}, {}),
     ("patch naming an anchor", DENY, "Bash", {"command": "patch AGENTS.md < fix.diff"}, {}),
+
+    # Adversarial cases from the decider's review of this draft. The first
+    # three were fail-open regressions against the installed hook; the rest
+    # were missed by both hooks.
+    ("quoted heredoc marker then an rm", DENY, "Bash", {
+        "command": 'git commit -m "note about <<EOF markers"\nrm ANCHORS.md'}, {}),
+    ("quoted heredoc marker then rm -rf of the hooks", DENY, "Bash", {
+        "command": 'gh pr create --body "use <<TOKEN here"\nrm -rf .claude/hooks/'}, {}),
+    ("heredoc marker inside single quotes then an rm", DENY, "Bash", {
+        "command": "python3 -c 'print(\"<<EOF\")' ; rm ANCHORS.md"}, {}),
+    ("unterminated heredoc hiding an rm", DENY, "Bash", {
+        "command": "cat <<EOF\nsome text\nrm ANCHORS.md"}, {}),
+    # The price of failing closed on that one: an unterminated heredoc is
+    # refused even when nothing dangerous is hiding behind it. Such a command
+    # would hang in bash anyway, so what it costs is a clearer error.
+    ("unterminated heredoc with nothing hidden", DENY, "Bash", {
+        "command": "cat <<EOF\nsome text"}, {}),
+    ("sed -i with an attached backup suffix", DENY, "Bash", {
+        "command": "sed -i.bak 's/x/y/' ANCHORS.md"}, {}),
+    ("sed --in-place with a suffix", DENY, "Bash", {
+        "command": "sed --in-place=.bak 's/x/y/' ANCHORS.md"}, {}),
+    ("sed -i in a combined short flag", DENY, "Bash", {
+        "command": "sed -ni.bak 's/x/y/p' ANCHORS.md"}, {}),
+    ("ed driven from a script file", DENY, "Bash", {"command": "ed ANCHORS.md < script.ed"}, {}),
+    ("ex writing in silent mode", DENY, "Bash", {"command": "ex -sc wq ANCHORS.md"}, {}),
+    ("vim in ex mode writing a file", DENY, "Bash", {
+        "command": "vim -es -c wq ANCHORS.md"}, {}),
+    ("git config writing a named file", DENY, "Bash", {
+        "command": "git config -f WORKPLAN.md core.bare false"}, {}),
+    ("git config writing a named file with an equals", DENY, "Bash", {
+        "command": "git config --file=WORKPLAN.md core.bare false"}, {}),
     ("file tool write to an anchor", DENY, "Write", {"file_path": "ANCHORS.md"}, {}),
     ("file tool write to an anchor in a worktree", DENY, "Write", {
         "file_path": ".claude/worktrees/wt/ANCHORS.md"}, {}),
@@ -108,6 +162,15 @@ CASES = [
     # trusting `git -C <path>`, which is the argument an agent would forge.
     ("push to main in an unrelated checkout", DENY, "Bash", {
         "command": "git -C {scratch}/other push origin refs/heads/main"}, {}),
+
+    # Known limitation, kept visible for the same reason: an interpreter
+    # produces no visible targets, so the outside-the-workspace check never
+    # runs on it, and a path outside the checkout has no protected name to
+    # fall back on. Both hooks allow this. Closing it means reading the code
+    # string, which is the name matching this proposal removes. Stated in the
+    # hook's header rather than left to be rediscovered.
+    ("interpreter writing outside the workspace", ALLOW, "Bash", {
+        "command": "python3 -c \"open('../prompts/lead.md','w').write('')\""}, {}),
 ]
 
 
@@ -115,7 +178,7 @@ def build_fixture(base: str) -> str:
     """A throwaway workspace: a checkout, a worktree inside it, prompts outside."""
     repo = os.path.join(base, "vfi")
     for directory in (".git", "docs/adr", "contracts", ".claude/hooks",
-                      ".claude/worktrees/wt/.git"):
+                      ".github/workflows", ".claude/worktrees/wt/.git"):
         os.makedirs(os.path.join(repo, directory), exist_ok=True)
     os.makedirs(os.path.join(base, "prompts"), exist_ok=True)
     shutil.copy(
@@ -123,7 +186,8 @@ def build_fixture(base: str) -> str:
         os.path.join(repo, ".claude", "hooks", "protected-paths.txt"),
     )
     for name in ("ANCHORS.md", "AGENTS.md", "WORKPLAN.md", "docs/notes.md",
-                 "docs/adr/TEMPLATE.md", ".claude/worktrees/wt/ANCHORS.md"):
+                 "docs/adr/TEMPLATE.md", ".github/workflows/ci.yml",
+                 ".claude/worktrees/wt/ANCHORS.md"):
         path = os.path.join(repo, name)
         with open(path, "w", encoding="utf-8") as f:
             f.write("fixture\n")
