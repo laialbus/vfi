@@ -43,8 +43,9 @@ Redaction is skipped, leaving the floor untouched, whenever it cannot be done
 soundly: a command containing a command substitution (`$(` or a backtick) is
 never redacted, since a quoted argument can execute; an operand that is not
 exactly one quoted string is never redacted; a flag is attributed only when the
-segment's first words are the unquoted command that gives it its meaning; and a
-command whose quotes the walk cannot close exempts nothing at all.
+segment's first word is the bare, unpathed, unquoted command that gives it its
+meaning — `./git` and `tools/git` earn nothing; and a command whose quotes the
+walk cannot close exempts nothing at all.
 
 The predecessor of this draft modelled write targets instead, and an adversarial
 review found twelve commands the installed hook refuses and that draft allowed,
@@ -59,11 +60,14 @@ from refusal and subtracting, rather than from parsing and hoping.
     `ed ANCHORS.md < script`, `git config -f WORKPLAN.md`, and a redirect to
     `../prompts/` are all allowed here, exactly as the installed hook allows
     them. The sandbox is the layer that covers them.
-  - Heredoc bodies are not redacted. Delimiting a body soundly needs the same
-    shell parsing this design exists to avoid — the review's comment-marker
-    bypass was a mis-delimited body — so a heredoc whose body names a protected
-    path beside a write-capable word is still refused. Write the file with the
-    Write tool and pass it as `--body-file`/`commit -F` instead.
+  - Heredoc bodies are not specially delimited. Delimiting a body soundly
+    needs the same shell parsing this design exists to avoid — the review's
+    comment-marker bypass was a mis-delimited body — so body lines are read as
+    ordinary text: one that names a protected path beside a write-capable word
+    is refused, and one that happens to be shaped like a whitelisted prose
+    flag is redacted like any other text, which can only remove a match, never
+    smuggle a write. Write the file with the Write tool and pass it as
+    `--body-file`/`commit -F` instead.
   - A read-only command that names a protected path is still refused when it
     carries a write-capable word: `cp ANCHORS.md /tmp/` is a read, and it is
     refused. That is the cost of the floor, paid deliberately.
@@ -231,7 +235,14 @@ def prose_flags(words: list[Word]) -> tuple[str, ...]:
     names = [word.plain for word in words]
     if not names or not names[0]:
         return ()
-    command = os.path.basename(names[0])
+    # Only the bare, unpathed name is attributed: `./git` or `tools/git` is an
+    # arbitrary executable that happens to be called git, and an exemption it
+    # earned would hold exactly as long as the impostor behaves. Real pathed
+    # invocations lose the exemption too and fall back to the floor, which is
+    # a refusal — the fail-closed direction.
+    command = names[0]
+    if "/" in command:
+        return ()
     if command == "git":
         index = 1
         while index < len(names) and names[index] and names[index].startswith("-"):
@@ -320,14 +331,20 @@ def protected_match(resolved: str, base: str, protected: list[str]) -> str | Non
 
 
 def scratch_prefixes(root: str) -> list[str]:
-    """Where a write outside the checkout is allowed to land: this run's temp
-    directory and the system's. A temp root that contains the checkout is not
-    scratch for this run — otherwise a checkout living under /tmp would exempt
-    everything beside it."""
-    candidates = ["/tmp", "/private/tmp", "/var/folders", "/private/var/folders", "/dev"]
+    """Where a write outside the checkout is allowed to land: this run's own
+    scratch — $TMPDIR and the harness's claude temp roots — and nothing wider.
+    The system-wide temp roots are not exempt, so a stranger's files under
+    /tmp keep the protection of being outside the workspace. A scratch root
+    that contains the checkout is not scratch for this run — otherwise a
+    checkout living under /tmp would exempt everything beside it."""
+    candidates = []
     tmpdir = os.environ.get("TMPDIR")
     if tmpdir:
         candidates.append(os.path.realpath(tmpdir))
+    uid = os.getuid()
+    for base in ("/tmp", "/private/tmp"):
+        candidates.append("%s/claude" % base)
+        candidates.append("%s/claude-%d" % (base, uid))
     return [
         prefix.rstrip(os.sep)
         for prefix in candidates
@@ -336,7 +353,12 @@ def scratch_prefixes(root: str) -> list[str]:
 
 
 def is_scratch(resolved: str, root: str) -> bool:
-    return any(resolved.startswith(prefix + os.sep) for prefix in scratch_prefixes(root))
+    if not any(resolved.startswith(prefix + os.sep) for prefix in scratch_prefixes(root)):
+        return False
+    # A git checkout parked under a scratch root is not scratch: its files
+    # keep the protection of the checkout they belong to. Bash can still work
+    # in scratch repositories; only the file tools defer to the floor here.
+    return checkout_root(resolved, "") == ""
 
 
 def check_authority(text: str) -> None:

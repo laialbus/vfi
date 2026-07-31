@@ -105,6 +105,18 @@ CASES = [
         "command": "git commit -m fix-rm-of-ANCHORS.md"}, {}),
     ("a prose flag on a command not in the whitelist", DENY, "Bash", {
         "command": 'git tag -a v1 -m "rm of ANCHORS.md"'}, {}),
+    # Attribution demands the bare name: a pathed git is an arbitrary
+    # executable that happens to be called git. The review proved the point
+    # with a two-line impostor; the absolute form loses the exemption too,
+    # which is the accepted cost of the safe direction.
+    ("a relative-path git earns no exemption", DENY, "Bash", {
+        "command": './git commit -m "rm ANCHORS.md"'}, {}),
+    ("a git under a subdirectory earns no exemption", DENY, "Bash", {
+        "command": 'tools/git commit -m "an rm of ANCHORS.md"'}, {}),
+    ("an absolute git earns no exemption", DENY, "Bash", {
+        "command": '/usr/bin/git commit -m "an rm of ANCHORS.md"'}, {}),
+    ("a pathed gh earns no exemption", DENY, "Bash", {
+        "command": './gh pr comment 9 --body "an rm of AGENTS.md"'}, {}),
     ("quoted heredoc marker then an rm", DENY, "Bash", {
         "command": 'git commit -m "note about <<EOF markers"\nrm ANCHORS.md'}, {}),
     ("quoted heredoc marker then rm -rf of the hooks", DENY, "Bash", {
@@ -161,6 +173,13 @@ CASES = [
         "file_path": "{scratch}/draft.md"}, {}),
     ("file tool write to a scratch file named like an anchor", ALLOW, "Write", {
         "file_path": "{scratch}/ANCHORS.md"}, {}),
+    # Scratch stops at this run's own roots, and never includes a checkout: a
+    # repository parked under a temp root keeps its files' protection, and the
+    # system-wide temp trees stay outside the workspace.
+    ("file tool write into a checkout parked in scratch", DENY, "Write", {
+        "file_path": "{scratch}/other/ANCHORS.md"}, {}),
+    ("file tool write to the system temp outside the run's scratch", DENY, "Write", {
+        "file_path": "/tmp/elsewhere/note.md"}, {}),
 
     # Protected paths, by any route.
     ("rm a hook file", DENY, "Bash", {"command": "rm .claude/hooks/protect_paths.py"}, {}),
@@ -309,6 +328,7 @@ def build_fixture(base: str) -> str:
 def run(hook: str, repo: str, tool: str, tool_input: dict, extra: dict) -> str:
     scratch = os.path.join(os.path.dirname(repo), "scratch")
     os.makedirs(scratch, exist_ok=True)
+    os.makedirs(os.path.join(scratch, "other", ".git"), exist_ok=True)
     env = dict(os.environ, CLAUDE_PROJECT_DIR=repo, TMPDIR=scratch)
     env.pop("VFI_ROLE", None)
     env.update(extra)

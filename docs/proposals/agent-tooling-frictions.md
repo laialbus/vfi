@@ -24,14 +24,19 @@ outside the workspace, including the session scratchpad the harness itself
 designates for temp files, so workers fall back to bash heredocs into `$TMPDIR`
 to write a scratch file — shell as a workaround for the file tools.
 
-**Fix:** parse the command for actual filesystem-write targets instead of
-substring-matching the whole string, and let every tool write to the run's
-scratch directory, not just bash. Written and tested; needs human sign-off. See
-`docs/adr/protect-paths-hook-matching.md` and the two files it names. The
-`refs/heads/main` case survives as a documented limitation with a test of its
-own: the guard reads the branch name, not which repository owns it, and
-believing a `git -C` path would be trusting the one argument an agent could
-forge.
+**Fix:** keep the installed hook's decision as the floor and subtract from it
+in exactly one place — the quoted prose operands of `git commit -m` and
+`gh pr … --body/--title` are blanked before the protected-name scan, and a
+refusal is waived only when it is positively attributable to that prose. An
+earlier draft parsed commands for their write targets instead; two adversarial
+reviews showed every gap in such a parser fails open, and it was rejected. The
+floor design fails closed by construction. Also: every tool may write to the
+run's own scratch roots, not just bash. Written and tested; needs human
+sign-off. See `docs/adr/protect-paths-hook-matching.md` and the two files it
+names. The `refs/heads/main` case survives as a documented limitation with a
+test of its own: the guard reads the branch name, not which repository owns
+it, and believing a `git -C` path would be trusting the one argument an agent
+could forge.
 
 ## 2. Sessions silently change worktree, and the sandbox does not follow
 

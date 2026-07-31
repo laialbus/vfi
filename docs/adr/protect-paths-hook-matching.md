@@ -60,8 +60,11 @@ redactor fails to recognise is a refusal, not an escape.
 Redaction is skipped, leaving the floor untouched, wherever it cannot be done
 soundly. A command containing `$(` or a backtick is never redacted, because a
 quoted argument can execute. An operand that is not exactly one quoted string is
-never redacted. A flag is attributed only when the segment's first words are the
-unquoted command that gives it its meaning. A command whose quotes the walk
+never redacted. A flag is attributed only when the segment's first word is the
+bare, unpathed, unquoted command that gives it its meaning — a `./git` or
+`tools/git` is an arbitrary executable and earns no exemption, and a genuinely
+pathed `/usr/bin/git` loses it too, falling back to the floor's refusal, which
+is the safe direction. A command whose quotes the walk
 cannot close exempts nothing at all, which is the whole of its penalty: refusing
 it outright would add no safety, since the floor is already the verdict, and it
 would cost the common case of an apostrophe in a heredoc body.
@@ -69,8 +72,12 @@ would cost the common case of an apostrophe in a heredoc body.
 One boundary moves with this, outside Bash. The run's scratch directory becomes
 writable by the file tools rather than by bash alone: the harness designates it
 for temp files, and the file tools refusing it is what pushes agents into
-writing through shell heredocs instead. A temp root that contains the checkout
-is not treated as scratch, so this cannot become a way out of the workspace.
+writing through shell heredocs instead. Scratch means this run's own roots —
+`$TMPDIR` and the harness's claude temp directories — not the system-wide temp
+trees. A scratch root that contains the checkout is not treated as scratch, and
+a git checkout parked under a scratch root is not scratch either: its files
+keep the protection of the checkout they belong to. What remains outside the
+workspace stays refused.
 
 The replacement is `docs/proposals/protect_paths.py`, with
 `docs/proposals/protect_paths_tests.py` running 87 tool calls through both the
