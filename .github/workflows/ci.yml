@@ -1,7 +1,6 @@
-# The gate runner. Trivially green until M2 replaces the body with the real
-# gates (build, tests, fixtures, dependency direction, purity deny-list,
-# contract compatibility, benchmark). The job name `gates` is what the ruleset
-# marks as a required status check — keep it stable.
+# The gates, from the same runner an agent runs locally. Whatever `gates.sh`
+# checks is what CI checks, so the two cannot drift. The job name `gates` is
+# what the ruleset marks as a required status check — keep it stable.
 name: ci
 
 on:
@@ -13,5 +12,12 @@ jobs:
   gates:
     runs-on: ubuntu-latest
     steps:
-      - name: placeholder
-        run: echo "no gates yet — M2 makes this real"
+      - uses: actions/checkout@v4
+
+      - name: install the rust toolchain
+        run: |
+          rustup toolchain install stable --profile minimal --no-self-update
+          rustup default stable
+
+      - name: run every gate
+        run: scripts/gates.sh
