@@ -1,9 +1,9 @@
 # The hook honors planner-granted ownership of protected paths
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Constitutional
 - **Proposed:** 2026-08-01, by the lead (supervised session)
-- **Decided:** —
+- **Decided:** 2026-08-01, by Albus Lai (human)
 - **Touches:** protected-path enforcement — the pre-edit hook and what the
   protected list means
 
@@ -84,4 +84,29 @@ by a human with this ADR's acceptance as the sign-off.
 
 ## Decision review
 
-*(for the human — Constitutional, so the decider defers by rule)*
+Decided by Albus Lai; recorded at their direction by the lead session, from
+the decision as they made it. The decider took no part: Constitutional is the
+tier it defers by rule.
+
+- **Authority:** Constitutional — it changes what protected-path enforcement
+  means. That is exactly the tier reserved for a human, and a human decided
+  it.
+- **Checked:** the two enforcement layers and which one binds (the
+  server-side label check is untouched and remains the boundary); the
+  never-grantable sublist, in particular that the hook and the constitution
+  can never be granted, whatever a task file says; the corpus evidence on
+  PR #34 (109 cases, 0 failing under 3.9.6 and 3.14.2; 3024 floor commands,
+  0 breaches; 0 bypasses); the alternatives as argued — route 1 rejected for
+  removing the server label requirement along with the friction, route 2
+  kept as fallback and already exercised twice, at a cost paid in
+  hand-installs and one mis-trimmed header.
+- **Verdict and why:** accepted. The friction is not confined to M2: every
+  protected surface the roadmap keeps extending — the gates now, contracts
+  at every stage boundary through M6 — would otherwise route through a human
+  hand-install for the life of the project. The grant moves delivery only;
+  nothing lands without the label, so the property the protection exists for
+  is unchanged.
+- **What would have changed it:** if the grant could cause an unsigned
+  protected change to land, rather than merely exist on a branch where it
+  dies without a signature — or if the grantable sublist could reach the
+  hook or the constitution. Both were checked directly before accepting.
