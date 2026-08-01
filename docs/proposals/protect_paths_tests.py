@@ -3,7 +3,7 @@
 
 Destination: `.claude/hooks/protect_paths_tests.py`, alongside the hook it
 tests. Installed by a human together with `docs/proposals/protect_paths.py`,
-after `docs/adr/protect-paths-hook-matching.md` is approved.
+after `docs/adr/protect-paths-owns-grant.md` is approved.
 
 Run it before installing anything:
 
@@ -19,8 +19,18 @@ hook allows that command's text with the prose arguments of `git commit -m` and
 `gh pr create|comment|edit --body/--title` blanked out. So the `old` column
 carries a claim this corpus checks case by case — **no row may read
 `deny allow` unless the refusal is caused by prose in one of those
-arguments**. Six rows do; they are the false positives the change exists for.
+arguments, or the row is a `grant:` case listed in EXEMPT**. Six prose rows
+and four grant rows do; they are the loosenings the two ADRs exist for.
 Every other loosening is a bug in the draft, whatever the `want` column says.
+
+The `grant:` rows exercise the owns grant
+(`docs/adr/protect-paths-owns-grant.md`): the planner-committed task file on
+origin/main may grant its own `owns` paths, within the hook's fixed grantable
+sublist, and nothing else may. Their fixture is a real git repository with
+task files committed on a fabricated `refs/remotes/origin/main`; a case's
+`_branch` key checks the claim out before the hook runs and the harness
+returns to the neutral branch afterwards. The doctored and uncommitted task
+files prove the grant reads the committed copy, never the working tree.
 
 The `bypass:` block is the reason for that rule. It is the twelve commands an
 adversarial review of the predecessor draft — which modelled write targets —
@@ -288,6 +298,42 @@ CASES = [
     # trusting `git -C <path>`, which is the argument an agent would forge.
     ("push to main in an unrelated checkout", DENY, "Bash", {
         "command": "git -C {scratch}/other push origin refs/heads/main"}, {}),
+
+    # The owns grant (docs/adr/protect-paths-owns-grant.md). The four ALLOW
+    # rows are the entire loosening; every other row proves an edge of it
+    # stays shut. `_branch` names the claim the harness checks out first.
+    ("grant: granted bash write to the gate runner", ALLOW, "Bash", {
+        "command": "echo x > scripts/gates.sh"}, {"_branch": "M2-03"}),
+    ("grant: file tool write to the gate runner", ALLOW, "Write", {
+        "file_path": "scripts/gates.sh"}, {"_branch": "M2-03"}),
+    ("grant: a directory grant covers its files", ALLOW, "Bash", {
+        "command": "touch contracts/v1.rs"}, {"_branch": "C-1"}),
+    ("grant: a file grant reaches the file tools", ALLOW, "Write", {
+        "file_path": ".github/workflows/ci.yml"}, {"_branch": "CI-1"}),
+    ("grant: a file grant does not erase the directory from bash", DENY, "Bash", {
+        "command": "echo x > .github/workflows/ci.yml"}, {"_branch": "CI-1"}),
+    ("grant: an unclaimed branch gets nothing", DENY, "Write", {
+        "file_path": "scripts/gates.sh"}, {}),
+    ("grant: a branch with no task file gets nothing", DENY, "Write", {
+        "file_path": "scripts/gates.sh"}, {"_branch": "M1-99"}),
+    ("grant: an uncommitted task file grants nothing", DENY, "Write", {
+        "file_path": "scripts/gates.sh"}, {"_branch": "LOCAL-1"}),
+    ("grant: a working-tree edit grants nothing", DENY, "Write", {
+        "file_path": "ANCHORS.md"}, {"_branch": "M2-03"}),
+    ("grant: never-grantable stays refused even when owned", DENY, "Write", {
+        "file_path": "ANCHORS.md"}, {"_branch": "BAD-1"}),
+    ("grant: the hooks stay refused even when owned", DENY, "Bash", {
+        "command": "rm .claude/hooks/protect_paths.py"}, {"_branch": "BAD-1"}),
+    ("grant: the ungranted neighbour still refuses", DENY, "Bash", {
+        "command": "rm scripts/gates.sh ANCHORS.md"}, {"_branch": "M2-03"}),
+    ("grant: a duplicated owns key grants nothing", DENY, "Write", {
+        "file_path": "scripts/gates.sh"}, {"_branch": "DUP-1"}),
+    ("grant: an owns spelling variant grants nothing", DENY, "Write", {
+        "file_path": "scripts/gates.sh"}, {"_branch": "VAR-1"}),
+    ("grant: the approval label stays human when granted", DENY, "Bash", {
+        "command": "gh pr edit 3 --add-label human-approved"}, {"_branch": "M2-03"}),
+    ("grant: push to main stays refused when granted", DENY, "Bash", {
+        "command": "git push origin main"}, {"_branch": "M2-03"}),
 ]
 
 # Rows allowed to read `deny allow`: the refusal is caused by prose inside a
@@ -302,14 +348,56 @@ EXEMPT = {
     # Not Bash: the file tools gain the run's scratch directory.
     "file tool write to the scratch directory",
     "file tool write to a scratch file named like an anchor",
+    # The owns grant: the planner-committed task file grants its own paths,
+    # inside the hook's grantable sublist (docs/adr/protect-paths-owns-grant.md).
+    "grant: granted bash write to the gate runner",
+    "grant: file tool write to the gate runner",
+    "grant: a directory grant covers its files",
+    "grant: a file grant reaches the file tools",
+}
+
+
+# Task files committed on the fixture's origin/main. The frontmatter mirrors
+# WORKPLAN.md's format; only id and owns matter to the grant.
+def task_file(task_id: str, owns_block: str) -> str:
+    return (
+        "---\n"
+        f"id: {task_id}\n"
+        "title: fixture task\n"
+        "milestone: M2\n"
+        f"{owns_block}"
+        "depends_on: []\n"
+        "exclusive: yes\n"
+        "acceptance:\n"
+        "  - fixture\n"
+        "---\n"
+    )
+
+
+FIXTURE_TASKS = {
+    # The ordinary grant: one task, one protected file it owns.
+    "M2-03": task_file("M2-03", "owns:\n  - scripts/gates.sh\n"),
+    # A grant narrower than the protected entry: file tools only.
+    "CI-1": task_file("CI-1", "owns:\n  - .github/workflows/ci.yml\n"),
+    # A directory grant equal to its protected entry.
+    "C-1": task_file("C-1", "owns:\n  - contracts/\n"),
+    # Owns entries the grantable sublist must overrule.
+    "BAD-1": task_file("BAD-1", "owns:\n  - ANCHORS.md\n  - .claude/hooks/\n"),
+    # A duplicated owns key: the parser vouches for nothing.
+    "DUP-1": task_file("DUP-1", "owns:\n  - docs/notes.md\nowns:\n  - scripts/gates.sh\n"),
+    # A spelling variant of the key: sighted, parsed by nothing.
+    "VAR-1": task_file("VAR-1", "Owns:\n  - scripts/gates.sh\n"),
 }
 
 
 def build_fixture(base: str) -> str:
-    """A throwaway workspace: a checkout, a worktree inside it, prompts outside."""
+    """A throwaway workspace: a real checkout on a neutral branch, task files
+    committed on a fabricated origin/main, a worktree inside it, prompts
+    outside."""
     repo = os.path.join(base, "vfi")
-    for directory in (".git", "docs/adr", "contracts", ".claude/hooks",
-                      ".github/workflows", ".claude/worktrees/wt/.git"):
+    for directory in ("docs/adr", "contracts", "scripts", "tasks",
+                      ".claude/hooks", ".github/workflows",
+                      ".claude/worktrees/wt/.git"):
         os.makedirs(os.path.join(repo, directory), exist_ok=True)
     os.makedirs(os.path.join(base, "prompts"), exist_ok=True)
     shutil.copy(
@@ -318,10 +406,35 @@ def build_fixture(base: str) -> str:
     )
     for name in ("ANCHORS.md", "AGENTS.md", "WORKPLAN.md", "docs/notes.md",
                  "docs/adr/TEMPLATE.md", ".github/workflows/ci.yml",
-                 ".claude/worktrees/wt/ANCHORS.md"):
+                 "scripts/gates.sh", ".claude/worktrees/wt/ANCHORS.md"):
         path = os.path.join(repo, name)
         with open(path, "w", encoding="utf-8") as f:
             f.write("fixture\n")
+    for task_id, text in FIXTURE_TASKS.items():
+        with open(os.path.join(repo, "tasks", f"{task_id}.md"), "w",
+                  encoding="utf-8") as f:
+            f.write(text)
+    git = ["git", "-C", repo, "-c", "user.email=fixture@vfi",
+           "-c", "user.name=fixture"]
+    subprocess.run(["git", "-C", repo, "init", "-q", "-b", "work"], check=True)
+    subprocess.run(git + ["add", "tasks"], check=True)
+    subprocess.run(git + ["commit", "-q", "-m", "fixture tasks"], check=True)
+    subprocess.run(
+        ["git", "-C", repo, "update-ref", "refs/remotes/origin/main", "HEAD"],
+        check=True,
+    )
+    # The committed copy is the grant; these two exist to prove it. One task
+    # file doctored only in the working tree, one never committed at all.
+    with open(os.path.join(repo, "tasks", "M2-03.md"), "a", encoding="utf-8") as f:
+        f.write("# doctored in the working tree only:\n# owns:\n#  - ANCHORS.md\n")
+    doctored = os.path.join(repo, "tasks", "M2-03.md")
+    with open(doctored, "r", encoding="utf-8") as f:
+        text = f.read()
+    with open(doctored, "w", encoding="utf-8") as f:
+        f.write(text.replace("owns:\n  - scripts/gates.sh\n",
+                             "owns:\n  - scripts/gates.sh\n  - ANCHORS.md\n"))
+    with open(os.path.join(repo, "tasks", "LOCAL-1.md"), "w", encoding="utf-8") as f:
+        f.write(task_file("LOCAL-1", "owns:\n  - scripts/gates.sh\n"))
     return repo
 
 
@@ -331,14 +444,41 @@ def run(hook: str, repo: str, tool: str, tool_input: dict, extra: dict) -> str:
     os.makedirs(os.path.join(scratch, "other", ".git"), exist_ok=True)
     env = dict(os.environ, CLAUDE_PROJECT_DIR=repo, TMPDIR=scratch)
     env.pop("VFI_ROLE", None)
+    extra = dict(extra)
+    # `_branch` is the harness's, not the hook's: check the claim out first,
+    # return to the neutral branch after. Every branch points at the same
+    # commit, so the working tree never changes underneath a case.
+    branch = extra.pop("_branch", None)
     env.update(extra)
+    if branch:
+        subprocess.run(["git", "-C", repo, "checkout", "-q", "-B", branch],
+                       check=True)
     filled = {k: v.replace("{scratch}", scratch) for k, v in tool_input.items()}
     payload = json.dumps({"tool_name": tool, "tool_input": filled, "cwd": repo})
-    done = subprocess.run(
-        [sys.executable, hook], input=payload, capture_output=True, text=True,
-        env=env, cwd=repo,
-    )
+    try:
+        done = subprocess.run(
+            [sys.executable, hook], input=payload, capture_output=True, text=True,
+            env=env, cwd=repo,
+        )
+    finally:
+        if branch:
+            subprocess.run(["git", "-C", repo, "checkout", "-q", "work"],
+                           check=True)
     return DENY if done.returncode == 2 else ALLOW
+
+
+def require_draft() -> bool:
+    """A missing draft must be a loud error, not a verdict: python exits 2 for
+    a file it cannot open, which `run` would read as deny — a corpus judging
+    an absent draft once reported 36 phantom failures exactly that way."""
+    if os.path.exists(DRAFT):
+        return True
+    print(
+        "protect_paths_tests: docs/proposals/protect_paths.py is absent — "
+        "nothing to judge. Write the candidate beside this corpus first.",
+        file=sys.stderr,
+    )
+    return False
 
 
 def bypasses() -> int:
@@ -487,6 +627,8 @@ def floor() -> int:
 
 
 def main() -> int:
+    if not require_draft():
+        return 1
     if "--bypasses" in sys.argv:
         return bypasses()
     if "--floor" in sys.argv:
