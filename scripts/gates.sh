@@ -1,22 +1,3 @@
-# DRAFT — NOT INSTALLED. Delete this block down to the shebang on install.
-#
-# Destination: `scripts/gates.sh`, which is a protected path. This is M2-02's
-# whole deliverable; the pre-edit hook refuses to write the destination, so it
-# is parked here. See escalations/2026-08-01-M2-02.md.
-#
-# Install: replace `scripts/gates.sh` with everything below this block, keeping
-# the executable bit — CI runs `scripts/gates.sh` directly and a 644 file fails
-# the workflow before any gate runs.
-#
-# Verified before parking, from a scratch copy with this file in place:
-#   - `scripts/gates.sh` exits 0: build, tests, and deps pass, the control copy
-#     passes, and all three proofs catch.
-#   - vfi-fetch depending on vfi-normalize — an allowed forward edge — stays
-#     green, so the gate admits the architecture anchor 2 describes.
-#   - vfi-fetch depending on vfi-analyze — forward but skipping a stage — goes
-#     red and names the edge.
-#   - vfi-normalize dev-depending on vfi-fetch — backward, reached only from
-#     tests, and not a cycle — goes red and names the edge.
 #!/usr/bin/env bash
 # Usage: scripts/gates.sh              — run every gate, then prove each one catches.
 #        scripts/gates.sh --gates-only — run the gates and stop. This is the form a
