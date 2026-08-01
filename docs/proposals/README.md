@@ -12,7 +12,6 @@ Delete a draft once installed.
 | :---- | :---------- | :------ |
 | `com.vfi.agent.lead.plist` | `~/Library/LaunchAgents/` | header comment in the file — **not before M2's gates exist and a supervised dry run has passed** |
 | `protect_paths_tests.py` | `.claude/hooks/protect_paths_tests.py` | the hook it tests went in without it (PR #20); nothing else gates it |
-| `gates.sh` | `scripts/gates.sh` | header comment in the file; blocked on escalations/2026-08-01-M2-02.md, which is about the destination being protected at all |
 
 The corpus reads the candidate hook it judges as `protect_paths.py` beside
 itself, and that draft is drained. So the next change to the guard restores the
