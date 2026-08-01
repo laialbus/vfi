@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
-"""PreToolUse guard for VFI (GOALS.md, M0). DRAFT — NOT INSTALLED.
+"""PreToolUse guard for VFI (GOALS.md, M0). Installed per docs/adr/protect-paths-owns-grant.md.
 
 Destination: `.claude/hooks/protect_paths.py`, which is a protected path.
-Installation is human-only, and only after `docs/adr/protect-paths-hook-matching.md`
+Installation is human-only, and only after `docs/adr/protect-paths-owns-grant.md`
 is approved. Re-verify first with `docs/proposals/protect_paths_tests.py`.
+
+This revision is the installed refusal-floor guard (accepted in
+`docs/adr/protect-paths-hook-matching.md`, installed in PR #20, made
+version-independent in PR #28) plus exactly one addition: the owns grant.
+Everything above the grant section below is the installed hook's design,
+unchanged.
 
 Refuses:
   1. Any file-tool write to a protected path (list: protected-paths.txt) or to
@@ -32,13 +38,6 @@ span between the quotes of an operand of `git commit -m/--message` and of
 scan runs — and before nothing else. A refusal is waived only when it is
 positively attributable to prose in one of those arguments.
 
-Concretely, the hook refuses a Bash command when either of these holds:
-
-  - the installed hook's push-to-main, merge, or approval-label guard matches
-    the original text *or* the redacted text; or
-  - the installed hook's write-hint-plus-protected-name scan matches the
-    redacted text.
-
 Redaction is skipped, leaving the floor untouched, whenever it cannot be done
 soundly: a command containing a command substitution (`$(` or a backtick) is
 never redacted, since a quoted argument can execute; an operand that is not
@@ -47,12 +46,49 @@ segment's first word is the bare, unpathed, unquoted command that gives it its
 meaning — `./git` and `tools/git` earn nothing; and a command whose quotes the
 walk cannot close exempts nothing at all.
 
-The predecessor of this draft modelled write targets instead, and an adversarial
-review found twelve commands the installed hook refuses and that draft allowed,
-across five mechanisms — glued separators, command substitution, wrapper flags,
-`~`, and a heredoc marker in a comment. Every one of them was refused by the
-installed hook for naming a protected path. That is the evidence behind starting
-from refusal and subtracting, rather than from parsing and hoping.
+## The owns grant (docs/adr/protect-paths-owns-grant.md)
+
+The one loosening this revision adds. A write to a protected path is allowed
+when the planner granted that path to the running task — all of these, or the
+floor applies unchanged:
+
+  - The checkout is on a branch named for a task, and `tasks/<branch>.md` AS
+    COMMITTED ON origin/main lists the path under `owns:`. The working-tree
+    copy is never read: a worker editing a task file locally grants nothing,
+    because the grant is read with `git cat-file` against
+    `refs/remotes/origin/main`.
+  - The path is on GRANTABLE below — the gate runner, CI, contracts. The
+    constitution, `docs/adr/TEMPLATE.md`, `.claude/settings.json`, and
+    everything under `.claude/hooks/` (this file and the list it reads) are
+    never grantable, whatever a task file says. A guard that can be taught to
+    permit edits to itself is no guard one step later.
+  - Every failure is the empty grant: no branch (detached HEAD), branch is
+    main, no task file on origin/main, more than one `owns:` key, a key
+    spelling the parser does not vouch for, git missing or timing out. The
+    grant can only shrink on error, never widen.
+
+Granularity differs by tool, in the fail-closed direction. The file tools
+grant an exact target: the resolved path must fall inside an `owns` entry and
+inside a GRANTABLE entry. Bash — which the floor deliberately never parses for
+targets — grants only by erasing a protected entry from the name scan, so it
+requires the `owns` entry to equal the protected entry: a task owning
+`scripts/gates.sh` may run `sed -i` on it, but a task owning only
+`.github/workflows/ci.yml` gets file-tool writes and no bash exemption for
+`.github/`, because erasing `.github/` from the scan would exempt the whole
+directory.
+
+The authority guards are outside the grant entirely: push-to-main, merging
+without the decider role, and the human-approved label refuse exactly as
+before, on every branch, granted or not. The grant moves *delivery*; the
+server-side label check is still what decides whether a protected change
+*lands*.
+
+Documented limitation, same class as the name-rebinding one below: the grant
+trusts the local `refs/remotes/origin/main`. An agent that moves that ref at a
+doctored commit has forged its own permission slip — deliberate circumvention,
+which this hook does not model. The sandbox and the server-side check (which
+reads the base branch on GitHub, not any local ref) are the layers for an
+adversary; this hook is friction for an honest agent.
 
 ## What this does not do
 
@@ -61,16 +97,16 @@ from refusal and subtracting, rather than from parsing and hoping.
     `../prompts/` are all allowed here, exactly as the installed hook allows
     them. The sandbox is the layer that covers them.
   - Heredoc bodies are not specially delimited. Delimiting a body soundly
-    needs the same shell parsing this design exists to avoid — the review's
-    comment-marker bypass was a mis-delimited body — so body lines are read as
-    ordinary text: one that names a protected path beside a write-capable word
-    is refused, and one that happens to be shaped like a whitelisted prose
-    flag is redacted like any other text, which can only remove a match, never
-    smuggle a write. Write the file with the Write tool and pass it as
-    `--body-file`/`commit -F` instead.
+    needs the same shell parsing this design exists to avoid, so body lines
+    are read as ordinary text: one that names a protected path beside a
+    write-capable word is refused, and one that happens to be shaped like a
+    whitelisted prose flag is redacted like any other text, which can only
+    remove a match, never smuggle a write. Write the file with the Write tool
+    and pass it as `--body-file`/`commit -F` instead.
   - A read-only command that names a protected path is still refused when it
     carries a write-capable word: `cp ANCHORS.md /tmp/` is a read, and it is
-    refused. That is the cost of the floor, paid deliberately.
+    refused. That is the cost of the floor, paid deliberately. The grant does
+    not change this for ungranted paths.
   - Prose outside the whitelisted flags is not exempt, including `git tag -m`,
     `gh issue`, and any body passed positionally.
   - Attribution reads the name, not the binary. A command that rebinds the
@@ -87,11 +123,11 @@ commands; the server (ruleset, required checks) is the backstop.
 
 Exit 0 allows the tool call. Exit 2 blocks it; stderr is shown to the agent.
 """
-
 from __future__ import annotations
 import json
 import os
 import re
+import subprocess
 import sys
 
 WRITE_TOOLS = ("Edit", "Write", "NotebookEdit")
@@ -123,6 +159,16 @@ GIT_GLOBALS_ALONE = ("-P", "--no-pager", "--paginate", "--bare")
 # expands it, so its span is text the shell executes and must not be blanked.
 SUBSTITUTION = re.compile(r"\$\(|`")
 SEGMENT_BREAKS = ";|&()\n"
+
+# The only protected entries a task file can grant (the ADR's fixed sublist).
+# The constitution, the ADR template, the settings file, and .claude/hooks/
+# are deliberately absent and must stay absent: everything else in this file
+# is enforced by what is on this tuple.
+GRANTABLE = ("scripts/gates.sh", ".github/", "contracts/")
+
+# One grant lookup per process. The value is the owns list from origin/main's
+# copy of the claimed task file, or [] when anything at all went wrong.
+_GRANT_CACHE: dict[str, list[str]] = {}
 
 
 def deny(message: str) -> None:
@@ -370,6 +416,119 @@ def is_scratch(resolved: str, root: str) -> bool:
     return checkout_root(resolved, "") == ""
 
 
+# --------------------------------------------------------------------------
+# The owns grant. Everything below returns the empty grant on any surprise.
+# --------------------------------------------------------------------------
+
+OWNS_KEY = re.compile(r"^owns:\s*(.*)$")
+OWNS_KEY_VARIANT = re.compile(r"^\s*[Oo][Ww][Nn][Ss]\s*:")
+OWNS_ITEM = re.compile(r"^\s*-\s*(.+?)\s*$")
+
+
+def parse_owns(text: str) -> list[str]:
+    """The owns list from task-file frontmatter, or [] when the file cannot be
+    vouched for. Exactly one `owns:` key, spelled exactly, at column zero;
+    inline `[a, b]` or a block list. A variant spelling (case, indentation,
+    space before the colon) is counted as a sighting but parsed by nothing,
+    so it yields the empty grant — the same fail-closed reading tasks.sh
+    applies to its own fields."""
+    lines = text.splitlines()
+    if not lines or lines[0].strip() != "---":
+        return []
+    sightings = 0
+    owns: list[str] = []
+    in_block = False
+    for line in lines[1:]:
+        if line.strip() == "---":
+            break
+        if OWNS_KEY_VARIANT.match(line):
+            sightings += 1
+            exact = OWNS_KEY.match(line)
+            in_block = False
+            if not exact:
+                continue
+            value = exact.group(1).strip()
+            if value == "":
+                in_block = True
+            elif value.startswith("[") and value.endswith("]"):
+                owns = [
+                    item.strip().strip("'\"")
+                    for item in value[1:-1].split(",")
+                    if item.strip()
+                ]
+            continue
+        if in_block:
+            item = OWNS_ITEM.match(line)
+            if item:
+                owns.append(item.group(1).strip("'\""))
+                continue
+            if line.strip():
+                in_block = False
+    if sightings != 1:
+        return []
+    return [own.replace("\t", " ").strip() for own in owns if own.strip()]
+
+
+def grant_owns(root: str) -> list[str]:
+    """The claimed task's owns list, read from origin/main, cached per process.
+
+    The branch is the claim (WORKPLAN.md), so the branch name keys the task
+    file. main and a detached HEAD claim nothing. The working tree is never
+    consulted — `git cat-file` against refs/remotes/origin/main reads what the
+    planner committed, not what the run may have edited."""
+    if root in _GRANT_CACHE:
+        return _GRANT_CACHE[root]
+    owns: list[str] = []
+    try:
+        head = subprocess.run(
+            ["git", "-C", root, "symbolic-ref", "--short", "-q", "HEAD"],
+            capture_output=True, text=True, timeout=5,
+        )
+        branch = head.stdout.strip()
+        if head.returncode == 0 and branch and branch not in ("main", "master"):
+            blob = subprocess.run(
+                ["git", "-C", root, "cat-file", "blob",
+                 "refs/remotes/origin/main:tasks/%s.md" % branch],
+                capture_output=True, text=True, timeout=5,
+            )
+            if blob.returncode == 0:
+                owns = parse_owns(blob.stdout)
+    except Exception:
+        owns = []
+    _GRANT_CACHE[root] = owns
+    return owns
+
+
+def within(rel: str, entry: str) -> bool:
+    bare = entry.rstrip("/")
+    return rel == bare or rel.startswith(bare + os.sep)
+
+
+def file_write_granted(rel: str, root: str) -> bool:
+    """A file-tool target is granted when it falls inside an owns entry and
+    inside a GRANTABLE entry. Both conditions read the target, so an owns
+    entry wider than the grantable sublist grants only the grantable part."""
+    owns = grant_owns(root)
+    return any(within(rel, own) for own in owns) and any(
+        within(rel, g) for g in GRANTABLE
+    )
+
+
+def bash_granted_entries(protected: list[str], root: str) -> set[str]:
+    """Protected entries erased from the bash name scan: only those the task
+    owns by the entry's own spelling. Bash is never parsed for targets, so the
+    grant here is all-or-nothing per entry — which is why an owns entry
+    narrower than the protected entry (a file inside .github/) grants bash
+    nothing at all."""
+    owns = {own.rstrip("/") for own in grant_owns(root)}
+    grantable = {g.rstrip("/") for g in GRANTABLE}
+    return {
+        entry
+        for entry in protected
+        if entry.rstrip("/") in owns and entry.rstrip("/") in grantable
+    }
+
+
 def check_authority(text: str) -> None:
     if PUSH_TO_MAIN.search(text):
         deny(
@@ -390,7 +549,7 @@ def check_authority(text: str) -> None:
         )
 
 
-def check_bash(command: str, protected: list[str]) -> None:
+def check_bash(command: str, protected: list[str], root: str) -> None:
     redacted = redact(command, redaction_spans(command))
     check_authority(command)
     if redacted != command:
@@ -402,6 +561,8 @@ def check_bash(command: str, protected: list[str]) -> None:
         base = os.path.basename(bare)
         named_base = base and re.search(r"(?<![\w/.-])" + re.escape(base), redacted)
         if bare in redacted or named_base:
+            if entry in bash_granted_entries(protected, root):
+                continue
             deny(
                 f"This command names the protected path '{entry}' and "
                 "contains a write-capable operation; refused. Use a "
@@ -440,18 +601,23 @@ def main() -> None:
             )
         # Against the project root, as the installed hook does, and against the
         # checkout the path sits in, so a worktree's own ANCHORS.md is covered.
+        # The grant is judged against the project root only: a claim held in
+        # this checkout says nothing about files in some other checkout.
         for base in (root, checkout_root(resolved, root)):
             entry = protected_match(resolved, base, protected)
             if entry:
+                rel = os.path.relpath(resolved, base)
+                if base == root and file_write_granted(rel, root):
+                    continue
                 deny(
-                    f"'{os.path.relpath(resolved, base)}' is a protected path "
+                    f"'{rel}' is a protected path "
                     f"(matches '{entry}'). Changing it requires human sign-off "
                     "recorded in an ADR. Stop and write an escalation instead."
                 )
         sys.exit(0)
 
     if tool == "Bash":
-        check_bash(tool_input.get("command", "") or "", protected)
+        check_bash(tool_input.get("command", "") or "", protected, root)
         sys.exit(0)
 
     sys.exit(0)

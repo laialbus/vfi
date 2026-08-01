@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Corpus test for the protect-paths guard. DRAFT — NOT INSTALLED.
+"""Corpus test for the protect-paths guard. Installed per docs/adr/protect-paths-owns-grant.md.
 
 Destination: `.claude/hooks/protect_paths_tests.py`, alongside the hook it
 tests. Installed by a human together with `docs/proposals/protect_paths.py`,
