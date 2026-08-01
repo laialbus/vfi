@@ -88,6 +88,7 @@ commands; the server (ruleset, required checks) is the backstop.
 Exit 0 allows the tool call. Exit 2 blocks it; stderr is shown to the agent.
 """
 
+from __future__ import annotations
 import json
 import os
 import re
