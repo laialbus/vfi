@@ -11,7 +11,6 @@ Delete a draft once installed.
 | Draft | Destination | Install |
 | :---- | :---------- | :------ |
 | `com.vfi.agent.lead.plist` | `~/Library/LaunchAgents/` | header comment in the file — **not before M2's gates exist and a supervised dry run has passed** |
-| `com.vfi.agent.decider.plist` | `~/Library/LaunchAgents/` | same condition as the lead plist |
 | `protect_paths_tests.py` | `.claude/hooks/protect_paths_tests.py` | the hook it tests went in without it (PR #20); nothing else gates it |
 
 The corpus reads the candidate hook it judges as `protect_paths.py` beside
