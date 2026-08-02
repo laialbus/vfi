@@ -13,10 +13,10 @@ cd "$(dirname "$0")/.."
 prog="$(basename "$0")"
 
 # The gates from AGENTS.md whose machinery exists today, in the order they run.
-# The rest — golden fixtures, the analyze deny-list, contract compatibility, the
-# benchmark — are absent rather than stubbed green: a gate that cannot fail
-# reads exactly like a gate that is holding.
-gates="build tests deps"
+# The rest — golden fixtures, contract compatibility, the benchmark — are absent
+# rather than stubbed green: a gate that cannot fail reads exactly like a gate
+# that is holding.
+gates="build tests deps purity"
 
 # Anchor 2: the pipeline runs fetch → normalize → analyze → store, and a later
 # stage never calls an earlier one, so every edge points forward — the dependent
@@ -30,6 +30,99 @@ allowed_edges="
 	vfi-normalize>vfi-analyze
 	vfi-analyze>vfi-store
 "
+
+# Anchor 4: analyze takes data in and returns results out — no network, no disk,
+# no clock, no randomness, no environment, no logging with effects. A package
+# belongs here when linking it puts one of those in analyze's hands; the word
+# beside it is which one, and it is what the failure names. This is the only
+# place that judgement is written down.
+#
+# The last group is the floor the others stand on. On a real target every
+# capability above bottoms out in one of them, so a wrapper this list has never
+# heard of is still caught by what it must link to do the work.
+#
+# What the list cannot see is std: std::fs, std::net, std::time and std::env
+# arrive with every crate and no dependency list can deny them. This gate is the
+# mechanism anchor 4's enforcement clause asks for — analyze cannot acquire the
+# libraries — and it is not the whole of what anchor 4 says.
+denied_packages() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	# Clients, async runtimes — sockets and timers both — and the TLS under them.
+	reqwest             network
+	ureq                network
+	curl                network
+	isahc               network
+	hyper               network
+	tonic               network
+	tokio               network
+	async-std           network
+	smol                network
+	mio                 network
+	socket2             network
+	native-tls          network
+	rustls              network
+	openssl             network
+
+	# Paths, temp files, watchers, mmap, and the embedded databases that are a
+	# file on disk.
+	tempfile            filesystem
+	walkdir             filesystem
+	glob                filesystem
+	notify              filesystem
+	memmap2             filesystem
+	dirs                filesystem
+	directories         filesystem
+	home                filesystem
+	rusqlite            filesystem
+	sqlx                filesystem
+	diesel              filesystem
+
+	# Reading the current time. Calendar arithmetic over dates that arrived as
+	# data would be fine; each of these carries a now() as well.
+	chrono              clock
+	time                clock
+	humantime           clock
+	instant             clock
+	quanta              clock
+
+	# An unseeded value is not reproducible, and uuid and ulid mint identity
+	# from one.
+	rand                randomness
+	rand_core           randomness
+	rand_chacha         randomness
+	getrandom           randomness
+	fastrand            randomness
+	uuid                randomness
+	ulid                randomness
+
+	# The process environment, argv, and config files. Settings arrive as
+	# arguments (anchor 5); they are never read from around the process.
+	dotenv              environment
+	dotenvy             environment
+	envy                environment
+	config              environment
+	clap                environment
+
+	# A logger writes somewhere. The effect is what anchor 4 bans, not the
+	# message.
+	log                 logging
+	tracing             logging
+	tracing-subscriber  logging
+	env_logger          logging
+	slog                logging
+	fern                logging
+
+	# Direct access to the machine.
+	libc                syscalls
+	nix                 syscalls
+	rustix              syscalls
+	windows-sys         syscalls
+	winapi              syscalls
+	wasi                syscalls
+	js-sys              syscalls
+	web-sys             syscalls
+	EOF
+}
 
 gate_build() {
 	cargo build --workspace
@@ -92,6 +185,38 @@ gate_deps() {
 	fi
 }
 
+# The whole resolved tree, not the direct edges: a denied package three levels
+# down is linked just the same. Build and dev edges count too — a build script
+# runs at compile time with the machine in reach, and a test that reads a clock
+# is no longer proving the pure function analyze is supposed to be. A dependency
+# that only some feature turns on is not in this tree and not linked either; what
+# the build compiles is what this reads.
+analyze_dependencies() {
+	cargo tree -p vfi-analyze --edges normal,build,dev --prefix none --format '{p}' |
+		awk 'NF { print $1 }'
+}
+
+gate_purity() {
+	local tree package reason offenders
+	tree=" $(analyze_dependencies | tr '\n' ' ')" || return 1
+
+	offenders=""
+	while read -r package reason; do
+		case "$tree" in
+		*" $package "*) offenders="$offenders  $package ($reason)
+" ;;
+		esac
+	done <<-EOF
+	$(denied_packages)
+	EOF
+
+	if [ -n "$offenders" ]; then
+		echo "$prog: vfi-analyze links what anchor 4 bans it from reaching:" >&2
+		printf '%s' "$offenders" >&2
+		return 1
+	fi
+}
+
 # Any crate source will do: the violation only has to reach the compiler.
 crate_source() {
 	local candidate
@@ -140,6 +265,34 @@ violate_deps() {
 
 [dependencies.vfi-analyze]
 path = "../analyze"
+EOF
+}
+
+# A local package carrying a denied name, not the real one from the registry: a
+# run's sandbox cannot write cargo's registry cache, so a proof that had to
+# download would fail for a reason of its own and read as the gate catching
+# nothing. The gate matches the names in the resolved tree, and this resolves to
+# the same name the real package would.
+#
+# It sits beside the copy rather than inside it because a path dependency inside
+# the workspace directory becomes a workspace member, and then the deps gate,
+# which runs first, objects to the edge and the proof goes red in the wrong
+# place.
+violate_purity() {
+	local denied="$1-denied"
+	mkdir -p "$denied/src"
+	cat >"$denied/Cargo.toml" <<'EOF'
+[package]
+name = "rand"
+version = "0.0.0"
+edition = "2024"
+publish = false
+EOF
+	: >"$denied/src/lib.rs"
+	cat >>"$1/crates/analyze/Cargo.toml" <<EOF
+
+[dependencies.rand]
+path = "$denied"
 EOF
 }
 
