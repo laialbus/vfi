@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Usage: scripts/tasks.sh available     — print the id of every claimable task, one per line.
 #        scripts/tasks.sh claim <id>    — claim <id> by pushing its branch, then verify it.
+#        scripts/tasks.sh sweep         — release the claims of runs that are gone.
 #
-# Exit codes: 0 done, 1 origin unreachable, 2 bad invocation, 3 unreadable queue,
-# 4 claim lost.
+# Exit codes: 0 done, 1 origin unreachable or a claim could not be released,
+# 2 bad invocation, 3 unreadable queue, 4 claim lost.
 
 set -euo pipefail
 
@@ -12,6 +13,7 @@ cd "$(dirname "$0")/.."
 usage() {
 	echo "usage: $(basename "$0") available" >&2
 	echo "       $(basename "$0") claim <task-id>" >&2
+	echo "       $(basename "$0") sweep" >&2
 	exit 2
 }
 
@@ -120,11 +122,18 @@ claimed() {
 	printf '%s\n' "$branches" | grep -Fxq "refs/heads/$1"
 }
 
+# One read of origin, kept whole as well as by name: the sweep releases a ref at
+# the commit it was seen at, and a second read would be a second moment.
 read_branches() {
-	if ! branches="$(git ls-remote --heads origin 2>/dev/null | awk '{print $2}')"; then
+	if ! branch_refs="$(git ls-remote --heads origin 2>/dev/null)"; then
 		echo "$(basename "$0"): cannot reach origin to check claimed branches" >&2
 		return 1
 	fi
+	branches="$(printf '%s\n' "$branch_refs" | awk '{print $2}')"
+}
+
+claim_head() {
+	printf '%s\n' "$branch_refs" | awk -v ref="refs/heads/$1" '$2 == ref { print $1; exit }'
 }
 
 # exclusive is a guard, so anything the parser cannot vouch for is refused
@@ -198,13 +207,15 @@ available() {
 	done | sort
 }
 
-# Only ever removes a ref this run created: the lease names the commit the
-# claim was pushed at, so a ref that has since moved is left alone rather than
-# deleted out from under whoever moved it.
+# Only ever removes the ref as it was read: the lease names the commit the ref
+# was seen at, so one that has moved since is left alone rather than deleted out
+# from under whoever moved it. That is what makes releasing another run's claim
+# safe — anything its owner pushes between the read and the delete refuses it,
+# whatever the sweep concluded in between.
 release() {
 	if ! git push --quiet origin \
 		--force-with-lease="refs/heads/$1:$2" --delete "refs/heads/$1"; then
-		echo "$(basename "$0"): claim branch $1 is still on origin and must be deleted by hand" >&2
+		echo "$(basename "$0"): could not release $1; a later sweep takes it if it is dead" >&2
 		return 1
 	fi
 }
@@ -314,6 +325,144 @@ claim() {
 	echo "$1: claimed"
 }
 
+# A claim still on origin belongs to one of three runs: one still working, one
+# that handed off and is waiting on review, or one that was killed outright. The
+# wrapper releases the claim on every exit it survives, so only the third leaves
+# a claim behind by accident, and only the third is swept. The other two have to
+# be ruled out from origin alone — this runs in a different process from the runs
+# it judges and sees nothing of them but what they left here.
+#
+# The one waiting on review is ruled out by its open pull request, which is left
+# alone: deleting the branch would close it.
+#
+# The one still working is ruled out by age, and the age that counts is when the
+# claim landed on origin — not the date on the commit it points at. A claim is
+# pushed at whatever main's tip was, so a claim made this minute can point at a
+# commit from last week, and sweeping by commit date would take the live claims
+# first. Origin's activity record is the one place that says when the ref itself
+# appeared, so a claim whose age it cannot answer for is kept and reported
+# instead: a claim held one run too long costs a run, and a claim taken from a
+# live run puts two agents on one task.
+#
+# What bounds a live claim's age is the wrapper's wall-clock limit — an hour by
+# default, and the wrapper kills what does not stop by then. Six times that
+# leaves room for a limit raised on the day and a clock that disagrees, and it is
+# the one assumption here that a change outside the repository could break.
+claim_lifetime_hours=6
+
+# The moment a claim must have landed before to be too old for a live run to
+# hold, in the shape origin reports. BSD date first, GNU second: the fleet runs
+# on macOS and CI on Linux.
+claim_cutoff() {
+	date -u -v-"$claim_lifetime_hours"H +%Y-%m-%dT%H:%M:%SZ 2>/dev/null ||
+		date -u -d "$claim_lifetime_hours hours ago" +%Y-%m-%dT%H:%M:%SZ 2>/dev/null
+}
+
+# When origin last saw anything happen to this ref. Any activity is evidence of
+# life at that moment, so the kind does not matter and the most recent one
+# answers. Empty when origin's record does not reach back to this claim.
+last_activity() {
+	gh api "repos/{owner}/{repo}/activity?ref=refs/heads/$1&per_page=1" \
+		--jq '.[].timestamp'
+}
+
+open_pull_requests() {
+	gh pr list --head "$1" --state open --json number \
+		--jq '[.[].number | "#\(.)"] | join(" and ")'
+}
+
+# Both stamps carry the same fixed shape, so their digits order them and nothing
+# here has to parse a date.
+digits() {
+	printf '%s' "$1" | tr -cd '0-9'
+}
+
+# Only a branch whose whole name is a task id still in the queue is a candidate.
+# That is what keeps main, session/… and escalated/… out of reach: an
+# escalated/M1-08-… branch is the record of a run that failed, not a claim, and a
+# record is not something to tidy away. It holds as long as a task id is one path
+# segment, so an id with a slash in it — which could name a branch inside
+# escalated/ — is refused rather than swept.
+sweep() {
+	read_branches || exit 1
+	read_queue
+
+	if ! cutoff="$(claim_cutoff)"; then
+		echo "$(basename "$0"): cannot work out how old a claim would have to be" >&2
+		exit 1
+	fi
+
+	claims=""
+	while IFS="$tab" read -r id depends exclusive; do
+		[ -n "$id" ] || continue
+
+		if claimed "$id"; then
+			claims="$claims $id"
+		fi
+	done <<<"$tasks"
+
+	if [ -z "$claims" ]; then
+		echo "no claims on origin"
+		return 0
+	fi
+
+	echo "a claim origin last saw before $cutoff is nobody's live run"
+
+	stuck=0
+	for id in $claims; do
+		case "$id" in
+		*/*)
+			echo "$id: kept, an id with a / could name a branch this must not touch"
+			continue
+			;;
+		esac
+
+		if ! pulls="$(open_pull_requests "$id")"; then
+			echo "$id: kept, cannot ask origin whether a pull request is open"
+			continue
+		fi
+		if [ -n "$pulls" ]; then
+			echo "$id: kept, pull request $pulls is open"
+			continue
+		fi
+
+		if ! stamp="$(last_activity "$id")"; then
+			echo "$id: kept, cannot ask origin when this claim landed"
+			continue
+		fi
+		if [ -z "$stamp" ]; then
+			echo "$id: kept, origin has no record of when this claim landed"
+			continue
+		fi
+		case "$stamp" in
+		[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;;
+		*)
+			echo "$id: kept, origin dates this claim in a shape this cannot read: $stamp"
+			continue
+			;;
+		esac
+		if [ "$(digits "$stamp")" -ge "$(digits "$cutoff")" ]; then
+			echo "$id: kept, origin last saw this claim at $stamp"
+			continue
+		fi
+
+		# The commit goes in the line because the branch does not survive it.
+		# A run killed mid-task may have pushed work nobody has seen, and the
+		# wrapper discards exactly that on every exit it survives; naming the
+		# commit is what keeps it findable afterward rather than only gone.
+		claim_sha="$(claim_head "$id")"
+		if release "$id" "$claim_sha"; then
+			echo "$id: released, origin last saw it at $stamp, at $claim_sha"
+		else
+			stuck=$((stuck + 1))
+		fi
+	done
+
+	if [ "$stuck" -ne 0 ]; then
+		exit 1
+	fi
+}
+
 tab="$(printf '\t')"
 
 case "${1:-}" in
@@ -324,6 +473,10 @@ available)
 claim)
 	[ "$#" -eq 2 ] || usage
 	claim "$2"
+	;;
+sweep)
+	[ "$#" -eq 1 ] || usage
+	sweep
 	;;
 *)
 	usage
