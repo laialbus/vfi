@@ -30,6 +30,7 @@ Nothing else.
 | `shell/` | The Python presentation shell, including its `pyproject.toml`. |
 | `scripts/` | Every operational script. See below. |
 | `fixtures/` | Golden fixture inputs and their expected results, as data. The harness that runs them is code and lives with the crate it exercises. |
+| `benchmarks/` | Benchmark workloads, the committed baseline each one costs, and the thresholds a measurement may drift by, as data. The harness that measures is code and lives with the crate it exercises, exactly as with `fixtures/`. Separate from `fixtures/` because a baseline is not an expected result: a fixture that no longer matches is wrong, and a measurement that no longer matches may be either a regression or a stage that legitimately costs more, which is a judgement the gate reports rather than makes. |
 | `tasks/` | The task queue, one file per task. |
 | `sessions/` | Session entries, one file per run. |
 | `escalations/` | Escalations, one file per stop. |

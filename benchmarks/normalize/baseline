@@ -1,0 +1,20 @@
+# What one measurement of benchmarks/normalize/input costs the normalize stage.
+# Recorded deliberately, read by crates/normalize/tests/bench.rs, and compared
+# against the multiples in benchmarks/thresholds.
+#
+# allocations and bytes are counted, not timed: the stage asks for its output
+# buffer once and reuses it across all 512 passes, and 11836 is the workload
+# itself. Both numbers are the same on every machine.
+allocations 1
+bytes 11836
+
+# The stage's time as a multiple of a plain copy of the same bytes, measured in
+# the same run — the machine's own speed is in both halves and divides out, which
+# is what lets a number recorded on one machine mean anything on another. Above
+# one because the stage is a call the copy is not.
+#
+# Near the middle of what the machine that recorded it measured: about two
+# hundred runs, ranging from 0.92 to 1.47. A third decimal here would be
+# recording that noise, and it is the threshold beside it that decides anything,
+# never this last digit.
+cost 1.2
