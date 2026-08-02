@@ -14,11 +14,11 @@ cd "$(dirname "$0")/.."
 prog="$(basename "$0")"
 
 # The gates from AGENTS.md whose machinery exists today, in the order they run.
-# The rest — the golden fixtures and the benchmark — are absent rather than
-# stubbed green: a gate that cannot fail reads exactly like a gate that is
-# holding. A gate that has machinery and nothing to check yet is a different
-# thing and belongs here: contracts runs its real check over the contracts that
-# exist, which today is none of them.
+# The one still missing, the benchmark, is absent rather than stubbed green: a
+# gate that cannot fail reads exactly like a gate that is holding. A gate that
+# has machinery and nothing to check yet is a different thing and belongs here:
+# contracts runs its real check over the contracts that exist, which today is
+# none of them.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -30,6 +30,7 @@ expected_gates() {
 	sed 's/#.*//' <<-'EOF' | awk 'NF'
 	build
 	tests
+	fixtures
 	deps
 	purity
 	contracts
@@ -150,6 +151,47 @@ gate_build() {
 
 gate_tests() {
 	cargo test --workspace
+}
+
+# AGENTS.md's "the golden fixtures still produce their expected results". A
+# fixture is a directory under fixtures/<stage>/ holding what goes into that
+# stage and what must come out, both committed; the harness that runs them is
+# code and lives with the crate it exercises (docs/layout.md), as that crate's
+# `golden` test target. Anything about the shape of a fixture is written down
+# there, with the code that reads it.
+#
+# Which harnesses run is read off fixtures/ rather than listed here, because a
+# list would be a second place saying which stages have fixtures and the copy
+# that drifts is the one nobody runs. A stage directory whose crate has no
+# `golden` target turns this red, which is the answer that fits: a committed
+# fixture nothing runs is worth less than no fixture at all.
+fixture_stages() {
+	local dir
+	for dir in fixtures/*/; do
+		if [ -d "$dir" ]; then
+			dir="${dir%/}"
+			printf '%s\n' "${dir#fixtures/}"
+		fi
+	done
+}
+
+gate_fixtures() {
+	local stages stage count
+	stages="$(fixture_stages)" || return 1
+
+	count=0
+	for stage in $stages; do
+		count=$((count + 1))
+		cargo test -p "vfi-$stage" --test golden || return 1
+	done
+
+	# Unlike contracts, an empty set here is not an absence. The baseline is
+	# committed, so nothing under fixtures/ means the baseline was deleted, and
+	# a sweep that passes over nothing reads exactly like one that is holding.
+	if [ "$count" -eq 0 ]; then
+		echo "$prog: fixtures/ holds no stage, so this gate checks nothing" >&2
+		return 1
+	fi
 }
 
 edge_allowed() {
@@ -465,6 +507,27 @@ mod gate_proof {
     }
 }
 EOF
+}
+
+# The whole of this gate is the comparison, so the violation is an expected
+# result that no longer says what the stage produces. Whichever committed
+# fixture comes first will do: the gate has to catch a drifted expectation
+# wherever in fixtures/ it sits, and singling one out by name would leave the
+# proof passing while the rest of the sweep had quietly stopped running.
+#
+# The perturbed copy still builds and still passes the test gate, because the
+# harness is the one target `cargo test` does not select. That is what lets this
+# violation go red under its own name and no other.
+violate_fixtures() {
+	local expected
+	for expected in "$1"/fixtures/*/*/expected; do
+		if [ -f "$expected" ]; then
+			printf 'a line the stage does not produce\n' >>"$expected"
+			return 0
+		fi
+	done
+	echo "$prog: no committed fixture to perturb the expected result of" >&2
+	return 1
 }
 
 # The last stage reaching back to an earlier one. The forward edge this reverses
