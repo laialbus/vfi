@@ -13,12 +13,12 @@ cd "$(dirname "$0")/.."
 
 prog="$(basename "$0")"
 
-# The gates from AGENTS.md whose machinery exists today, in the order they run.
-# The one still missing, the benchmark, is absent rather than stubbed green: a
-# gate that cannot fail reads exactly like a gate that is holding. A gate that
-# has machinery and nothing to check yet is a different thing and belongs here:
-# contracts runs its real check over the contracts that exist, which today is
-# none of them.
+# The gates from AGENTS.md, in the order they run. Every gate AGENTS.md names now
+# has machinery behind it. A gate that has machinery and nothing to check yet
+# still belongs here: contracts runs its real check over the contracts that
+# exist, which today is none of them. What would not belong is a name stubbed
+# green, because a gate that cannot fail reads exactly like a gate that is
+# holding.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -34,6 +34,7 @@ expected_gates() {
 	deps
 	purity
 	contracts
+	benchmark
 	EOF
 }
 
@@ -470,6 +471,49 @@ gate_contracts() {
 	fi
 }
 
+# AGENTS.md's "the benchmark shows no regression past the set threshold". A
+# workload is a directory under benchmarks/<stage>/ holding what the stage runs
+# over and what it cost, both committed; the thresholds it is allowed to drift by
+# are benchmarks/thresholds, one file for every stage. The harness that measures
+# is code and lives with the crate it exercises (docs/layout.md), as that crate's
+# `bench` test target. What it measures, and why none of it is a wall clock, is
+# written down there with the code that does it.
+#
+# Which harnesses run is read off benchmarks/ rather than listed here, for the
+# reason fixtures gives: a list would be a second place saying which stages have a
+# workload, and the copy that drifts is the one nobody runs. benchmarks/thresholds
+# is a file, so the glob passes over it.
+#
+# Release is not a preference. The committed baseline describes optimized code,
+# and the same numbers taken from a debug build measure something else.
+benchmark_stages() {
+	local dir
+	for dir in benchmarks/*/; do
+		if [ -d "$dir" ]; then
+			dir="${dir%/}"
+			printf '%s\n' "${dir#benchmarks/}"
+		fi
+	done
+}
+
+gate_benchmark() {
+	local stages stage count
+	stages="$(benchmark_stages)" || return 1
+
+	count=0
+	for stage in $stages; do
+		count=$((count + 1))
+		cargo test -p "vfi-$stage" --test bench --release || return 1
+	done
+
+	# As with fixtures, an empty set here is not an absence: the baseline is
+	# committed, so nothing under benchmarks/ means the baseline was deleted.
+	if [ "$count" -eq 0 ]; then
+		echo "$prog: benchmarks/ holds no stage, so this gate checks nothing" >&2
+		return 1
+	fi
+}
+
 # Any crate source will do: the violation only has to reach the compiler.
 crate_source() {
 	local candidate
@@ -733,6 +777,54 @@ check_contract_cases() {
 		printf '%s' "$failures" >&2
 		return 1
 	fi
+}
+
+# Work the stage did not do before, on every call: the slowdown a benchmark gate
+# exists to catch. It leaves the output exactly as it was, because fixtures runs
+# first and a violation that changed what the stage produces would go red there
+# and prove nothing about this gate.
+#
+# Injected into whichever benched stage comes first and into whatever its first
+# public function is — singling one out by name would leave this proof passing
+# while the rest of the sweep had quietly stopped running. The insertion is
+# checked rather than assumed: a signature this cannot find is a proof that could
+# not be made, which is a different answer from a gate that failed to catch, and
+# it says so instead of leaving a copy that was never slowed down.
+violate_benchmark() {
+	local dir stage source slowed
+	for dir in "$1"/benchmarks/*/; do
+		[ -d "$dir" ] || continue
+		dir="${dir%/}"
+		stage="${dir##*/}"
+		source="$1/crates/${stage}/src/lib.rs"
+		[ -f "$source" ] || continue
+
+		slowed="$source.slowed"
+		awk '
+			!slowed && /^pub fn / && /\{$/ {
+				print
+				print "    std::hint::black_box(String::from(\"a deliberate slowdown\"));"
+				slowed = 1
+				next
+			}
+			{ print }
+		' "$source" >"$slowed" || {
+			rm -f "$slowed"
+			return 1
+		}
+
+		if cmp -s "$source" "$slowed"; then
+			rm -f "$slowed"
+			echo "$prog: $stage has no signature on one line to slow down" >&2
+			return 1
+		fi
+		cat "$slowed" >"$source"
+		rm -f "$slowed"
+		return 0
+	done
+
+	echo "$prog: no benched stage to inject a slowdown into" >&2
+	return 1
 }
 
 # The one violation that is against the runner rather than the tree: a gate

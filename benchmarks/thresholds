@@ -1,0 +1,36 @@
+# How far past its committed baseline a measurement may go before the benchmark
+# gate calls it a regression. One line per kind of measurement, as a multiple of
+# the baseline. This is the only place these numbers are written down.
+#
+# There are two because the two kinds of measurement fail differently, and one
+# number covering both would have to be the looser of the two.
+
+# The counted measurements — allocations and bytes allocated. These are the same
+# on every machine, so nothing here is headroom for noise; there is none. What it
+# is is headroom for change: a stage may grow a buffer or a temporary without
+# that being a regression, and a gate that red-lined on every such change would
+# be updated so often that updating it would stop being a decision. Past this,
+# the stage is doing a different amount of work and the baseline says so.
+work 1.05
+
+# The cost measurement — the stage's time as a multiple of the plainest copy of
+# the same bytes, both measured in the same run. Dividing by the copy is what
+# makes a committed baseline mean anything on a machine it was not recorded on;
+# what is left is the stage's own cost, in a unit the machine cancels out of.
+#
+# The residue the division does not cancel is why this number is as wide as it
+# is. The two loops lean differently on the cache and on the compiler, so their
+# ratio still drifts between microarchitectures — the baseline is recorded on a
+# laptop and checked on a shared runner. About two hundred runs on one machine
+# already spread 0.92 to 1.47, a factor of 1.6 with nothing changed, and the
+# widest of those came with the cores oversubscribed, which is the state a shared
+# runner is in. A full scripts/gates.sh run measures this ten times over, once in
+# the control copy and once inside every proof, so a per-run flake rate that would
+# be tolerable for a single measurement is not tolerable here.
+#
+# Ten times the baseline sits far enough above that spread that an unchanged tree
+# does not go red, and far below the slowdowns this measurement is the only one
+# that can see: a sleep, a spin, a copy that became a scan. A slowdown of less
+# than ten times that allocates nothing passes, and the harness header says so
+# rather than leaving it to be discovered.
+cost 10

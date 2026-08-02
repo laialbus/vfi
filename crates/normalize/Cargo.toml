@@ -13,3 +13,10 @@ publish.workspace = true
 name = "golden"
 path = "tests/golden.rs"
 test = false
+
+# The benchmark harness, kept out of `cargo test` for the same reason and run by
+# name in release, which is the build its committed baseline describes.
+[[test]]
+name = "bench"
+path = "tests/bench.rs"
+test = false
