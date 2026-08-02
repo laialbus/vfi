@@ -3,8 +3,9 @@
 #        scripts/gates.sh --gates-only — run the gates and stop. This is the form a
 #                                        proof runs inside its scratch copy.
 #
-# Exit codes: 0 every gate passed and every proof caught, 1 a gate failed,
-# 2 bad invocation, 3 a proof did not catch or could not be run.
+# Exit codes: 0 every gate passed and every proof caught, 1 a gate failed or the
+# gates the runner has are not the gates expected, 2 bad invocation, 3 a proof
+# did not catch or could not be run.
 
 set -euo pipefail
 
@@ -16,7 +17,23 @@ prog="$(basename "$0")"
 # The rest — golden fixtures, contract compatibility, the benchmark — are absent
 # rather than stubbed green: a gate that cannot fail reads exactly like a gate
 # that is holding.
-gates="build tests deps purity"
+#
+# This is the only place the set is written down, and it is checked against the
+# gates the file actually defines before any of them runs. Both loops below read
+# it — the one that runs the gates and the one that proves them — so a name
+# deleted here would take its own proof with it, and the run would end green
+# having checked less. The check is what makes removing a gate cost a visible
+# line in a file that cannot land without a signature.
+expected_gates() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	build
+	tests
+	deps
+	purity
+	EOF
+}
+
+gates="$(expected_gates | tr '\n' ' ')"
 
 # Anchor 2: the pipeline runs fetch → normalize → analyze → store, and a later
 # stage never calls an earlier one, so every edge points forward — the dependent
@@ -296,12 +313,76 @@ path = "$denied"
 EOF
 }
 
+# The one violation that is against the runner rather than the tree: a gate
+# deleted from the list, which is what the gate loop and the proof loop both
+# read. Before the expectation this was the blind spot — the copy would build,
+# test, and pass every gate that was left, and report every gate green.
+violate_gate_set() {
+	local runner="$1/scripts/gates.sh" trimmed="$1.trimmed"
+
+	awk 'NF != 1 || $1 != "purity"' "$runner" >"$trimmed"
+	if cmp -s "$runner" "$trimmed"; then
+		echo "$prog: the expectation has no purity line to delete" >&2
+		rm -f "$trimmed"
+		return 1
+	fi
+	cat "$trimmed" >"$runner"
+	rm -f "$trimmed"
+}
+
 usage() {
 	echo "usage: $prog [--gates-only]" >&2
 	exit 2
 }
 
+# What the runner can actually do, read off the functions themselves rather than
+# restated as a second list: two hand-written lists drift together as easily as
+# one is edited alone, and only the functions are the thing that runs.
+defined_gates() {
+	declare -F | awk '$3 ~ /^gate_/ { print substr($3, 6) }'
+}
+
+# The expectation against what the file defines, both ways round. A gate the
+# expectation names and the runner does not have would be a gate silently
+# dropped; one the runner has and the expectation does not name would be a gate
+# that never runs. Neither is visible in a green run, which is why this comes
+# before the gates rather than after them.
+assert_gate_set() {
+	local expected defined name differences
+
+	expected=" $(expected_gates | tr '\n' ' ')"
+	defined=" $(defined_gates | tr '\n' ' ')"
+
+	differences=""
+	for name in $expected; do
+		case "$defined" in
+		*" $name "*) ;;
+		*) differences="$differences  $name: expected, and the runner has no gate for it
+" ;;
+		esac
+	done
+	for name in $defined; do
+		case "$expected" in
+		*" $name "*) ;;
+		*) differences="$differences  $name: the runner has this gate, and the expectation does not name it
+" ;;
+		esac
+	done
+
+	if [ -n "$differences" ]; then
+		echo "$prog: the gates the runner has are not the gates expected:" >&2
+		printf '%s' "$differences" >&2
+		return 1
+	fi
+}
+
 run_gates() {
+	if ! assert_gate_set; then
+		echo "$prog: gate_set failed" >&2
+		return 1
+	fi
+	echo "gate_set: the runner has the gates expected"
+
 	for gate in $gates; do
 		if ! "gate_$gate"; then
 			# The first red ends the run. A gate after the build gate would
@@ -339,23 +420,23 @@ control() {
 # copy is run with --gates-only because the plain form would recurse into these
 # proofs; it runs the same gates, so what is red there is red for it too.
 prove() {
-	local gate copy output
-	gate="$1"
-	copy="$scratch/$gate"
+	local name copy output
+	name="$1"
+	copy="$scratch/$name"
 	copy_tree "$copy"
-	"violate_$gate" "$copy" || return 1
+	"violate_$name" "$copy" || return 1
 
 	if output="$("$copy/scripts/gates.sh" --gates-only 2>&1)"; then
-		echo "$prog: the $gate gate passed a tree carrying the violation it exists to catch" >&2
+		echo "$prog: $name passed a tree carrying the violation it exists to catch" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	if ! printf '%s\n' "$output" | grep -Fqx "$prog: $gate failed"; then
-		echo "$prog: the injected $gate violation went red somewhere else" >&2
+	if ! printf '%s\n' "$output" | grep -Fqx "$prog: $name failed"; then
+		echo "$prog: the injected $name violation went red somewhere else" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	echo "$gate: proof caught it"
+	echo "$name: proof caught it"
 }
 
 scratch=""
@@ -376,8 +457,10 @@ case "${1:-}" in
 	scratch="$(mktemp -d "${TMPDIR:-/tmp}/vfi-gates.XXXXXX")"
 	trap cleanup EXIT
 	control || exit 3
-	for gate in $gates; do
-		prove "$gate" || exit 3
+	# The gate-set check is proved like a gate, because it is what stands
+	# between a deleted gate and a green run.
+	for name in gate_set $gates; do
+		prove "$name" || exit 3
 	done
 	echo "$prog: every gate passed and every proof caught"
 	;;
