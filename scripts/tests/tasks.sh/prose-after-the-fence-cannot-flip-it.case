@@ -1,0 +1,21 @@
+# Frontmatter ends at the closing fence. What a task says about itself in prose
+# below cannot change what it is.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: no
+	---
+	This task would like to be exclusive: yes, and saying so here does not make
+	it so.
+stdout
+	M2-01

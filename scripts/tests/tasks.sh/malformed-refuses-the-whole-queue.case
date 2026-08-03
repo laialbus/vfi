@@ -1,0 +1,25 @@
+# The malformed task may be the exclusive one, so partial output would leave the
+# same hole open. Nothing is printed, including the two tasks read before it —
+# zzz sorts last, so the refusal has to reach back over work already done.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+file tasks/zzz.md
+	---
+	id: Z
+	depends_on: []
+	exclusive: maybe
+	---
+stderr
+	tasks.sh: tasks/zzz.md: exclusive must be yes or no, found: maybe

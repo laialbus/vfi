@@ -1,0 +1,20 @@
+# The same rule from the other side. Both sides apply it to themselves without
+# knowing whether the other side will, so an ordinary claim gives way too.
+run claim M1-01
+exit 4
+claims M2-01
+after M2-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---
+stderr
+	tasks.sh: claim on M1-01 released: the exclusive claim on M2-01 is in flight

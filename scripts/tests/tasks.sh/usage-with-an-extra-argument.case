@@ -1,0 +1,15 @@
+# An argument too many is a mistake as well: a subcommand that takes none
+# quietly ignoring one would hide a caller that thinks it is asking for
+# something.
+run available now
+exit 2
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	usage: tasks.sh available
+	       tasks.sh claim <task-id>
+	       tasks.sh sweep

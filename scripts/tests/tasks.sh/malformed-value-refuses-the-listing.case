@@ -1,0 +1,13 @@
+# exclusive is a guard, so a value the parser cannot vouch for refuses the whole
+# listing rather than reading as no. A guard that fails open stops guarding and
+# says nothing.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: true
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: exclusive must be yes or no, found: true

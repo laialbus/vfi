@@ -12,13 +12,18 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 prog="$(basename "$0")"
+tab="$(printf '\t')"
 
-# The gates from AGENTS.md, in the order they run. Every gate AGENTS.md names now
-# has machinery behind it. A gate that has machinery and nothing to check yet
-# still belongs here: contracts runs its real check over the contracts that
-# exist, which today is none of them. What would not belong is a name stubbed
-# green, because a gate that cannot fail reads exactly like a gate that is
-# holding.
+# The gates, in the order they run. Every gate AGENTS.md names now has machinery
+# behind it. A gate that has machinery and nothing to check yet still belongs
+# here: contracts runs its real check over the contracts that exist, which today
+# is none of them. What would not belong is a name stubbed green, because a gate
+# that cannot fail reads exactly like a gate that is holding.
+#
+# scripts is the one name here AGENTS.md does not list. It is over the
+# operational scripts themselves, which that list passes over, and it runs first
+# because it is the cheapest and because every other gate is reached through a
+# script.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -28,6 +33,7 @@ prog="$(basename "$0")"
 # line in a file that cannot land without a signature.
 expected_gates() {
 	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	scripts
 	build
 	tests
 	fixtures
@@ -144,6 +150,435 @@ denied_packages() {
 	js-sys              syscalls
 	web-sys             syscalls
 	EOF
+}
+
+# AGENTS.md names seven gates and none of them is over scripts/, which is how
+# that directory came to hold the claim protocol with nothing checking it: every
+# behaviour verified in review was verified in that review and nowhere after.
+# This gate is the one this file adds to AGENTS.md's list, and it has two halves.
+#
+# Every script under scripts/ parses under the shell it declares. A file there is
+# a script when its first line is a shebang, and an executable that declares none
+# is refused rather than skipped — otherwise dropping the shebang would drop the
+# check with it.
+#
+# Every corpus under scripts/tests/ runs. A corpus is a directory named for the
+# script it pins, holding one <case>.case file apiece, and a case is that script
+# run once in a scratch repository with a real bare remote. Which corpora run is
+# read off the directory rather than listed here, for the reason fixtures gives:
+# a list would be a second place saying which scripts are pinned, and the copy
+# that drifts is the one nobody runs.
+script_corpora() {
+	local dir
+	for dir in scripts/tests/*/; do
+		if [ -d "$dir" ]; then
+			dir="${dir%/}"
+			printf '%s\n' "${dir#scripts/tests/}"
+		fi
+	done
+}
+
+# Every file under scripts/, script or not. What makes one a script is read per
+# file rather than guessed from its name: a corpus case is a .case and a script
+# is a .sh today, and neither of those is what the kernel reads.
+script_files() {
+	find scripts -type f | sort
+}
+
+# The shell a script declares, from its shebang: the interpreter is the word
+# after env when the line runs env, and the program itself otherwise. Anything
+# else — a flag, a wrapper, a stray carriage return — comes out as a name no
+# syntax check matches, which is refused rather than skipped.
+declared_shell() {
+	local line rest first
+	IFS= read -r line <"$1" || return 1
+	case "$line" in
+	'#!'*) ;;
+	*) return 1 ;;
+	esac
+
+	rest="${line#\#!}"
+	first="${rest%% *}"
+	if [ "${first##*/}" = env ]; then
+		rest="${rest#* }"
+		first="${rest%% *}"
+	fi
+	printf '%s\n' "${first##*/}"
+}
+
+# One script against the shell it declares. Anything wrong prints a line on
+# stdout for the gate to collect; a return of 1 means the check could not be made
+# at all, which is not the same answer as a script that failed it.
+check_script() {
+	local file shell output
+	file="$1"
+
+	if ! shell="$(declared_shell "$file")"; then
+		if [ -x "$file" ]; then
+			printf '  %s: is executable and declares no shell to parse it under\n' "$file"
+		fi
+		return 0
+	fi
+
+	case "$shell" in
+	bash | sh) ;;
+	*)
+		printf '  %s: declares %s, and this gate has no syntax check for it\n' "$file" "$shell"
+		return 0
+		;;
+	esac
+
+	if ! command -v "$shell" >/dev/null 2>&1; then
+		echo "$prog: no $shell on this machine to parse $file with" >&2
+		return 1
+	fi
+
+	if ! output="$("$shell" -n "$file" 2>&1)"; then
+		printf '  %s: does not parse under %s: %s\n' "$file" "$shell" \
+			"$(printf '%s\n' "$output" | head -1)"
+	fi
+}
+
+# A case is a flat file of directives, one per line, whose body is the
+# tab-indented lines under it. The tab is stripped and what is left is content
+# byte for byte, which is what lets a case carry a value with a tab inside it or
+# whitespace on the end of it — both of which this script has been wrong about
+# before. Any other line ends the body above it, so an empty line inside one is
+# written as a lone tab.
+#
+#   run <words>   the arguments the script is run with; none means none
+#   exit <code>   the exit code the case pins
+#   file <path>   a file the scratch repository holds, its body the content
+#   claims <ids>  the branches on origin before the run, one per claim; an id
+#                 written <id>@elsewhere is a claim pushed from another commit
+#   after <ids>   the branches on origin after it; absent means claims, unmoved
+#   stdout        the output pinned, exactly
+#   stderr        the script's own stderr, pinned exactly
+#   unreachable   origin cannot be reached for the length of this case
+#
+# stdout belongs to the script alone, so it is compared whole. stderr does not: a
+# push the lease refuses prints git's own line before the script says anything,
+# and that line carries a path and a git version, neither of which is behaviour
+# to pin. So the pinned lines are matched against the tail, and nothing above the
+# tail may be the script's own voice — a second message from it is a change even
+# when the last line still matches.
+
+# The scratch repository, built once per corpus. What a case needs from HEAD is a
+# commit to push, not a tree, so the commit is empty.
+#
+# The same commit is made again inside the remote, so a claim can be planted
+# there holding the very commit the run would push — the case git calls a success
+# and the script has to tell apart from a claim of its own. The other commit is
+# what someone else's claim looks like. Both are made where they are needed,
+# because an object no ref names is still an object the repository has, and the
+# two repositories agreeing on the first one is checked rather than assumed:
+# were they to disagree, the two claim cases would silently become one.
+lab_build() {
+	local lab empty here
+	lab="$1"
+
+	git init -q --initial-branch=claimant "$lab/work" || return 1
+	git init -q --initial-branch=claimant --bare "$lab/remote.git" || return 1
+	git -C "$lab/work" remote add origin "$lab/remote.git" || return 1
+
+	empty="$(git -C "$lab/work" hash-object -t tree /dev/null)" || return 1
+	here="$(git -C "$lab/work" commit-tree "$empty" -m base)" || return 1
+	git -C "$lab/work" update-ref refs/heads/claimant "$here" || return 1
+
+	git -C "$lab/remote.git" commit-tree "$empty" -m base >"$lab/here" || return 1
+	git -C "$lab/remote.git" commit-tree "$empty" -m elsewhere >"$lab/elsewhere" || return 1
+
+	if [ "$here" != "$(cat "$lab/here")" ]; then
+		echo "$prog: the scratch repository and its remote do not agree on a commit" >&2
+		return 1
+	fi
+}
+
+# What the last case left, undone: the work tree emptied but for the script under
+# test, and every ref the remote holds deleted. Nothing carries over, so a case
+# cannot pass on something another case set up.
+lab_reset() {
+	local lab script entry ref
+	lab="$1"
+	script="$2"
+
+	for entry in "$lab"/work/* "$lab"/work/.[!.]*; do
+		[ -e "$entry" ] || continue
+		case "${entry##*/}" in
+		.git) continue ;;
+		esac
+		rm -rf "$entry"
+	done
+
+	mkdir -p "$lab/work/scripts"
+	cp "scripts/$script" "$lab/work/scripts/$script" || return 1
+	chmod +x "$lab/work/scripts/$script"
+
+	for ref in $(git -C "$lab/remote.git" for-each-ref --format='%(refname)'); do
+		git -C "$lab/remote.git" update-ref -d "$ref" || return 1
+	done
+
+	git -C "$lab/work" remote set-url origin "$lab/remote.git" || return 1
+}
+
+# What a failed comparison shows, so a red case says what happened rather than
+# only that something did.
+show_lines() {
+	if [ -s "$2" ]; then
+		sed "s/^/      $1: /" "$2"
+	else
+		printf '      %s: nothing\n' "$1"
+	fi
+}
+
+# One case, planted and run. Anything wrong prints a line on stdout for the
+# corpus to collect; a return of 1 means the case could not be run at all.
+run_corpus_case() {
+	local lab script file name line key rest target
+	local args pinned_exit claims after has_after unreachable
+	local code id ref commit pinned_lines said_lines above
+
+	lab="$1"
+	script="$2"
+	file="$3"
+	name="${file##*/}"
+	name="${name%.case}"
+
+	lab_reset "$lab" "$script" || return 1
+	: >"$lab/pinned-stdout"
+	: >"$lab/pinned-stderr"
+
+	args=""
+	pinned_exit=""
+	claims=""
+	after=""
+	has_after=no
+	unreachable=no
+	target=""
+
+	while IFS= read -r line || [ -n "$line" ]; do
+		case "$line" in
+		"$tab"*)
+			if [ -z "$target" ]; then
+				printf '  %s: a body with no directive above it\n' "$name"
+				return 0
+			fi
+			printf '%s\n' "${line#"$tab"}" >>"$target"
+			continue
+			;;
+		esac
+
+		target=""
+		case "$line" in
+		"" | "#"*) continue ;;
+		esac
+
+		key="${line%% *}"
+		case "$line" in
+		*" "*) rest="${line#* }" ;;
+		*) rest="" ;;
+		esac
+
+		case "$key" in
+		run) args="$rest" ;;
+		exit) pinned_exit="$rest" ;;
+		claims) claims="$rest" ;;
+		after)
+			after="$rest"
+			has_after=yes
+			;;
+		unreachable) unreachable=yes ;;
+		stdout) target="$lab/pinned-stdout" ;;
+		stderr) target="$lab/pinned-stderr" ;;
+		file)
+			target="$lab/work/$rest"
+			mkdir -p "${target%/*}"
+			: >"$target"
+			;;
+		*)
+			printf '  %s: no directive named %s\n' "$name" "$key"
+			return 0
+			;;
+		esac
+	done <"$file"
+
+	if [ -z "$pinned_exit" ]; then
+		printf '  %s: pins no exit code\n' "$name"
+		return 0
+	fi
+
+	for id in $claims; do
+		case "$id" in
+		*@elsewhere)
+			ref="${id%@elsewhere}"
+			commit="$(cat "$lab/elsewhere")"
+			;;
+		*)
+			ref="$id"
+			commit="$(cat "$lab/here")"
+			;;
+		esac
+		git -C "$lab/remote.git" update-ref "refs/heads/$ref" "$commit" || return 1
+	done
+
+	if [ "$unreachable" = yes ]; then
+		git -C "$lab/work" remote set-url origin "$lab/no-remote-of-this-name.git" || return 1
+	fi
+
+	code=0
+	"$lab/work/scripts/$script" $args >"$lab/stdout" 2>"$lab/stderr" || code=$?
+
+	if [ "$code" != "$pinned_exit" ]; then
+		printf '  %s: exits %s where the case pins %s\n' "$name" "$code" "$pinned_exit"
+	fi
+
+	if ! cmp -s "$lab/stdout" "$lab/pinned-stdout"; then
+		printf '  %s: says something other than what it pins on stdout\n' "$name"
+		show_lines pinned "$lab/pinned-stdout"
+		show_lines said "$lab/stdout"
+	fi
+
+	pinned_lines="$(awk 'END { print NR }' <"$lab/pinned-stderr")"
+	said_lines="$(awk 'END { print NR }' <"$lab/stderr")"
+	if [ "$pinned_lines" -gt "$said_lines" ] ||
+		! tail -n "$pinned_lines" "$lab/stderr" | cmp -s - "$lab/pinned-stderr"; then
+		printf '  %s: says something other than what it pins on stderr\n' "$name"
+		show_lines pinned "$lab/pinned-stderr"
+		show_lines said "$lab/stderr"
+	fi
+
+	above=$((said_lines - pinned_lines))
+	if [ "$above" -gt 0 ]; then
+		head -n "$above" "$lab/stderr" >"$lab/stderr-above"
+		while IFS= read -r line; do
+			case "$line" in
+			"$script:"* | usage:*)
+				printf '  %s: says more on stderr than the case pins: %s\n' "$name" "$line"
+				;;
+			esac
+		done <"$lab/stderr-above"
+	fi
+
+	if [ "$has_after" = no ]; then
+		after="$claims"
+	fi
+	: >"$lab/pinned-claims"
+	for id in $after; do
+		printf '%s\n' "${id%@elsewhere}" >>"$lab/pinned-claims"
+	done
+	sort -o "$lab/pinned-claims" "$lab/pinned-claims"
+	git -C "$lab/remote.git" for-each-ref --format='%(refname:short)' refs/heads |
+		sort >"$lab/claims" || return 1
+
+	if ! cmp -s "$lab/claims" "$lab/pinned-claims"; then
+		printf '  %s: leaves origin holding claims the case does not pin\n' "$name"
+		show_lines pinned "$lab/pinned-claims"
+		show_lines held "$lab/claims"
+	fi
+}
+
+# The corpus for one script. The scratch repository is built once and reset
+# between cases: a fresh one apiece would be a git init per case for no more
+# isolation than undoing what the last case wrote.
+#
+# The environment is closed off deliberately, and this runs inside a command
+# substitution, which is what keeps the exports below from reaching the rest of
+# the run. The machine's git configuration, its identity, and its terminal are
+# all outside the repository, and a case whose answer depended on any of them
+# would pass or fail by where it ran.
+run_corpus() {
+	local script lab case_file
+
+	script="$1"
+
+	export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_SYSTEM=/dev/null
+	export GIT_AUTHOR_NAME=vfi GIT_AUTHOR_EMAIL=vfi@invalid
+	export GIT_COMMITTER_NAME=vfi GIT_COMMITTER_EMAIL=vfi@invalid
+	export GIT_AUTHOR_DATE='@0 +0000' GIT_COMMITTER_DATE='@0 +0000'
+	export GIT_TERMINAL_PROMPT=0
+
+	lab="$(mktemp -d "${TMPDIR:-/tmp}/vfi-corpus.XXXXXX")" || return 1
+	if ! lab_build "$lab"; then
+		rm -rf "$lab"
+		return 1
+	fi
+
+	for case_file in "scripts/tests/$script"/*.case; do
+		[ -f "$case_file" ] || continue
+		if ! run_corpus_case "$lab" "$script" "$case_file"; then
+			rm -rf "$lab"
+			return 1
+		fi
+	done
+
+	rm -rf "$lab"
+}
+
+gate_scripts() {
+	local file corpus corpora found problems parsed corpus_count case_file cases pinned
+
+	# The checker before what it checks: its cases sit with the proofs below.
+	check_script_cases || return 1
+
+	problems=""
+	parsed=0
+	for file in $(script_files); do
+		if declared_shell "$file" >/dev/null; then
+			parsed=$((parsed + 1))
+		fi
+		found="$(check_script "$file")" || return 1
+		if [ -n "$found" ]; then
+			problems="$problems$found
+"
+		fi
+	done
+
+	corpora="$(script_corpora)" || return 1
+	corpus_count=0
+	cases=0
+	for corpus in $corpora; do
+		corpus_count=$((corpus_count + 1))
+		if [ ! -f "scripts/$corpus" ]; then
+			problems="$problems  $corpus: a corpus for a script scripts/ does not have
+"
+			continue
+		fi
+
+		# Counted here rather than inside the run, so that one place says how
+		# much was pinned and an empty corpus cannot report itself clean.
+		pinned=0
+		for case_file in "scripts/tests/$corpus"/*.case; do
+			[ -f "$case_file" ] || continue
+			pinned=$((pinned + 1))
+		done
+		if [ "$pinned" -eq 0 ]; then
+			problems="$problems  $corpus: the corpus holds no case, so it pins nothing
+"
+			continue
+		fi
+		cases=$((cases + pinned))
+
+		found="$(run_corpus "$corpus")" || return 1
+		if [ -n "$found" ]; then
+			problems="$problems$found
+"
+		fi
+	done
+
+	if [ -n "$problems" ]; then
+		echo "$prog: the operational scripts are not what is pinned of them:" >&2
+		printf '%s' "$problems" >&2
+		return 1
+	fi
+
+	# As with fixtures, an empty set here is not an absence: the corpus is
+	# committed, so nothing under scripts/tests/ means the corpus was deleted.
+	if [ "$corpus_count" -eq 0 ]; then
+		echo "$prog: scripts/tests/ holds no corpus, so this gate checks nothing" >&2
+		return 1
+	fi
+
+	echo "scripts: $parsed parse under the shell they declare, $cases cases pinned"
 }
 
 gate_build() {
@@ -512,6 +947,109 @@ gate_benchmark() {
 		echo "$prog: benchmarks/ holds no stage, so this gate checks nothing" >&2
 		return 1
 	fi
+}
+
+# The cases the syntax half must get right, one apiece, each a file differing in
+# one way, and what the checker must say about it. They run in-band with the
+# gate, for the reason the contract cases do: a checker that has quietly stopped
+# checking must not be able to report a clean scripts/.
+script_cases() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	parses                clean
+	does-not-parse        caught
+	posix-parses          clean
+	posix-does-not-parse  caught
+	data                  clean
+	executable-data       caught
+	unknown-shell         caught
+	EOF
+}
+
+plant_script_case() {
+	local file
+	mkdir -p "$1"
+	file="$1/subject"
+
+	case "$2" in
+	parses) printf '#!/usr/bin/env bash\ntrue\n' >"$file" ;;
+	does-not-parse) printf '#!/usr/bin/env bash\nif true; then\n' >"$file" ;;
+	posix-parses) printf '#!/bin/sh\ntrue\n' >"$file" ;;
+	posix-does-not-parse) printf '#!/bin/sh\nif true; then\n' >"$file" ;;
+	data) printf 'a line of data, with no shell to run it under\n' >"$file" ;;
+	executable-data)
+		printf 'a line of data, in a file the kernel would be asked to run\n' >"$file"
+		chmod +x "$file"
+		;;
+	unknown-shell) printf '#!/usr/bin/env perl\nprint "hello";\n' >"$file" ;;
+	*)
+		echo "$prog: no script case named $2" >&2
+		return 1
+		;;
+	esac
+}
+
+check_script_cases() {
+	local lab name expectation found verdict failures
+
+	lab="$(mktemp -d "${TMPDIR:-/tmp}/vfi-script-cases.XXXXXX")" || return 1
+
+	failures=""
+	while read -r name expectation; do
+		if ! plant_script_case "$lab/$name" "$name"; then
+			failures="$failures  $name: the case could not be built
+"
+			continue
+		fi
+		if ! found="$(check_script "$lab/$name/subject")"; then
+			failures="$failures  $name: the checker could not run over it
+"
+			continue
+		fi
+		if [ -n "$found" ]; then
+			verdict=caught
+		else
+			verdict=clean
+		fi
+		if [ "$verdict" != "$expectation" ]; then
+			failures="$failures  $name: the checker leaves it $verdict, and the rule says $expectation
+"
+		fi
+	done <<-EOF
+	$(script_cases)
+	EOF
+
+	rm -rf "$lab"
+
+	if [ -n "$failures" ]; then
+		echo "$prog: the script checker does not hold to its own rule:" >&2
+		printf '%s' "$failures" >&2
+		return 1
+	fi
+}
+
+# A guard that stops guarding, injected where only the corpus can see it: the
+# exclusive value read off a task file is thrown away, so every task reads as
+# ordinary and an exclusive one is offered beside a claim it may not stand with.
+# Nothing about it is a syntax error and nothing about it touches the workspace —
+# a corpus that only caught a script which no longer parses would not be pinning
+# behaviour, and a violation the other gates could see would not be proving this
+# one.
+violate_scripts() {
+	local script opened
+	script="$1/scripts/tasks.sh"
+	opened="$1.opened"
+
+	sed 's/exclusive = tolower(value)/exclusive = "no"/' "$script" >"$opened" || {
+		rm -f "$opened"
+		return 1
+	}
+	if cmp -s "$script" "$opened"; then
+		rm -f "$opened"
+		echo "$prog: tasks.sh has no exclusive value to throw away" >&2
+		return 1
+	fi
+	cat "$opened" >"$script"
+	rm -f "$opened"
 }
 
 # Any crate source will do: the violation only has to reach the compiler.

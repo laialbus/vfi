@@ -1,0 +1,18 @@
+# The queue is read before anything is pushed, so a queue that cannot be
+# vouched for stops the claim rather than being claimed around.
+run claim M1-01
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/zzz.md
+	---
+	id: Z
+	depends_on: []
+	exclusive: maybe
+	---
+stderr
+	tasks.sh: tasks/zzz.md: exclusive must be yes or no, found: maybe

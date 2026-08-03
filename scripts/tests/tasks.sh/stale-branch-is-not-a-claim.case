@@ -1,0 +1,13 @@
+# A branch is a claim only when it names a task still in the queue. Merged work
+# and the branches runs leave behind never block anything.
+run available
+exit 0
+claims M0-01 ghost-branch
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---
+stdout
+	M2-01

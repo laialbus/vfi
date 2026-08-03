@@ -1,0 +1,12 @@
+# A trailing comment is not a supported spelling, and the refusal shows the
+# value as written rather than a mangled form of it.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes # touches a shared surface
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: exclusive must be yes or no, found: yes # touches a shared surface

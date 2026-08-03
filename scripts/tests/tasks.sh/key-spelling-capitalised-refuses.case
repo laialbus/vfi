@@ -1,0 +1,13 @@
+# A key the parser can see as one of the three but would not read as one is
+# refused rather than ignored: a field that looks set and is not is the
+# fail-open case.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	Exclusive: yes
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: frontmatter key must be written exactly "exclusive:", found: Exclusive: yes

@@ -1,0 +1,16 @@
+# The same task holding its own claim: it withholds the queue, which it could
+# not do while its exclusive field was being read as something else.
+run available
+exit 0
+claims M2-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	exclusive: yes
+	---

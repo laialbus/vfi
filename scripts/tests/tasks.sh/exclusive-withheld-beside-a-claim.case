@@ -1,0 +1,25 @@
+# An exclusive task runs alone, so a single claim in flight is enough to
+# withhold it. Everything else is still offered.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---
+stdout
+	M1-02

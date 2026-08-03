@@ -1,0 +1,12 @@
+# An exclusive claim is allowed when it is the only one.
+run claim M2-01
+exit 0
+after M2-01
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---
+stdout
+	M2-01: claimed

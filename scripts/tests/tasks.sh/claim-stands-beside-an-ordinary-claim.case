@@ -1,0 +1,20 @@
+# Two ordinary claims may stand together, which is the whole point of running
+# several agents at once.
+run claim M1-02
+exit 0
+claims M1-01
+after M1-01 M1-02
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-02: claimed

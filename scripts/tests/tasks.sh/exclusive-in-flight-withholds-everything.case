@@ -1,0 +1,17 @@
+# Once the exclusive claim is in flight nothing is claimable until it merges or
+# the claim is released. Empty output at exit 0 is that state, not a failure.
+run available
+exit 0
+claims M2-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---

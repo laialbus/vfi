@@ -1,0 +1,13 @@
+# A tab inside the value once split the record, so the string that was
+# validated was not the string that was compared. Tabs become spaces before
+# anything reads them, and this refuses like any other malformed value.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: true	yes
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: exclusive must be yes or no, found: true yes

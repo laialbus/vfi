@@ -1,0 +1,15 @@
+# A claim someone else pushed from another commit. The lease refuses it rather
+# than fast-forwarding their claim onto our commit, and the ref is left where
+# they put it.
+run claim M1-01
+exit 4
+claims M1-01@elsewhere
+after M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: M1-01 is already claimed

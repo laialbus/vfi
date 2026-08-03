@@ -1,0 +1,11 @@
+# No depends_on line at all is the natural way to write "nothing blocks this",
+# and it is offered.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	exclusive: no
+	---
+stdout
+	M1-01

@@ -1,0 +1,24 @@
+# The block-list spelling of depends_on gates exactly as the inline one does,
+# and the owns and acceptance blocks after it are not read as dependencies.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on:
+	  - M1-01
+	exclusive: no
+	owns:
+	  - crates/analyze/
+	  - Cargo.toml
+	acceptance:
+	  - the workspace still compiles
+	---
+stdout
+	M1-01

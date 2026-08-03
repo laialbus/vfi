@@ -1,0 +1,18 @@
+# The record the parser emits carries a placeholder for an empty field, so an
+# exclusive task with no depends_on line keeps its exclusivity. Before that it
+# was offered here, because the empty field collapsed and exclusive was read as
+# a dependency.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	exclusive: yes
+	---
