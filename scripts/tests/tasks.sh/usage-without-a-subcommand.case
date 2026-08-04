@@ -1,0 +1,14 @@
+# Exit 2 is a bad invocation, and it is distinct from every other refusal
+# because the wrapper branches on the difference.
+run
+exit 2
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	usage: tasks.sh available
+	       tasks.sh claim <task-id>
+	       tasks.sh sweep

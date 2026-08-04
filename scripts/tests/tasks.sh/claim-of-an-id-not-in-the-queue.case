@@ -1,0 +1,12 @@
+# Nothing is pushed for a task that does not exist, and this is a usage mistake
+# rather than a lost claim.
+run claim M9-99
+exit 2
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: M9-99 is not a task in the queue

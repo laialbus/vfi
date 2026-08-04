@@ -1,0 +1,6 @@
+# The queue as this repository holds it with nothing left to do: a README and no
+# task. Nothing is offered, and that is not a failure.
+run available
+exit 0
+file tasks/README.md
+	Prose, not a task. A file with no frontmatter is not one.

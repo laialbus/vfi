@@ -1,0 +1,13 @@
+# Claiming is pushing the task's branch. The ref on origin afterwards is the
+# claim; nothing else records it.
+run claim M1-01
+exit 0
+after M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01: claimed

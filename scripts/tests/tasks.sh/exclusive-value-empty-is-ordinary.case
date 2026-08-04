@@ -1,0 +1,18 @@
+# An empty value is the documented default, which is no.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive:
+	---
+stdout
+	M2-01

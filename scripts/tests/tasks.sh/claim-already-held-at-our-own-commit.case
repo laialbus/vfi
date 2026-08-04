@@ -1,0 +1,14 @@
+# Two runs on the same base commit push the very same commit, and git calls a
+# push onto a ref already at it a success. What settles the claim is that the
+# push created the ref, not that it returned zero.
+run claim M1-01
+exit 4
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: M1-01 is already claimed

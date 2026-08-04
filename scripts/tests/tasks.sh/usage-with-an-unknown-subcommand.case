@@ -1,0 +1,13 @@
+# A subcommand the script does not have is the same mistake as none at all.
+run finish M1-01
+exit 2
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	usage: tasks.sh available
+	       tasks.sh claim <task-id>
+	       tasks.sh sweep

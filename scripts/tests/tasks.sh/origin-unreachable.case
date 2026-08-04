@@ -1,0 +1,14 @@
+# A claim lives on origin, so a queue read without origin is not a queue read at
+# all. Exit 1, nothing on stdout, and one line saying which of the three
+# refusals this is.
+run available
+exit 1
+unreachable
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: cannot reach origin to check claimed branches

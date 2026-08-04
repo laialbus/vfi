@@ -1,0 +1,18 @@
+# A dependency is merged when its task file is gone. M1-01 is still in the
+# queue, so M1-02 is not available yet.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: [M1-01]
+	exclusive: no
+	---
+stdout
+	M1-01

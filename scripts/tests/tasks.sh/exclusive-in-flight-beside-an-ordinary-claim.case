@@ -1,0 +1,23 @@
+# The same state reached from the other side: an exclusive claim standing beside
+# an ordinary one still suppresses the whole listing.
+run available
+exit 0
+claims M1-01 M2-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---

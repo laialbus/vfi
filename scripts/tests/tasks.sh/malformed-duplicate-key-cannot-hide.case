@@ -1,0 +1,13 @@
+# Every occurrence is validated as it is seen, so a malformed value cannot hide
+# behind a valid one written after it.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	exclusive: maybe
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: exclusive must be yes or no, found: maybe

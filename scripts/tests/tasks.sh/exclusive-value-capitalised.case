@@ -1,0 +1,16 @@
+# Case is not meaning: a capitalised value is the same value.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: Yes
+	---

@@ -1,0 +1,12 @@
+# A space before the colon is valid YAML and is not the spelling the parser
+# reads, so it refuses instead of quietly offering an exclusive task.
+run available
+exit 3
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive : yes
+	---
+stderr
+	tasks.sh: tasks/M2-01.md: frontmatter key must be written exactly "exclusive:", found: exclusive : yes

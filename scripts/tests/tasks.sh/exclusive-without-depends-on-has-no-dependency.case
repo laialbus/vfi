@@ -1,0 +1,19 @@
+# The other half of the collapsed field: the exclusive value was read as the
+# dependency list, so the task waited on a task named yes. Here one exists and
+# the exclusive task is offered anyway.
+run available
+exit 0
+file tasks/M2-01.md
+	---
+	id: M2-01
+	exclusive: yes
+	---
+file tasks/yes.md
+	---
+	id: yes
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M2-01
+	yes

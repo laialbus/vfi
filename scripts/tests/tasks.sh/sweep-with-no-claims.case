@@ -1,0 +1,13 @@
+# A sweep over an origin holding no claim releases nothing and says so. What it
+# does with a claim it finds depends on origin's activity record and its open
+# pull requests, which are not this repository's to answer for.
+run sweep
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	no claims on origin

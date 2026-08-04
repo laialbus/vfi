@@ -1,0 +1,18 @@
+# The queue is keyed by id, so a file that opens frontmatter without one could
+# never be offered, matched to a branch, or read for its guard. It refuses
+# rather than going unseen while other tasks are offered around it.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/zzz.md
+	---
+	depends_on: []
+	exclusive: yes
+	---
+stderr
+	tasks.sh: tasks/zzz.md: frontmatter has no id

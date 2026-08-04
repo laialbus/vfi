@@ -1,0 +1,8 @@
+# No tasks/ at all. A queue that cannot be read is not an empty queue, so this
+# refuses rather than reporting no work.
+run available
+exit 3
+file README.md
+	The repository, without a queue in it.
+stderr
+	tasks.sh: tasks/ directory missing

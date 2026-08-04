@@ -1,0 +1,11 @@
+# The same task once its dependency's file is gone.
+run available
+exit 0
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: [M1-01]
+	exclusive: no
+	---
+stdout
+	M1-02

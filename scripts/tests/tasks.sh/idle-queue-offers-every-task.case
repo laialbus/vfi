@@ -1,0 +1,19 @@
+# Nothing in flight: every task whose dependencies have merged is offered, the
+# exclusive one included, in sorted order.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: yes
+	---
+stdout
+	M1-01
+	M1-02

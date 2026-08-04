@@ -1,0 +1,14 @@
+# Both refusals apply and origin is checked first. The order is fixed here
+# because the wrapper reads the exit code, and a refusal that changed which
+# code it reported by what else was wrong would be unreadable.
+run available
+exit 1
+unreachable
+file tasks/zzz.md
+	---
+	id: Z
+	depends_on: []
+	exclusive: maybe
+	---
+stderr
+	tasks.sh: cannot reach origin to check claimed branches

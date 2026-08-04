@@ -1,0 +1,22 @@
+# The push cannot settle the exclusive rule, because it spans tasks: two runs
+# reading an idle queue both push different refs and both succeed. So the claim
+# is verified after the ref lands, and a run that finds its claim beside one it
+# may not stand with deletes its own ref and reports the claim lost.
+run claim M2-01
+exit 4
+claims M1-01
+after M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive: yes
+	---
+stderr
+	tasks.sh: claim on M2-01 released: M2-01 is exclusive and 1 other claims are in flight

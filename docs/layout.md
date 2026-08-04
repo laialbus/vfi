@@ -29,6 +29,7 @@ Nothing else.
 | `contracts/` | The typed, versioned contracts between stages (anchor 3). A workspace member like any crate, but at the root because the protected-path list puts it there. |
 | `shell/` | The Python presentation shell, including its `pyproject.toml`. |
 | `scripts/` | Every operational script. See below. |
+| `scripts/tests/` | What those scripts must do, as data: one directory per script under test, named for it, holding one file per case. The harness that runs a corpus is code and lives with the gate that reads it, exactly as the fixture harness lives with the crate it exercises. Nothing here is a script, so nothing here is an exception to the rule below. |
 | `fixtures/` | Golden fixture inputs and their expected results, as data. The harness that runs them is code and lives with the crate it exercises. |
 | `benchmarks/` | Benchmark workloads, the committed baseline each one costs, and the thresholds a measurement may drift by, as data. The harness that measures is code and lives with the crate it exercises, exactly as with `fixtures/`. Separate from `fixtures/` because a baseline is not an expected result: a fixture that no longer matches is wrong, and a measurement that no longer matches may be either a regression or a stage that legitimately costs more, which is a judgement the gate reports rather than makes. |
 | `tasks/` | The task queue, one file per task. |
@@ -48,7 +49,8 @@ Two rules about the root, both load-bearing:
   purpose. `scripts/tasks.sh` reads the queue, `scripts/ci-status.sh` checks a
   branch, `scripts/escalate.sh` writes an escalation, `scripts/gates.sh` runs
   every gate (M2, protected). A second script for a job one of these already
-  does is a defect, not a convenience.
+  does is a defect, not a convenience. Every script here is covered by the
+  gates, so one that declares no shell to parse it under is a defect as well.
 - **No new top-level directory without amending this file.** The root is small
   on purpose; it is the first thing anyone reads.
 

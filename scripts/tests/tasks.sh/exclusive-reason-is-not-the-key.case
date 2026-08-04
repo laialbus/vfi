@@ -1,0 +1,18 @@
+# A key that begins with the word is not the key. exclusive_reason is prose.
+run available
+exit 0
+claims M1-01
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M2-01.md
+	---
+	id: M2-01
+	depends_on: []
+	exclusive_reason: it touches a shared surface
+	---
+stdout
+	M2-01
