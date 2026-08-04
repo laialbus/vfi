@@ -1,10 +1,10 @@
 # A worker run ends only in a terminal state
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-03, by the supervised session (from the M2-07
   escalation)
-- **Decided:** —
+- **Decided:** 2026-08-03
 - **Touches:** AGENTS.md (the finish step) and a new hook under
   `.claude/hooks/` — both protected, which is why an ADR is required
 
