@@ -12,6 +12,7 @@ Delete a draft once installed.
 | :---- | :---------- | :------ |
 | `com.vfi.agent.lead.plist` | `~/Library/LaunchAgents/` | header comment in the file — **not before M2's gates exist and a supervised dry run has passed** |
 | `run.sh` | `../run.sh` (workspace root) | header comment in the file — diff against the installed copy first; only the handoff recovery block is meant to differ |
+| `decider.md` | `../prompts/decider.md` | header comment in the file — strip the comment block on install; only the escalation sweep and its never-do lines are meant to differ |
 
 The pairing the corpus expects is restored: `protect_paths.py` beside it is
 the candidate, judged case by case against the installed copy. If the
