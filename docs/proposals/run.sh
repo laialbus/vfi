@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
 #
 # PROPOSAL — destination: ../run.sh (the workspace root, outside the repo).
-# Install by replacing the installed copy wholesale, after diffing against it:
-# the only intended change is the handoff block at the bottom — an agent that
-# exits 0 without an open PR now gets one opened for it from its committed
-# session entry, and the escalation is committed and pushed to an escalated/
-# ref instead of being left untracked where the next preflight's clean wipes
-# it. Everything above that block is byte-for-byte the installed wrapper as of
-# 2026-08-03. Delete this draft once installed.
+# Install by replacing the installed copy wholesale, after diffing against it.
+# Two intended changes, both in the worker section after the agent exits 0:
+#  - A deliberate escalation is recognized as the terminal state the
+#    terminal-state ADR names: a new escalated/<task>-* ref pushed during the
+#    run, with no open PR, releases the claim and ends the run cleanly,
+#    instead of being misread as a failed handoff.
+#  - A missing handoff PR gets one opened from the committed session entry
+#    behind a wrapper-authored notice, and the escalation is committed and
+#    pushed to an escalated/ ref instead of being left untracked where the
+#    next preflight's clean wipes it.
+# Everything else is byte-for-byte the installed wrapper as of 2026-08-03.
+# Delete this draft once installed.
 #
 # VFI agent run wrapper.
 #
@@ -170,6 +175,11 @@ if ! git push origin "$TASK_ID"; then
 fi
 CLAIMED_BRANCH="$TASK_ID"
 
+# Escalated refs for this task before the agent runs. Compared after it exits:
+# a ref that appears during the run is the agent escalating deliberately, which
+# is a terminal state (see docs/adr/worker-terminal-state.md), not a failure.
+ESCALATED_BEFORE="$(git ls-remote --heads origin "escalated/$TASK_ID-*" | awk '{print $2}' | sort)"
+
 set +e
 timeout --signal=TERM --kill-after=60 "$TIMEOUT_SECONDS" \
   claude -p --model "$MODEL" "Work task $TASK_ID. Read CLAUDE.md first. One task only."
@@ -182,6 +192,21 @@ if [[ "$AGENT_CODE" -ne 0 ]]; then
   git add -A && git commit -m "escalation: agent exited $AGENT_CODE on $TASK_ID" || true
   git push origin "HEAD:refs/heads/escalated/$TASK_ID-$(date +%Y%m%d-%H%M%S)" || true
   exit 1
+fi
+
+# A new escalated ref with no open PR is the agent stopping on purpose:
+# reverted, escalation pushed, nothing to hand off. Release the claim and end
+# the run as the normal outcome it is — an escalation is not a failed run.
+# An escalated ref beside an open PR is the other pattern, a non-blocking
+# escalation riding a delivery (M2-03); that proceeds as an ordinary handoff.
+ESCALATED_AFTER="$(git ls-remote --heads origin "escalated/$TASK_ID-*" | awk '{print $2}' | sort)"
+NEW_ESCALATED="$(comm -13 <(printf '%s\n' "$ESCALATED_BEFORE") <(printf '%s\n' "$ESCALATED_AFTER"))"
+if [[ -n "$NEW_ESCALATED" ]]; then
+  PR_STATE="$(gh pr view "$TASK_ID" --json state --jq .state 2>/dev/null || true)"
+  if [[ "$PR_STATE" != "OPEN" ]]; then
+    echo "agent escalated on $TASK_ID ($NEW_ESCALATED); releasing the claim"
+    exit 0
+  fi
 fi
 
 if ! ./scripts/gates.sh; then
