@@ -79,7 +79,10 @@ The stages are `fetch`, `normalize`, `analyze`, and `store`. `contracts` follows
 the same naming — package `vfi-contracts` — at its own root path.
 
 A crate that is not a pipeline stage still follows the pattern. Adding one is a
-layout change: amend this file in the same diff.
+layout change: amend this file in the same diff. There is one today — `jobs`,
+package `vfi-jobs` — which runs a long job without holding up whoever started
+it. It sits beside the pipeline rather than in it: no stage depends on it and it
+depends on none, so it adds no edge to the order anchor 2 fixes.
 
 ## The shell
 
