@@ -65,7 +65,8 @@ never both. Any mechanism with that property is acceptable. This one is chosen
 because it needs no extra service and folds claiming and branching into one step.
 
 A task whose branch exists is taken. A task whose dependencies are unmerged is
-not available yet.
+not available yet. A task an open escalation names is parked until the
+escalation is resolved.
 
 ## Rules for writing good tasks
 
@@ -105,9 +106,9 @@ colliding.
 This file is protected and changes rarely. The queue changes constantly. That is
 why they are separate.
 
-The available work is what is in `tasks/` whose dependencies are merged and whose
-branch does not yet exist. No status field is written anywhere, and no index file
-is kept — status is derived from the branch and the merge history, so it cannot
+The available work is what is in `tasks/` whose dependencies are merged, whose
+branch does not yet exist, and that no open escalation names. No status field is written anywhere, and no index file
+is kept — status is derived from the branch, the merge history, and the open escalations, so it cannot
 go stale or disagree with reality.
 
 To see what is claimable, run `scripts/tasks.sh available`. It reads the
