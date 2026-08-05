@@ -1,0 +1,14 @@
+# The same queue with the escalation gone. Deleting the file is the whole of
+# restoring the task: no status is written anywhere for a deletion to contradict.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file escalations/README.md
+	Prose, not an escalation. A file with no date and no task id names no task.
+stdout
+	M1-01

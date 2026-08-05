@@ -1,0 +1,16 @@
+# The escalations directory as this repository holds it: a README, and one open
+# escalation named for M1-01. That task is withheld exactly as an unmerged
+# dependency withholds it, and empty output at exit 0 is that state, not a
+# failure.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file escalations/README.md
+	Prose, not an escalation. A file with no date and no task id names no task.
+file escalations/2026-08-01-M1-01.md
+	The run stopped on a wall that retrying reproduces.

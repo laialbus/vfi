@@ -1,0 +1,14 @@
+# A run that claimed no task escalates under a subject slug, which is not a task
+# id and so names no task in the queue.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file escalations/2026-08-01-decider-cannot-merge.md
+	A stop with no task behind it.
+stdout
+	M1-01
