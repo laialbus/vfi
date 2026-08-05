@@ -1,0 +1,15 @@
+# The archive is named for when origin last saw the claim, so a second release
+# of one dead claim reaches for a name that is already there. The lease expects
+# nothing at that name and refuses, and the push is atomic, so the claim is
+# still on origin afterwards: neither copy of the work is written over.
+run release M1-01 3018f04759ca3d0b802462da59d18542b318b14b 2026-08-04T03:37:32Z
+exit 1
+claims M1-01@elsewhere main escalated/M1-01-swept-20260804-033732
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: could not release M1-01; 3018f04759ca3d0b802462da59d18542b318b14b is not on main and escalated/M1-01-swept-20260804-033732 did not land

@@ -1,0 +1,15 @@
+# A claim standing where main already stands holds nothing of its own, so the
+# ref is all there is to take and taking it loses nothing. This is what a sweep
+# has always done, and it is still what a sweep does.
+run release M1-01 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32Z
+exit 0
+claims M1-01 main
+after main
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01: released, origin last saw it at 2026-08-04T03:37:32Z, at 82d2ac72741f2ad73921d3d11be2d040416cfdae

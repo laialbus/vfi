@@ -1,0 +1,13 @@
+# The archive carries the time in its name, so a time this cannot read would
+# become a branch name nobody meant. It is refused where it arrives.
+run release M1-01 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32
+exit 2
+claims M1-01 main
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: 2026-08-04T03:37:32 is not a time in the shape origin reports

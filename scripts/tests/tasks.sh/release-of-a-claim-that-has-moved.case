@@ -1,0 +1,14 @@
+# The commit is the caller's evidence that the claim it read is the claim
+# origin holds. One that has moved since is somebody's live run, so it is
+# refused before anything is archived or taken.
+run release M1-01 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32Z
+exit 1
+claims M1-01@elsewhere main
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: origin holds the claim on M1-01 at 3018f04759ca3d0b802462da59d18542b318b14b, not 82d2ac72741f2ad73921d3d11be2d040416cfdae

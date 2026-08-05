@@ -2,6 +2,10 @@
 # Usage: scripts/tasks.sh available     — print the id of every claimable task, one per line.
 #        scripts/tasks.sh claim <id>    — claim <id> by pushing its branch, then verify it.
 #        scripts/tasks.sh sweep         — release the claims of runs that are gone.
+#        scripts/tasks.sh release <id> <commit> <seen>
+#                                       — release one claim the way a sweep would, given the
+#                                         commit origin holds it at and when origin last saw
+#                                         it. Both are in the line a sweep prints.
 #
 # Exit codes: 0 done, 1 origin unreachable or a claim could not be released,
 # 2 bad invocation, 3 unreadable queue, 4 claim lost.
@@ -14,6 +18,7 @@ usage() {
 	echo "usage: $(basename "$0") available" >&2
 	echo "       $(basename "$0") claim <task-id>" >&2
 	echo "       $(basename "$0") sweep" >&2
+	echo "       $(basename "$0") release <task-id> <commit> <last-seen>" >&2
 	exit 2
 }
 
@@ -212,7 +217,7 @@ available() {
 # from under whoever moved it. That is what makes releasing another run's claim
 # safe — anything its owner pushes between the read and the delete refuses it,
 # whatever the sweep concluded in between.
-release() {
+delete_claim() {
 	if ! git push --quiet origin \
 		--force-with-lease="refs/heads/$1:$2" --delete "refs/heads/$1"; then
 		echo "$(basename "$0"): could not release $1; a later sweep takes it if it is dead" >&2
@@ -307,7 +312,7 @@ claim() {
 
 	if ! read_branches; then
 		echo "$(basename "$0"): claim on $1 cannot be verified" >&2
-		release "$1" "$head" || true
+		delete_claim "$1" "$head" || true
 		exit 1
 	fi
 
@@ -318,7 +323,7 @@ claim() {
 
 	if claim_conflict "$1"; then
 		echo "$(basename "$0"): claim on $1 released: $conflict" >&2
-		release "$1" "$head" || exit 1
+		delete_claim "$1" "$head" || exit 1
 		exit 4
 	fi
 
@@ -377,12 +382,119 @@ digits() {
 	printf '%s' "$1" | tr -cd '0-9'
 }
 
+# The shape origin reports a time in, which is also the shape the comparison
+# above and the archive name below both assume. Anything else is refused where
+# it arrives rather than compared as if it were a time.
+is_timestamp() {
+	case "$1" in
+	[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) return 0 ;;
+	esac
+	return 1
+}
+
+# That time, in what a branch name can carry.
+stamp_suffix() {
+	printf '%s-%s\n' "$(digits "${1%%T*}")" "$(digits "${1#*T}")"
+}
+
+# A name this may release is a whole task id and one path segment, which is what
+# keeps every branch under escalated/ — including the archives written below —
+# out of reach of everything that removes a ref. An id with a slash in it could
+# name one, so it is refused rather than resolved.
+own_branch_only() {
+	case "$1" in
+	*/*) return 1 ;;
+	esac
+	return 0
+}
+
+have_commit() {
+	git cat-file -e "$1^{commit}" 2>/dev/null
+}
+
+# The remedy, which is a release and not a delete. A claim standing at a commit
+# main already has is a marker and nothing else, and removing the ref loses
+# nothing. A claim standing on commits main does not have is the only reachable
+# copy of what a run did, and the run that would have opened a pull request for
+# it is gone — so those commits move into escalated/, which no sweep looks at,
+# and the claim is released either way. Which of the two a claim is, is a
+# question about its commits, so it is asked of the commits.
+#
+# The archive is named for when origin last saw the claim alive — the fact that
+# condemned it — and not for the moment a sweep noticed. Two sweeps of one dead
+# claim then reach for the same name, and the second is refused by a lease that
+# expects nothing rather than making a second copy of the same work.
+#
+# The archive and the release are one atomic push, so a record that has not
+# landed can never outlive the claim that was the only other copy, and origin is
+# read back afterwards: the point of the archive is that it holds what the claim
+# held, and that is worth one question.
+#
+# Returns 0 released, 1 kept for the reason it printed, 2 could not release.
+release_claim() {
+	if ! own_branch_only "$1"; then
+		echo "$1: kept, an id with a / could name a branch this must not touch"
+		return 1
+	fi
+
+	main_sha="$(claim_head main)"
+	if [ -z "$main_sha" ]; then
+		echo "$1: kept, origin has no main to measure this claim against"
+		return 1
+	fi
+
+	if ! have_commit "$2" || ! have_commit "$main_sha"; then
+		if ! git fetch --quiet --no-tags origin \
+			"refs/heads/$1" refs/heads/main; then
+			echo "$1: kept, cannot read the commits this claim holds"
+			return 1
+		fi
+	fi
+	if ! have_commit "$2" || ! have_commit "$main_sha"; then
+		echo "$1: kept, origin no longer holds the commits this claim was read at"
+		return 1
+	fi
+
+	on_main=0
+	git merge-base --is-ancestor "$2" "$main_sha" || on_main=$?
+	case "$on_main" in
+	0)
+		delete_claim "$1" "$2" || return 2
+		echo "$1: released, origin last saw it at $3, at $2"
+		return 0
+		;;
+	1) ;;
+	*)
+		echo "$1: kept, cannot tell whether main has $2"
+		return 1
+		;;
+	esac
+
+	archive="escalated/$1-swept-$(stamp_suffix "$3")"
+	if ! git push --quiet --atomic origin \
+		--force-with-lease="refs/heads/$archive:" "$2:refs/heads/$archive" \
+		--force-with-lease="refs/heads/$1:$2" ":refs/heads/$1"; then
+		echo "$(basename "$0"): could not release $1; $2 is not on main and $archive did not land" >&2
+		return 2
+	fi
+
+	if ! archived="$(git ls-remote origin "refs/heads/$archive")"; then
+		echo "$(basename "$0"): released $1 but cannot read back $archive" >&2
+		return 2
+	fi
+	archived="$(printf '%s\n' "$archived" | awk '{ print $1; exit }')"
+	if [ "$archived" != "$2" ]; then
+		echo "$(basename "$0"): $archive holds $archived, not the $2 the claim on $1 held" >&2
+		return 2
+	fi
+
+	echo "$1: released, origin last saw it at $3, kept as $archive at $archived"
+}
+
 # Only a branch whose whole name is a task id still in the queue is a candidate.
 # That is what keeps main, session/… and escalated/… out of reach: an
 # escalated/M1-08-… branch is the record of a run that failed, not a claim, and a
-# record is not something to tidy away. It holds as long as a task id is one path
-# segment, so an id with a slash in it — which could name a branch inside
-# escalated/ — is refused rather than swept.
+# record is not something to tidy away.
 sweep() {
 	read_branches || exit 1
 	read_queue
@@ -410,13 +522,6 @@ sweep() {
 
 	stuck=0
 	for id in $claims; do
-		case "$id" in
-		*/*)
-			echo "$id: kept, an id with a / could name a branch this must not touch"
-			continue
-			;;
-		esac
-
 		if ! pulls="$(open_pull_requests "$id")"; then
 			echo "$id: kept, cannot ask origin whether a pull request is open"
 			continue
@@ -434,26 +539,18 @@ sweep() {
 			echo "$id: kept, origin has no record of when this claim landed"
 			continue
 		fi
-		case "$stamp" in
-		[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]Z) ;;
-		*)
+		if ! is_timestamp "$stamp"; then
 			echo "$id: kept, origin dates this claim in a shape this cannot read: $stamp"
 			continue
-			;;
-		esac
+		fi
 		if [ "$(digits "$stamp")" -ge "$(digits "$cutoff")" ]; then
 			echo "$id: kept, origin last saw this claim at $stamp"
 			continue
 		fi
 
-		# The commit goes in the line because the branch does not survive it.
-		# A run killed mid-task may have pushed work nobody has seen, and the
-		# wrapper discards exactly that on every exit it survives; naming the
-		# commit is what keeps it findable afterward rather than only gone.
-		claim_sha="$(claim_head "$id")"
-		if release "$id" "$claim_sha"; then
-			echo "$id: released, origin last saw it at $stamp, at $claim_sha"
-		else
+		outcome=0
+		release_claim "$id" "$(claim_head "$id")" "$stamp" || outcome=$?
+		if [ "$outcome" -eq 2 ]; then
 			stuck=$((stuck + 1))
 		fi
 	done
@@ -461,6 +558,37 @@ sweep() {
 	if [ "$stuck" -ne 0 ]; then
 		exit 1
 	fi
+}
+
+# The same remedy by hand, for the claim a sweep reported it could not release
+# and for the run that knows its own claim is dead before origin's record does.
+# It decides nothing a sweep decides: age and the open pull request are what
+# make a claim releasable, and the caller has already answered both. What it
+# will not do is release anything a sweep could not have — the id must be a task
+# in the queue, and origin must hold that claim at the commit named, or this is
+# not a release but a delete of whatever ref was passed.
+release_one() {
+	read_branches || exit 1
+	read_queue
+
+	if ! printf '%s' "$tasks" | cut -f1 | grep -Fxq "$1"; then
+		echo "$(basename "$0"): $1 is not a task in the queue" >&2
+		exit 2
+	fi
+	if ! is_timestamp "$3"; then
+		echo "$(basename "$0"): $3 is not a time in the shape origin reports" >&2
+		exit 2
+	fi
+	if ! claimed "$1"; then
+		echo "$(basename "$0"): origin holds no claim on $1" >&2
+		exit 1
+	fi
+	if [ "$(claim_head "$1")" != "$2" ]; then
+		echo "$(basename "$0"): origin holds the claim on $1 at $(claim_head "$1"), not $2" >&2
+		exit 1
+	fi
+
+	release_claim "$1" "$2" "$3" || exit 1
 }
 
 tab="$(printf '\t')"
@@ -477,6 +605,10 @@ claim)
 sweep)
 	[ "$#" -eq 1 ] || usage
 	sweep
+	;;
+release)
+	[ "$#" -eq 4 ] || usage
+	release_one "$2" "$3" "$4"
 	;;
 *)
 	usage

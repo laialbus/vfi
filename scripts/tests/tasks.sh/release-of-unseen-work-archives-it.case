@@ -1,0 +1,17 @@
+# A claim standing on a commit main does not have is the only reachable copy of
+# what a run did, so it is kept under escalated/ and the claim is released all
+# the same. The sha on the line is origin's own answer, read back after the
+# push: the archive holds the very commit the claim held, and a commit is its
+# history, so it holds every commit the claim held and nothing else.
+run release M1-01 3018f04759ca3d0b802462da59d18542b318b14b 2026-08-04T03:37:32Z
+exit 0
+claims M1-01@elsewhere main
+after main escalated/M1-01-swept-20260804-033732
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01: released, origin last saw it at 2026-08-04T03:37:32Z, kept as escalated/M1-01-swept-20260804-033732 at 3018f04759ca3d0b802462da59d18542b318b14b

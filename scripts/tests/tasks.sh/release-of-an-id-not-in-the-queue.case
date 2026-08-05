@@ -1,0 +1,13 @@
+# A release outside the queue is not a release. Only a task still in it can
+# have a claim, so anything else names a branch that is somebody's record.
+run release M1-02 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32Z
+exit 2
+claims M1-01 main
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: M1-02 is not a task in the queue
