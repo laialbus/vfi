@@ -3,6 +3,9 @@
 One file per stop, named `<YYYY-MM-DD>-<task-id>.md` —
 `2026-07-28-M1-04.md`, and a short subject slug where there is no task id.
 
+A file named for a task parks it: while it sits here `scripts/tasks.sh
+available` does not offer that task, and deleting the file puts it back.
+
 Write one whenever a run stops: ambiguity, a conflict between instructions, a
 missing gate, or a decision above its authority. Say what you were doing, what
 stopped you, and what you would need to proceed. Proposing the decision itself is

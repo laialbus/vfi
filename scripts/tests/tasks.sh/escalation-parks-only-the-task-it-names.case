@@ -1,0 +1,20 @@
+# Parking is one task leaving the pool, not the queue stopping: the escalation
+# names M1-01, and M1-02 is offered as it was.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+file escalations/2026-08-01-M1-01.md
+	The run stopped on a wall that retrying reproduces.
+stdout
+	M1-02

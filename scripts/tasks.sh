@@ -123,6 +123,23 @@ read_frontmatter() {
 	' "$1"
 }
 
+# An open escalation parks the task it names: the run that wrote one stopped on
+# a wall that retrying reproduces, so the task leaves the pool until the file is
+# deleted. What a file names is its name — <date>-<task-id>.md per
+# escalations/README.md — and the id is matched whole, against the queue's own
+# ids, so a name carrying a subject slug instead parks nothing and nothing here
+# has to work out what an id looks like.
+parked() {
+	for escalation in escalations/*.md; do
+		[ -e "$escalation" ] || continue
+
+		case "${escalation##*/}" in
+		[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-"$1".md) return 0 ;;
+		esac
+	done
+	return 1
+}
+
 claimed() {
 	printf '%s\n' "$branches" | grep -Fxq "refs/heads/$1"
 }
@@ -200,6 +217,10 @@ available() {
 		fi
 
 		if [ "$exclusive" = yes ] && [ "$claims_in_flight" -ne 0 ]; then
+			continue
+		fi
+
+		if parked "$id"; then
 			continue
 		fi
 
