@@ -1,0 +1,15 @@
+# What keeps an archive out of reach of the thing that made it is that a name
+# this may release is one path segment. An id with a slash could name a branch
+# under escalated/ — an archive, or the record of a run that failed — so it is
+# refused rather than resolved, whatever the queue says.
+run release escalated/M1-01-swept-20260804-033732 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32Z
+exit 1
+claims escalated/M1-01-swept-20260804-033732 main
+file tasks/M1-01.md
+	---
+	id: escalated/M1-01-swept-20260804-033732
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	escalated/M1-01-swept-20260804-033732: kept, an id with a / could name a branch this must not touch

@@ -12,3 +12,4 @@ stderr
 	usage: tasks.sh available
 	       tasks.sh claim <task-id>
 	       tasks.sh sweep
+	       tasks.sh release <task-id> <commit> <last-seen>
