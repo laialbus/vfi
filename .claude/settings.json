@@ -16,6 +16,17 @@
           }
         ]
       }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/worker_terminal_state.py",
+            "timeout": 30
+          }
+        ]
+      }
     ]
   },
   "sandbox": {
