@@ -100,6 +100,10 @@ nothing to collide with.
    - On success: push the branch, open a PR, write a session entry. Do not
      merge.
    - On failure you cannot fix: revert cleanly, write an escalation, exit.
+   - The run ends when your turn ends. A headless session does not outlive its
+     final message, so work deferred to a background task or monitor is work that
+     never happens. Reach a terminal state — PR open, or escalation pushed — before
+     you finish.
 7. **Timeout.** Every run has a hard wall-clock limit. An agent stuck in a loop
    overnight is worse than an agent that did nothing. If you hit the limit, revert
    and exit.
