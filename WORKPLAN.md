@@ -5,11 +5,12 @@ happens, and what order things must go in. It does not say how to do the work.
 
 This file is a specification, not a whiteboard. Workers read it. They do not
 edit it to claim a task — claiming happens through branch creation (below). Only
-the planner writes here. That is what keeps several agents from colliding on this
-one file.
+a human hand edits this file. That is what keeps several agents from colliding on
+this one file.
 
-Tasks are derived from the active milestone in GOALS.md. When a milestone is
-finished, the queue is refilled from the next one.
+Tasks are derived from the active milestone in GOALS.md. The planner refills the
+queue in batches of its own sizing, at the decider's request, never reaching past
+the active milestone.
 
 ## How a task is written
 
@@ -89,9 +90,10 @@ untangled afterward.
 ## Who fills this in
 
 The planner turns the active milestone into tasks. This is higher-leverage than
-any single task — a bad split wastes a whole run across the whole team — so
-early on a human supervises it. It moves to a planner agent once the shape it
-produces is trusted.
+any single task — a bad split wastes a whole run across the whole team — so it
+is checked twice: the queue gate refuses structural collisions, and the decider
+reviews every plan against the premise it states. The planner runs as its own
+role, requested by the decider when the queue drains.
 
 Workers never add tasks. An agent that thinks a task is missing writes an
 escalation.
