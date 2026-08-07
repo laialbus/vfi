@@ -1,9 +1,15 @@
 # What keeps an archive out of reach of the thing that made it is that a name
 # this may release is one path segment. An id with a slash could name a branch
-# under escalated/ — an archive, or the record of a run that failed — so it is
-# refused rather than resolved, whatever the queue says.
+# under escalated/ — an archive, or the record of a run that failed.
+#
+# It is now refused a step earlier than it was, and by a wider rule: a task file
+# is named for the id it carries, and no name under tasks/*.md carries a slash,
+# so a queue offering such an id is refused before any subcommand acts on it.
+# Every path to a release reads the queue first and only releases an id the
+# queue holds, so this is what an id with a slash meets from now on. The guard
+# in release_claim is kept below it, unreachable from here and cheap to keep.
 run release escalated/M1-01-swept-20260804-033732 82d2ac72741f2ad73921d3d11be2d040416cfdae 2026-08-04T03:37:32Z
-exit 1
+exit 3
 claims escalated/M1-01-swept-20260804-033732 main
 file tasks/M1-01.md
 	---
@@ -11,5 +17,5 @@ file tasks/M1-01.md
 	depends_on: []
 	exclusive: no
 	---
-stdout
-	escalated/M1-01-swept-20260804-033732: kept, an id with a / could name a branch this must not touch
+stderr
+	tasks.sh: tasks/M1-01.md: frontmatter says id escalated/M1-01-swept-20260804-033732, and a task file is named for the id it carries

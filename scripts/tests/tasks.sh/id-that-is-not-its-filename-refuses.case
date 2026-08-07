@@ -1,0 +1,14 @@
+# The branch that claims a task is named for its id and the file that describes
+# it is named for its id, so the two names are one name. A file where they part
+# is a task that cannot be looked up from a branch or from a dependency that
+# names it.
+run available
+exit 3
+file tasks/M1-07.md
+	---
+	id: M1-06
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-07.md: frontmatter says id M1-06, and a task file is named for the id it carries

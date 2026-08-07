@@ -13,3 +13,4 @@ stderr
 	       tasks.sh claim <task-id>
 	       tasks.sh sweep
 	       tasks.sh release <task-id> <commit> <last-seen>
+	       tasks.sh check

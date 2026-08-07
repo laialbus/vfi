@@ -1,0 +1,17 @@
+# Origin gone, and this still answers. That is the whole reason check exists
+# beside available: the gate runs it in a scratch copy of the tree with no .git
+# in it at all, and every other subcommand refuses at exit 1 before it reads a
+# task. A read that reached for origin would make the gate a test of the network.
+run check
+exit 0
+unreachable
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	1 tasks, no structural collision

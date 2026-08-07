@@ -1,0 +1,18 @@
+# Pinned as-is, and deliberately not a refusal. A depends_on naming no queued
+# task reads as satisfied, because absence is the merge record — the branch that
+# finishes a task deletes its file. So a dependency that has merged and a
+# dependency misspelt are the same two lines in a checked-out tree, and telling
+# them apart needs history this does not carry. That is queue review's job, not
+# this one's.
+run available
+exit 0
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize
+	depends_on: [M1-01, M0-99]
+	exclusive: no
+	---
+stdout
+	M1-02

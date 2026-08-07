@@ -1,0 +1,25 @@
+# The same deadlock spread over three tasks, where no pair of task files says
+# anything wrong on its own. What is traced back is the whole loop, because the
+# task to fix is not necessarily the one the walk closed on.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: [M1-03]
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: [M1-01]
+	exclusive: no
+	---
+file tasks/M1-03.md
+	---
+	id: M1-03
+	depends_on: [M1-02]
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-02.md: depends_on M1-01 closes a cycle: M1-01 -> M1-03 -> M1-02 -> M1-01

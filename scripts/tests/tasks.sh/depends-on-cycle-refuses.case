@@ -1,0 +1,19 @@
+# Two tasks each waiting on the other. Neither can ever be offered, so nothing
+# goes red and nothing gets claimed — the queue simply has less work in it than
+# it appears to, which is the failure a refusal exists to make loud.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: [M1-02]
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: [M1-01]
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-02.md: depends_on M1-01 closes a cycle: M1-01 -> M1-02 -> M1-01
