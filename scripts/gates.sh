@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # Usage: scripts/gates.sh              — run every gate, then prove each one catches.
-#        scripts/gates.sh --gates-only — run the gates and stop. This is the form a
-#                                        proof runs inside its scratch copy.
+#        scripts/gates.sh --gates-only — run the gates and stop.
+#        scripts/gates.sh --gates-only <gate>...
+#                                      — run the gates named and stop. This is the
+#                                        form a proof runs inside its scratch copy,
+#                                        naming the one gate it is a proof about.
+#
+# Every gate says what it cost, on every form, and the sweep, each proof, and the
+# run as a whole do the same.
 #
 # Exit codes: 0 every gate passed and every proof caught, 1 a gate failed or the
 # gates the runner has are not the gates expected, 2 bad invocation, 3 a proof
@@ -13,6 +19,45 @@ cd "$(dirname "$0")/.."
 
 prog="$(basename "$0")"
 tab="$(printf '\t')"
+
+# Every gate, proof, and sweep says what it cost, on every run, because the last
+# time this suite outgrew a worker's turn the number had to be inferred after the
+# fact. A mark is a reading of SECONDS, which a subshell carries over from the
+# shell that started it, so a step timed inside one measures the same clock.
+#
+# Whole seconds, from the shell itself: bash 3.2 is what this runs under and it
+# has no finer clock that does not cost a process to read, and what this exists to
+# expose is measured in minutes.
+since() {
+	local elapsed
+	elapsed=$((SECONDS - $1))
+	if [ "$elapsed" -ge 60 ]; then
+		printf '%dm%02ds\n' "$((elapsed / 60))" "$((elapsed % 60))"
+	else
+		printf '%ds\n' "$elapsed"
+	fi
+}
+
+# How much of the machine this run takes at once, read off the machine rather
+# than written down, because the fleet machine and a laptop are not the same
+# size. Capped, because several workers share that machine: a run that took all
+# of it would cost the others more than it saved itself. A machine that will not
+# say how many it has gets a number any machine can carry.
+machine_lanes() {
+	local count
+	count="$(getconf _NPROCESSORS_ONLN 2>/dev/null || true)"
+	case "$count" in
+	"" | *[!0-9]*) count=4 ;;
+	esac
+	if [ "$count" -lt 1 ]; then
+		count=1
+	elif [ "$count" -gt 8 ]; then
+		count=8
+	fi
+	printf '%s\n' "$count"
+}
+
+at_once="$(machine_lanes)"
 
 # The gates, in the order they run. Every gate AGENTS.md names now has machinery
 # behind it. A gate that has machinery and nothing to check yet still belongs
@@ -263,8 +308,9 @@ check_script() {
 # tail may be the script's own voice — a second message from it is a change even
 # when the last line still matches.
 
-# The scratch repository, built once per corpus. What a case needs from HEAD is a
-# commit to push, not a tree, so the commit is empty.
+# The template scratch repository, built once per corpus and copied per case.
+# What a case needs from HEAD is a commit to push, not a tree, so the commit is
+# empty.
 #
 # The same commit is made again inside the remote, so a claim can be planted
 # there holding the very commit the run would push — the case git calls a success
@@ -274,12 +320,17 @@ check_script() {
 # two repositories agreeing on the first one is checked rather than assumed:
 # were they to disagree, the two claim cases would silently become one.
 lab_build() {
-	local lab empty here
+	local lab script empty here
 	lab="$1"
+	script="$2"
 
 	git init -q --initial-branch=claimant "$lab/work" || return 1
 	git init -q --initial-branch=claimant --bare "$lab/remote.git" || return 1
 	git -C "$lab/work" remote add origin "$lab/remote.git" || return 1
+
+	mkdir -p "$lab/work/scripts" || return 1
+	cp "scripts/$script" "$lab/work/scripts/$script" || return 1
+	chmod +x "$lab/work/scripts/$script" || return 1
 
 	empty="$(git -C "$lab/work" hash-object -t tree /dev/null)" || return 1
 	here="$(git -C "$lab/work" commit-tree "$empty" -m base)" || return 1
@@ -294,30 +345,20 @@ lab_build() {
 	fi
 }
 
-# What the last case left, undone: the work tree emptied but for the script under
-# test, and every ref the remote holds deleted. Nothing carries over, so a case
-# cannot pass on something another case set up.
-lab_reset() {
-	local lab script entry ref
-	lab="$1"
-	script="$2"
+# A case's own copy of the template, which is what a case gets instead of one
+# repository undone between cases. It carries over nothing by construction rather
+# than by remembering to delete, and copies can be made at the same time where
+# resets have to take turns.
+#
+# The remote is repointed because what the template recorded is a path outside
+# the copy: left alone, every case would push at the template's remote and see
+# every other case's claims.
+lab_clone() {
+	local template lab
+	template="$1"
+	lab="$2"
 
-	for entry in "$lab"/work/* "$lab"/work/.[!.]*; do
-		[ -e "$entry" ] || continue
-		case "${entry##*/}" in
-		.git) continue ;;
-		esac
-		rm -rf "$entry"
-	done
-
-	mkdir -p "$lab/work/scripts"
-	cp "scripts/$script" "$lab/work/scripts/$script" || return 1
-	chmod +x "$lab/work/scripts/$script"
-
-	for ref in $(git -C "$lab/remote.git" for-each-ref --format='%(refname)'); do
-		git -C "$lab/remote.git" update-ref -d "$ref" || return 1
-	done
-
+	cp -R "$template" "$lab" || return 1
 	git -C "$lab/work" remote set-url origin "$lab/remote.git" || return 1
 }
 
@@ -344,7 +385,6 @@ run_corpus_case() {
 	name="${file##*/}"
 	name="${name%.case}"
 
-	lab_reset "$lab" "$script" || return 1
 	: >"$lab/pinned-stdout"
 	: >"$lab/pinned-stderr"
 
@@ -477,9 +517,16 @@ run_corpus_case() {
 	fi
 }
 
-# The corpus for one script. The scratch repository is built once and reset
-# between cases: a fresh one apiece would be a git init per case for no more
-# isolation than undoing what the last case wrote.
+# The corpus for one script. Every case is one run of that script against a
+# repository of its own, so no case can see another's, and the order they run in
+# was never part of what any of them pins — which is what lets them run at once.
+# They did not, once, and the sequential corpus was most of what the whole suite
+# cost.
+#
+# What each case reports is written to a file named for its place in the corpus,
+# and the files are read back in that order afterwards. Two cases printing down
+# the same pipe would interleave, and a corpus that reported its problems in
+# whatever order they finished would say something different every run.
 #
 # The environment is closed off deliberately, and this runs inside a command
 # substitution, which is what keeps the exports below from reaching the rest of
@@ -487,7 +534,7 @@ run_corpus_case() {
 # all outside the repository, and a case whose answer depended on any of them
 # would pass or fail by where it ran.
 run_corpus() {
-	local script lab case_file
+	local script root case_file index place marker found
 
 	script="$1"
 
@@ -497,21 +544,45 @@ run_corpus() {
 	export GIT_AUTHOR_DATE='@0 +0000' GIT_COMMITTER_DATE='@0 +0000'
 	export GIT_TERMINAL_PROMPT=0
 
-	lab="$(mktemp -d "${TMPDIR:-/tmp}/vfi-corpus.XXXXXX")" || return 1
-	if ! lab_build "$lab"; then
-		rm -rf "$lab"
+	root="$(mktemp -d "${TMPDIR:-/tmp}/vfi-corpus.XXXXXX")" || return 1
+	if ! lab_build "$root/template" "$script"; then
+		rm -rf "$root"
 		return 1
 	fi
 
+	index=0
 	for case_file in "scripts/tests/$script"/*.case; do
 		[ -f "$case_file" ] || continue
-		if ! run_corpus_case "$lab" "$script" "$case_file"; then
-			rm -rf "$lab"
+		index=$((index + 1))
+		place="$(printf '%04d' "$index")"
+		(
+			if lab_clone "$root/template" "$root/case-$place" &&
+				run_corpus_case "$root/case-$place" "$script" "$case_file"; then
+				exit 0
+			fi
+			# A case that could not be run at all is a different answer from one
+			# that failed, and it has to survive the subshell it ran in.
+			: >"$root/broken-$place"
+		) >"$root/found-$place" &
+		if [ "$((index % at_once))" -eq 0 ]; then
+			wait
+		fi
+	done
+	wait
+
+	for marker in "$root"/broken-*; do
+		if [ -e "$marker" ]; then
+			rm -rf "$root"
 			return 1
 		fi
 	done
 
-	rm -rf "$lab"
+	for found in "$root"/found-*; do
+		[ -f "$found" ] || continue
+		cat "$found"
+	done
+
+	rm -rf "$root"
 }
 
 gate_scripts() {
@@ -1383,8 +1454,28 @@ violate_gate_set() {
 }
 
 usage() {
-	echo "usage: $prog [--gates-only]" >&2
+	echo "usage: $prog [--gates-only [gate...]]" >&2
 	exit 2
+}
+
+# A name --gates-only will answer to: a gate the runner defines, or gate_set for
+# the assertion over the set itself. Read off the runner rather than the
+# expectation, so that the copy a gate_set proof has trimmed can still be asked
+# for the check it trimmed.
+#
+# Not named gate_something: what the runner counts as a gate is every function
+# with that prefix, so a helper wearing it is a gate the expectation does not
+# name, and the assertion says so.
+known_gate() {
+	local defined
+	case "$1" in
+	gate_set) return 0 ;;
+	esac
+	defined=" $(defined_gates | tr '\n' ' ')"
+	case "$defined" in
+	*" $1 "*) return 0 ;;
+	esac
+	return 1
 }
 
 # What the runner can actually do, read off the functions themselves rather than
@@ -1428,23 +1519,53 @@ assert_gate_set() {
 	fi
 }
 
+# Every gate, or the ones named. The assertion runs either way: it is what stands
+# between a deleted gate and a green run, and a scoped run that skipped it could
+# report a gate holding that the runner no longer has.
 run_gates() {
+	local started gate_started ran chosen name
+
+	started=$SECONDS
+	ran=0
 	if ! assert_gate_set; then
 		echo "$prog: gate_set failed" >&2
 		return 1
 	fi
 	echo "gate_set: the runner has the gates expected"
 
-	for gate in $gates; do
+	if [ "$#" -eq 0 ]; then
+		chosen="$gates"
+	else
+		# gate_set names the assertion above rather than a gate, so a run scoped
+		# to it is the assertion and nothing else.
+		chosen=""
+		for name in "$@"; do
+			case "$name" in
+			gate_set) continue ;;
+			esac
+			chosen="$chosen $name"
+		done
+	fi
+
+	for gate in $chosen; do
+		gate_started=$SECONDS
 		if ! "gate_$gate"; then
 			# The first red ends the run. A gate after the build gate would
 			# mostly re-report it, since nothing tests a workspace that does
 			# not compile.
+			#
+			# What it cost is said on its own line, because the line below is
+			# what a proof matches against and pinning it is the whole of how a
+			# proof tells the gate it aimed at from any other going red.
+			echo "$gate: failed in $(since "$gate_started")"
 			echo "$prog: $gate failed" >&2
 			return 1
 		fi
-		echo "$gate: passed"
+		echo "$gate: passed in $(since "$gate_started")"
+		ran=$((ran + 1))
 	done
+
+	echo "gates: $ran passed in $(since "$started")"
 }
 
 copy_tree() {
@@ -1456,14 +1577,16 @@ copy_tree() {
 # toolchain the scratch directory cannot reach — would read as every gate
 # catching every violation. So the untouched copy runs first and must be green.
 control() {
-	local output
+	local output started
+	started=$SECONDS
 	copy_tree "$scratch/control"
 	if ! output="$("$scratch/control/scripts/gates.sh" --gates-only 2>&1)"; then
 		echo "$prog: the untouched scratch copy does not pass its own gates" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	echo "control: the untouched copy passes"
+	printf '%s\n' "$output" | sed 's/^/  /'
+	echo "control: the untouched copy passes, in $(since "$started")"
 }
 
 # Going red is half of what a gate has to do; a gate that refuses everything
@@ -1473,27 +1596,35 @@ control() {
 # Where the tree itself is the shape a gate accepts, the control already proves
 # this side and the gate carries no accept_.
 accepts() {
-	local name copy output
+	local name copy output started
 	name="$1"
 	copy="$scratch/$name-accepted"
+	started=$SECONDS
 	copy_tree "$copy"
 	"accept_$name" "$copy" || return 1
 
-	if ! output="$("$copy/scripts/gates.sh" --gates-only 2>&1)"; then
+	if ! output="$("$copy/scripts/gates.sh" --gates-only "$name" 2>&1)"; then
 		echo "$prog: $name refused what its rule allows" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	echo "$name: accepts what the rule allows"
+	echo "$name: accepts what the rule allows, in $(since "$started")"
 }
 
 # A gate counts as a gate only if it goes red on what it exists to catch. Each
 # proof copies the tree, injects that thing, and runs this same script in the
 # copy, so a gate weakened later fails here instead of passing unnoticed. The
 # copy is run with --gates-only because the plain form would recurse into these
-# proofs; it runs the same gates, so what is red there is red for it too.
+# proofs; it runs the same gate, so what is red there is red for it too.
+#
+# The copy is asked for the one gate the violation belongs to, not the whole
+# sweep. What the sweep added was the chance for some other gate to go red first
+# and answer for this one, which is why the line below is checked and not just
+# the exit code — and a run holding one gate cannot be answered for by another at
+# all. Running the rest was the multiplier that made this suite cost what it did:
+# every gate, once per gate, for a verdict about one of them.
 prove() {
-	local name copy output
+	local name copy output started
 	name="$1"
 	copy="$scratch/$name"
 	if declare -F "accept_$name" >/dev/null; then
@@ -1501,20 +1632,21 @@ prove() {
 		# something about the fixture the violation is made from.
 		accepts "$name" || return 1
 	fi
+	started=$SECONDS
 	copy_tree "$copy"
 	"violate_$name" "$copy" || return 1
 
-	if output="$("$copy/scripts/gates.sh" --gates-only 2>&1)"; then
+	if output="$("$copy/scripts/gates.sh" --gates-only "$name" 2>&1)"; then
 		echo "$prog: $name passed a tree carrying the violation it exists to catch" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
 	if ! printf '%s\n' "$output" | grep -Fqx "$prog: $name failed"; then
-		echo "$prog: the injected $name violation went red somewhere else" >&2
+		echo "$prog: the injected $name violation did not go red under $name" >&2
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	echo "$name: proof caught it"
+	echo "$name: proof caught it, in $(since "$started")"
 }
 
 scratch=""
@@ -1525,10 +1657,18 @@ cleanup() {
 	fi
 }
 
+suite_started=$SECONDS
+
 case "${1:-}" in
 --gates-only)
-	[ "$#" -eq 1 ] || usage
-	run_gates || exit 1
+	shift
+	for name in "$@"; do
+		if ! known_gate "$name"; then
+			echo "$prog: no gate named $name" >&2
+			usage
+		fi
+	done
+	run_gates "$@" || exit 1
 	;;
 "")
 	run_gates || exit 1
@@ -1540,7 +1680,7 @@ case "${1:-}" in
 	for name in gate_set $gates; do
 		prove "$name" || exit 3
 	done
-	echo "$prog: every gate passed and every proof caught"
+	echo "$prog: every gate passed and every proof caught, in $(since "$suite_started")"
 	;;
 *)
 	usage
