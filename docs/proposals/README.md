@@ -12,10 +12,7 @@ Delete a draft once installed.
 | :---- | :---------- | :------ |
 | `com.vfi.agent.lead.plist` | `~/Library/LaunchAgents/` | header comment in the file — **not before M2's gates exist and a supervised dry run has passed** |
 | `worker_terminal_state.py` | `.claude/hooks/worker_terminal_state.py` | header comment in the file — the file, the `Stop` wiring in `.claude/settings.json`, and the AGENTS.md sentence land together, or the hook does nothing. Run `worker_terminal_state_tests.py` first |
-| `worker_terminal_state_tests.py` | `.claude/hooks/worker_terminal_state_tests.py` | with `worker_terminal_state.py` above — the corpus and the hook it judges move together |
-| `planner.md` | `../prompts/planner.md` | with the two rows below and the human amendments to WORKPLAN.md — three sentences: the refill sentence, "Only the planner writes here" (an agent planner must not read as granted a protected file), and "Who fills this in" — and to AGENTS.md (the planner stands outside the pool like the decider). The role does nothing until `run.sh` knows it |
-| `decider.md` | `../prompts/decider.md` | full replacement; adds queue-PR review and the refill request. Install together with `planner.md` and `run.sh` — a request ref nothing consumes, or a consumer nothing requests, is half a protocol |
-| `run.sh` | `../run.sh` | full replacement; adds the planner launch. Diff against the installed copy before overwriting — it carries your local dark-wake guard unchanged |
+| `worker_terminal_state_tests.py` | `.claude/hooks/worker_terminal_state_tests.py` | with `worker_terminal_state.py` above — the corpus and the hook it judges move together. The hook is installed; this corpus is not yet — install it, then drain both rows |
 
 The pairing the corpus expects is restored: `protect_paths.py` beside it is
 the candidate, judged case by case against the installed copy. If the
