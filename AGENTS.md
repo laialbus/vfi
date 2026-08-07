@@ -108,9 +108,12 @@ nothing to collide with.
    overnight is worse than an agent that did nothing. If you hit the limit, revert
    and exit.
 
-You never merge your own PR. The decider reviews and merges — an agent outside
+You never merge your own PR.
+The decider reviews and merges — an agent outside
 the worker pool that claims no tasks and writes no code. That separation is what
 makes unattended work safe: the thing checking the work has no stake in it.
+The planner stands outside the pool the same way: it refills the queue as a pull
+request, claims nothing, and merges nothing.
 
 Some decisions are above the decider too. Those are marked in the ADR template
 and stop for a human.
