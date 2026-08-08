@@ -1,0 +1,26 @@
+# Sibling names, where one spelling begins with the other and neither contains
+# it. crates/analyze is not a directory crates/analyzer sits in, so these two
+# tasks own nothing in common and both are offered. A prefix test that read
+# characters rather than path segments would refuse this pair, and refusing a
+# sound queue costs the whole night's work.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/analyze
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/analyzer
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01
+	M1-02

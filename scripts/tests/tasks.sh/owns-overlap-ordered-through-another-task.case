@@ -1,0 +1,33 @@
+# The order that separates two tasks does not have to be an edge between them.
+# M1-03 waits on M1-02, which waits on M1-01, so M1-03 and M1-01 are as ordered
+# as any neighbouring pair and their shared path is safe. Reading only direct
+# dependencies would refuse this, and the queue would have no way to express a
+# chain of tasks over one crate.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/fetch
+	depends_on: [M1-01]
+	exclusive: no
+	---
+file tasks/M1-03.md
+	---
+	id: M1-03
+	owns:
+	  - crates/normalize
+	depends_on: [M1-02]
+	exclusive: no
+	---
+stdout
+	M1-01

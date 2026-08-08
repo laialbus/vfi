@@ -1,0 +1,27 @@
+# The read on its own, which is what the queue gate runs. It says how much it
+# read, because a run over an empty tasks/ and a run over a queue full of work
+# are both silence otherwise, and the gate's line would say the same either way.
+#
+# The two tasks write owns the two ways WORKPLAN.md's format allows, so both
+# reach the comparison as the same thing: a list of paths.
+run check
+exit 0
+file tasks/README.md
+	Prose, not a task. A file with no frontmatter is not one.
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns: [crates/fetch]
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	2 tasks, no structural collision

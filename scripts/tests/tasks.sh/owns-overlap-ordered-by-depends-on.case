@@ -1,0 +1,24 @@
+# The same overlap, made safe the way WORKPLAN.md says to make it safe: one
+# task depends on the other, so they are never claimable at the same time and
+# there is nothing to collide. This is the shape the rule allows, and a check
+# that refused every overlap it saw would refuse it too.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize
+	depends_on: [M1-01]
+	exclusive: no
+	---
+stdout
+	M1-01

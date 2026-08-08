@@ -1,0 +1,24 @@
+# The queue is read before anything is pushed, and a structure that cannot be
+# worked in parallel stops the claim the same way a task that cannot be parsed
+# does. Origin is left holding nothing: the collision may be between the task
+# being claimed and one already in flight, so the answer cannot be a claim.
+run claim M1-01
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize/src
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-02.md: owns crates/normalize/src, which overlaps the crates/normalize that M1-01 owns, and neither depends on the other

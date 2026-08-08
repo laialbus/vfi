@@ -1,0 +1,25 @@
+# The other way an overlap is made safe. An exclusive task runs alone, so it is
+# never in flight beside the task it shares a path with, and no order between
+# them is needed. One side carrying the mark is enough, because the rule that
+# holds them apart is symmetric.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: yes
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01
+	M1-02

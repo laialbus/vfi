@@ -1,0 +1,25 @@
+# Overlap is not only two identical entries. A task owning a directory owns
+# everything under it, so a second task owning a file inside it is claimable at
+# the same time as the first and would edit the same tree. The trailing slash
+# WORKPLAN.md writes a directory with is not what makes it one, so it is
+# stripped before the comparison rather than compared.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize/src/lib.rs
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-02.md: owns crates/normalize/src/lib.rs, which overlaps the crates/ that M1-01 owns, and neither depends on the other

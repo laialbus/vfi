@@ -6,6 +6,9 @@
 #                                       — release one claim the way a sweep would, given the
 #                                         commit origin holds it at and when origin last saw
 #                                         it. Both are in the line a sweep prints.
+#        scripts/tasks.sh check         — read the queue and say how much of it there is.
+#                                         Reaches nothing outside the checked-out tree, so a
+#                                         gate can ask it of a copy with no remote.
 #
 # Exit codes: 0 done, 1 origin unreachable or a claim could not be released,
 # 2 bad invocation, 3 unreadable queue, 4 claim lost.
@@ -19,6 +22,7 @@ usage() {
 	echo "       $(basename "$0") claim <task-id>" >&2
 	echo "       $(basename "$0") sweep" >&2
 	echo "       $(basename "$0") release <task-id> <commit> <last-seen>" >&2
+	echo "       $(basename "$0") check" >&2
 	exit 2
 }
 
@@ -34,19 +38,24 @@ dependencies_merged() {
 }
 
 # One view of the frontmatter, validated where the whole line is visible. The
-# record is id<TAB>depends<TAB>exclusive with "-" standing for an empty field,
-# so consecutive tabs never collapse and the fields cannot shift. Tabs inside
-# values become spaces before anything reads them, so the value that is
+# record is id<TAB>depends<TAB>exclusive<TAB>owns with "-" standing for an empty
+# field, so consecutive tabs never collapse and the fields cannot shift. Tabs
+# inside values become spaces before anything reads them, so the value that is
 # validated is the value that is compared. Every exclusive line is checked as
 # it is seen — a malformed value on a duplicated key cannot hide behind a later
 # valid one. A file that opens frontmatter must carry an id; one the parser
 # cannot key would otherwise be invisible, and an invisible guard is no guard.
-# A line the parser can see as one of the three keys but would not read as one
+# A line the parser can see as one of the four keys but would not read as one
 # — different case, a space before the colon, an indent — is refused rather
 # than ignored: a field that looks set and is not is the fail-open case. Only
 # case and surrounding whitespace are forgiven, and the key must be the whole
 # text before the colon, so exclusive_reason is untouched, and so is prose that
 # quotes or bullets a key inside a value.
+#
+# owns and depends_on are both lists, written inline or as bullets, and only one
+# of them is being read at a time — which is what the list name tracks. A key
+# the parser knows, or any line that starts at column zero without a bullet,
+# closes the list above it, so an acceptance bullet is never read as a path.
 read_frontmatter() {
 	awk -v prog="$(basename "$0")" '
 		function fail(msg) {
@@ -66,7 +75,7 @@ read_frontmatter() {
 			sub(/^id:[[:space:]]*/, "", value)
 			gsub(/[[:space:]"'\''"]/, "", value)
 			id = value
-			in_depends = 0
+			list = ""
 			next
 		}
 		/^depends_on:/ {
@@ -75,7 +84,16 @@ read_frontmatter() {
 			gsub(/[\[\],\t]/, " ", value)
 			gsub(/["'\'']/, "", value)
 			depends = depends " " value
-			in_depends = 1
+			list = "depends"
+			next
+		}
+		/^owns:/ {
+			value = $0
+			sub(/^owns:[[:space:]]*/, "", value)
+			gsub(/[\[\],\t]/, " ", value)
+			gsub(/["'\'']/, "", value)
+			owns = owns " " value
+			list = "owns"
 			next
 		}
 		/^[[:space:]]*exclusive:/ {
@@ -87,7 +105,7 @@ read_frontmatter() {
 			if (tolower(value) !~ /^(yes|no)?$/)
 				fail("exclusive must be yes or no, found: " value)
 			exclusive = tolower(value)
-			in_depends = 0
+			list = ""
 			next
 		}
 		/^[[:space:]]*[^[:space:]][^:]*:/ {
@@ -96,18 +114,22 @@ read_frontmatter() {
 			sub(/^[[:space:]]+/, "", key)
 			sub(/[[:space:]]+$/, "", key)
 			spelling = tolower(key)
-			if (spelling == "id" || spelling == "depends_on" || spelling == "exclusive")
+			if (spelling == "id" || spelling == "depends_on" ||
+				spelling == "exclusive" || spelling == "owns")
 				fail("frontmatter key must be written exactly \"" spelling ":\", found: " $0)
 		}
-		in_depends && /^[[:space:]]*-[[:space:]]*/ {
+		list != "" && /^[[:space:]]*-[[:space:]]*/ {
 			value = $0
 			sub(/^[[:space:]]*-[[:space:]]*/, "", value)
 			gsub(/["'\'']/, "", value)
 			gsub(/\t/, " ", value)
-			depends = depends " " value
+			if (list == "owns")
+				owns = owns " " value
+			else
+				depends = depends " " value
 			next
 		}
-		/^[^[:space:]-]/ { in_depends = 0 }
+		/^[^[:space:]-]/ { list = "" }
 		END {
 			if (failed) exit 3
 			if (!in_frontmatter) exit 0
@@ -116,9 +138,12 @@ read_frontmatter() {
 			if (failed) exit 3
 			sub(/^[[:space:]]+/, "", depends)
 			sub(/[[:space:]]+$/, "", depends)
+			sub(/^[[:space:]]+/, "", owns)
+			sub(/[[:space:]]+$/, "", owns)
 			if (depends == "") depends = "-"
 			if (exclusive == "") exclusive = "-"
-			print id "\t" depends "\t" exclusive
+			if (owns == "") owns = "-"
+			print id "\t" depends "\t" exclusive "\t" owns
 		}
 	' "$1"
 }
@@ -158,12 +183,152 @@ claim_head() {
 	printf '%s\n' "$branch_refs" | awk -v ref="refs/heads/$1" '$2 == ref { print $1; exit }'
 }
 
+# What the queue must be for two agents to work in it at once. Each task is
+# well-formed on its own and these are about the set: WORKPLAN.md's rules for
+# writing good tasks, which a human eye kept while humans wrote task files and
+# which nothing kept once the planner did.
+#
+#   A task file is named for the id it carries, so the branch that claims it,
+#   the file that describes it, and the dependency that names it are one name.
+#   This is also what catches a copied id: two files cannot both be tasks/X.md.
+#
+#   depends_on is an order, so it cannot close a loop. A cycle is a set of tasks
+#   none of which can ever be claimed, which reads from outside as a queue that
+#   has quietly stopped offering work.
+#
+#   Two tasks whose owns overlap may never be claimable at once. Ordering them
+#   is one remedy and marking one exclusive is the other, so both are read here;
+#   the order counts through other queued tasks, because a path of dependencies
+#   separates two tasks exactly as well as one edge does. Overlap is a question
+#   about paths, so it is asked of path segments: crates/ contains
+#   crates/analyze, and crates/analyze does not contain crates/analyzer.
+#
+# What is deliberately not checked is a depends_on naming a task that is not
+# here. Absence is the merge record — dependencies_merged reads it that way —
+# so a dependency on an absent task is a dependency that has been met, and a
+# typo in one is indistinguishable from that without history the checked-out
+# tree does not carry. That belongs to review of the queue, not to this.
+#
+# The first problem refuses the whole queue, as a malformed task already does:
+# the collision may be between the two tasks a reader was about to claim, and a
+# partial answer is the one shape worse than none.
+check_queue() {
+	printf '%s' "$queue" | awk -v prog="$(basename "$0")" -F'\t' '
+		function fail(where, msg) {
+			printf "%s: %s: %s\n", prog, where, msg > "/dev/stderr"
+			exit 3
+		}
+		function bare(path) {
+			sub(/\/+$/, "", path)
+			return path
+		}
+		function overlaps(one, other,   a, b) {
+			a = bare(one)
+			b = bare(other)
+			if (a == "" || b == "") return 0
+			if (a == b) return 1
+			if (substr(b, 1, length(a) + 1) == a "/") return 1
+			if (substr(a, 1, length(b) + 1) == b "/") return 1
+			return 0
+		}
+		function edges(task,   value) {
+			value = depends[task]
+			if (value == "-") value = ""
+			return value
+		}
+		function paths(task,   value) {
+			value = owns[task]
+			if (value == "-") value = ""
+			return value
+		}
+		# The dependencies on the stack from the one closed back onto, round to
+		# itself: the cycle as a reader would have to trace it by hand.
+		function loop(target,   step, tracing, drawn) {
+			for (step = 1; step <= depth; step++) {
+				if (!tracing && stack[step] != target) continue
+				tracing = 1
+				drawn = drawn id[stack[step]] " -> "
+			}
+			return drawn id[target]
+		}
+		# Where a task has been is read as a value and never as a key: asking
+		# whether awk holds a subscript is what creates it, so a walk that
+		# tested membership would mark every task it merely looked at as
+		# visited and never follow an edge twice removed.
+		function walk(task,   part, count, dep, next_task) {
+			state[task] = "open"
+			stack[++depth] = task
+			count = split(edges(task), dep, " ")
+			for (part = 1; part <= count; part++) {
+				if (!(dep[part] in at)) continue
+				next_task = at[dep[part]]
+				if (state[next_task] == "open")
+					fail(file[task], "depends_on " id[next_task] \
+						" closes a cycle: " loop(next_task))
+				if (state[next_task] == "") walk(next_task)
+			}
+			state[task] = "done"
+			depth--
+		}
+		function reaches(task, root,   part, count, dep, next_task) {
+			count = split(edges(task), dep, " ")
+			for (part = 1; part <= count; part++) {
+				if (!(dep[part] in at)) continue
+				next_task = at[dep[part]]
+				if (!((root, next_task) in reach)) {
+					reach[root, next_task] = 1
+					reaches(next_task, root)
+				}
+			}
+		}
+		function collide(earlier, later,   mine, theirs, m, t, p, q) {
+			m = split(paths(earlier), mine, " ")
+			t = split(paths(later), theirs, " ")
+			for (p = 1; p <= m; p++)
+				for (q = 1; q <= t; q++)
+					if (overlaps(mine[p], theirs[q]))
+						fail(file[later], "owns " theirs[q] \
+							", which overlaps the " mine[p] " that " \
+							id[earlier] " owns, and neither depends on the other")
+		}
+		NF {
+			file[++n] = $1
+			id[n] = $2
+			depends[n] = $3
+			exclusive[n] = $4
+			owns[n] = $5
+			at[$2] = n
+		}
+		END {
+			for (i = 1; i <= n; i++)
+				if (file[i] != "tasks/" id[i] ".md")
+					fail(file[i], "frontmatter says id " id[i] \
+						", and a task file is named for the id it carries")
+			for (i = 1; i <= n; i++)
+				if (state[i] == "") walk(i)
+			for (i = 1; i <= n; i++)
+				reaches(i, i)
+			for (i = 1; i <= n; i++)
+				for (j = i + 1; j <= n; j++) {
+					if (exclusive[i] == "yes" || exclusive[j] == "yes") continue
+					if ((i, j) in reach || (j, i) in reach) continue
+					collide(i, j)
+				}
+		}
+	'
+}
+
 # exclusive is a guard, so anything the parser cannot vouch for is refused
 # rather than read as no: a guard that fails open stops guarding and says
 # nothing. The refusal covers the whole queue, since the malformed task may be
 # the exclusive one. Exit 3 keeps a broken queue distinct from a bad
 # invocation (2) and an unreachable origin (1). A file without frontmatter —
 # the README — is not a task and is skipped.
+#
+# Each file is vouched for as it is read and the set is vouched for once they
+# all are, because the structure is a fact about the set: a task that cannot be
+# parsed has no owns list to compare and no id to key, so there is nothing to
+# ask about it until every file has answered.
 read_queue() {
 	if [ ! -d tasks ]; then
 		echo "$(basename "$0"): tasks/ directory missing" >&2
@@ -171,6 +336,7 @@ read_queue() {
 	fi
 
 	tasks=""
+	queue=""
 	for task_file in tasks/*.md; do
 		[ -e "$task_file" ] || continue
 
@@ -181,7 +347,11 @@ read_queue() {
 
 		tasks="$tasks$frontmatter
 "
+		queue="$queue$task_file$tab$frontmatter
+"
 	done
+
+	check_queue || exit 3
 }
 
 available() {
@@ -194,7 +364,7 @@ available() {
 	# claimable until it merges or the claim is released.
 	claims_in_flight=0
 	exclusive_in_flight=no
-	while IFS="$tab" read -r id depends exclusive; do
+	while IFS="$tab" read -r id depends exclusive owns; do
 		[ -n "$id" ] || continue
 
 		if claimed "$id"; then
@@ -209,7 +379,7 @@ available() {
 		exit 0
 	fi
 
-	printf '%s\n' "$tasks" | while IFS="$tab" read -r id depends exclusive; do
+	printf '%s\n' "$tasks" | while IFS="$tab" read -r id depends exclusive owns; do
 		[ -n "$id" ] || continue
 
 		if claimed "$id"; then
@@ -256,7 +426,7 @@ claim_conflict() {
 	claims_beside_own=0
 	exclusive_beside_own=""
 
-	while IFS="$tab" read -r id depends exclusive; do
+	while IFS="$tab" read -r id depends exclusive owns; do
 		[ -n "$id" ] || continue
 
 		if [ "$id" = "$1" ]; then
@@ -526,7 +696,7 @@ sweep() {
 	fi
 
 	claims=""
-	while IFS="$tab" read -r id depends exclusive; do
+	while IFS="$tab" read -r id depends exclusive owns; do
 		[ -n "$id" ] || continue
 
 		if claimed "$id"; then
@@ -612,6 +782,24 @@ release_one() {
 	release_claim "$1" "$2" "$3" || exit 1
 }
 
+# Reading the queue, and nothing else. Every other subcommand reads it on the
+# way to something, and each of those also needs origin — so this is the one
+# form a gate can run against a checked-out tree that has no remote at all. It
+# decides nothing and reports the size of what it read, because a check that
+# passed over an empty directory and a check that passed read the same on the
+# way past.
+check() {
+	count=0
+	read_queue
+
+	while IFS="$tab" read -r id depends exclusive owns; do
+		[ -n "$id" ] || continue
+		count=$((count + 1))
+	done <<<"$tasks"
+
+	echo "$count tasks, no structural collision"
+}
+
 tab="$(printf '\t')"
 
 case "${1:-}" in
@@ -630,6 +818,10 @@ sweep)
 release)
 	[ "$#" -eq 4 ] || usage
 	release_one "$2" "$3" "$4"
+	;;
+check)
+	[ "$#" -eq 1 ] || usage
+	check
 	;;
 *)
 	usage

@@ -1,0 +1,23 @@
+# Two tasks that own the same path, either of which could be claimed while the
+# other is in flight. That is the collision the ownership rule exists to make
+# impossible, and it is refused where a human eye used to catch it.
+run available
+exit 3
+file tasks/M1-01.md
+	---
+	id: M1-01
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	owns:
+	  - crates/normalize
+	depends_on: []
+	exclusive: no
+	---
+stderr
+	tasks.sh: tasks/M1-02.md: owns crates/normalize, which overlaps the crates/normalize that M1-01 owns, and neither depends on the other

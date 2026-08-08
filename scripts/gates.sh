@@ -65,10 +65,12 @@ at_once="$(machine_lanes)"
 # is none of them. What would not belong is a name stubbed green, because a gate
 # that cannot fail reads exactly like a gate that is holding.
 #
-# scripts is the one name here AGENTS.md does not list. It is over the
-# operational scripts themselves, which that list passes over, and it runs first
-# because it is the cheapest and because every other gate is reached through a
-# script.
+# Two names here are not on AGENTS.md's list. scripts is over the operational
+# scripts themselves, which that list passes over, and it runs first because it
+# is the cheapest and because every other gate is reached through a script.
+# queue is the one WORKPLAN.md asks for — "the queue gate refuses structural
+# collisions" — and it runs second, over the queue this repository holds, once
+# the gate above has pinned what reading a queue does.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -79,6 +81,7 @@ at_once="$(machine_lanes)"
 expected_gates() {
 	sed 's/#.*//' <<-'EOF' | awk 'NF'
 	scripts
+	queue
 	build
 	tests
 	fixtures
@@ -652,6 +655,30 @@ gate_scripts() {
 	echo "scripts: $parsed parse under the shell they declare, $cases cases pinned"
 }
 
+# WORKPLAN.md's "the queue gate refuses structural collisions". The rule is in
+# scripts/tasks.sh, because reading the queue is what refuses and every
+# subcommand reads it; the gate above pins what that read does, over queues
+# planted for the purpose, and this one aims it at the queue this repository is
+# actually holding. Two agents claiming tasks that own the same paths is the
+# collision, and the moment it can be caught is while the task file is still a
+# diff on a branch.
+#
+# check is the read with nothing else attached, which is what a scratch copy
+# with no .git in it can answer. Every other subcommand reaches origin first and
+# would fail here for a reason that is not about the queue.
+#
+# An empty queue is green, and that is not the absence fixtures and contracts
+# guard against. A drained queue is what finishing a milestone looks like: the
+# branch that completes a task deletes its file, so the last task merging leaves
+# tasks/ holding nothing, and a gate that called that a failure would go red on
+# the project's best day. What stands in for the missing-baseline check is the
+# count, which says out loud how much was read.
+gate_queue() {
+	local summary
+	summary="$(scripts/tasks.sh check)" || return 1
+	echo "queue: $summary"
+}
+
 gate_build() {
 	cargo build --workspace
 }
@@ -1121,6 +1148,68 @@ violate_scripts() {
 	fi
 	cat "$opened" >"$script"
 	rm -f "$opened"
+}
+
+# The queue fixtures. They are planted rather than taken from tasks/, because
+# tasks/ drains to nothing as a milestone finishes — a proof that needed two
+# real queued tasks would go red on the day the queue emptied, for a reason that
+# is nothing to do with this gate.
+#
+# This is the shape the rule allows: two tasks own the same crate, and one waits
+# on the other, so they can never be claimed at the same time and there is
+# nothing for them to collide over. The copy carrying this must stay green,
+# because a gate that refused every overlap it saw would catch the violation
+# below just as well.
+accept_queue() {
+	mkdir -p "$1/tasks"
+
+	cat >"$1/tasks/M0-90.md" <<'EOF'
+---
+id: M0-90
+title: The task the other one waits for
+milestone: M0
+owns:
+  - crates/fixture
+depends_on: []
+exclusive: no
+acceptance:
+  - Nothing. This is a fixture for the queue gate's proof, not work.
+---
+EOF
+
+	cat >"$1/tasks/M0-91.md" <<'EOF'
+---
+id: M0-91
+title: The task that waits
+milestone: M0
+owns:
+  - crates/fixture/src
+depends_on: [M0-90]
+exclusive: no
+acceptance:
+  - Nothing. This is a fixture for the queue gate's proof, not work.
+---
+EOF
+}
+
+# The same two tasks with the order taken out of them, which is the only
+# difference. Both are now claimable at once over one crate, and two agents
+# would edit the same files on separate branches with nothing between them.
+violate_queue() {
+	local waiting="$1/tasks/M0-91.md" freed="$1.freed"
+	accept_queue "$1" || return 1
+
+	sed 's/^depends_on: \[M0-90\]$/depends_on: []/' "$waiting" >"$freed" || {
+		rm -f "$freed"
+		return 1
+	}
+	if cmp -s "$waiting" "$freed"; then
+		rm -f "$freed"
+		echo "$prog: the queue fixture has no dependency to take out" >&2
+		return 1
+	fi
+	cat "$freed" >"$waiting"
+	rm -f "$freed"
 }
 
 # Any crate source will do: the violation only has to reach the compiler.
