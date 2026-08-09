@@ -65,12 +65,15 @@ at_once="$(machine_lanes)"
 # is none of them. What would not belong is a name stubbed green, because a gate
 # that cannot fail reads exactly like a gate that is holding.
 #
-# Two names here are not on AGENTS.md's list. scripts is over the operational
+# Three names here are not on AGENTS.md's list. scripts is over the operational
 # scripts themselves, which that list passes over, and it runs first because it
 # is the cheapest and because every other gate is reached through a script.
 # queue is the one WORKPLAN.md asks for — "the queue gate refuses structural
 # collisions" — and it runs second, over the queue this repository holds, once
-# the gate above has pinned what reading a queue does.
+# the gate above has pinned what reading a queue does. egress is the one GOALS.md
+# asks for at M3 — "the fetcher cannot reach a host outside the allowed list.
+# This is checked, not intended" — and it sits beside deps and purity, the other
+# two that read the tree for a shape an anchor fixes rather than running it.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -87,6 +90,7 @@ expected_gates() {
 	fixtures
 	deps
 	purity
+	egress
 	contracts
 	benchmark
 	EOF
@@ -813,6 +817,95 @@ gate_purity() {
 	fi
 }
 
+# GOALS.md at M3: the fetcher cannot reach a host outside the allowed list, and
+# that is checked rather than intended. The list is one file in vfi-fetch, and
+# the chokepoint below is the only code that reads it and the only way out of
+# the stage. Which hosts are on the list is not this gate's business; that a
+# request can leave without meeting it is.
+#
+# Two things stand between a call site and a host nobody allowed, and only one
+# of them is here. A transport is handed a value the chokepoint alone can
+# construct, so a call site that tried to send around the list does not compile
+# — the build gate is that half, and it holds without anything being written
+# here. What the compiler cannot see is a call site that wants no transport:
+# opening a connection directly is in every crate's reach, and a connection
+# opened that way is a request that never met the list. So the names that open
+# one may appear inside the chokepoint and nowhere else in the workspace.
+#
+# This reads source rather than the resolved tree, because linking a client is
+# not yet a request — that is purity's shape of check, and purity is asking a
+# different question about a different crate. What it cannot see is a name it
+# has never been told about, and that is why the client packages come from
+# denied_packages rather than a second list here: that is where this project
+# writes down what reaches the wire, so a new one is added once and both gates
+# learn it.
+#
+# Two things stay out of its sight, said here rather than left to be found: a
+# downloader run as a process, which is std::process and not one of the names
+# below; and a name spelled some other way, since this reads text and an alias
+# would carry a socket past it. Neither is the case it exists for — a call site
+# that reached out because reaching out was the shorter way — and both are the
+# kind of thing a reader sees in a diff.
+chokepoint="crates/fetch/src/egress"
+
+wire_names() {
+	printf '%s\n' std::net TcpStream TcpListener UdpSocket ToSocketAddrs
+	denied_packages | awk '$2 == "network" { gsub(/-/, "_", $1); print $1 "::" }'
+}
+
+# Every Rust source in the tree, wherever a crate sits. target/ is whatever the
+# last build left behind rather than anything committed, and .git holds no
+# source at all.
+rust_sources() {
+	find . -name '*.rs' -not -path './target/*' -not -path './.git/*' | sort
+}
+
+gate_egress() {
+	local file found problems inside outside
+
+	if [ ! -d "$chokepoint" ]; then
+		echo "$prog: $chokepoint is gone, so there is no chokepoint for this to hold" >&2
+		return 1
+	fi
+
+	problems=""
+	inside=0
+	outside=0
+	for file in $(rust_sources); do
+		case "$file" in
+		"./$chokepoint"/*)
+			inside=$((inside + 1))
+			continue
+			;;
+		esac
+		outside=$((outside + 1))
+		if found="$(grep -Fn -f <(wire_names) "$file")"; then
+			problems="$problems$(printf '%s\n' "$found" | sed "s|^|  ${file#./}:|")
+"
+		fi
+	done
+
+	if [ -n "$problems" ]; then
+		echo "$prog: these open a connection outside $chokepoint, where no list is read:" >&2
+		printf '%s' "$problems" >&2
+		return 1
+	fi
+
+	# Neither count may be nothing. An empty chokepoint is one that was deleted
+	# or moved, and a tree with no source outside it is one this gate swept over
+	# without checking anything — both read exactly like a gate that is holding.
+	if [ "$inside" -eq 0 ]; then
+		echo "$prog: $chokepoint holds no source, so nothing goes through it" >&2
+		return 1
+	fi
+	if [ "$outside" -eq 0 ]; then
+		echo "$prog: no source outside $chokepoint, so this gate checks nothing" >&2
+		return 1
+	fi
+
+	echo "egress: $inside in the chokepoint may reach a host, $outside elsewhere cannot"
+}
+
 # Anchor 3: every boundary between stages is a typed, versioned contract, and a
 # change that breaks compatibility fails the build. Which changes those are is
 # not something this gate can read off a contract — a rename and a new field
@@ -1310,6 +1403,55 @@ EOF
 [dependencies.rand]
 path = "$denied"
 EOF
+}
+
+# One call site that opens a connection of its own, appended to $1. Where it
+# lands is the whole difference between the two proofs below: the same lines are
+# what the chokepoint is for and what it exists to keep out, and a gate that
+# could not tell those apart by place would be reading something else.
+plant_connection() {
+	cat >>"$1" <<'EOF'
+
+/// Planted by the egress proof: a call site that opens a connection itself.
+pub fn straight_out(host: &str) -> std::io::Result<std::net::TcpStream> {
+    std::net::TcpStream::connect(host)
+}
+EOF
+}
+
+# Whichever source in the chokepoint comes first, for the reason crate_source
+# gives: naming one would leave this proof passing over a file that had been
+# renamed out from under it.
+chokepoint_source() {
+	local candidate
+	for candidate in "$1/$chokepoint"/*.rs; do
+		if [ -e "$candidate" ]; then
+			echo "$candidate"
+			return 0
+		fi
+	done
+	echo "$prog: no source in $chokepoint to allow a connection inside" >&2
+	return 1
+}
+
+# The connection where the rule allows it. Reaching a source is what the
+# chokepoint is for, and a gate that refused this would be refusing the thing it
+# protects — and would catch the violation below just as well.
+accept_egress() {
+	local file
+	file="$(chokepoint_source "$1")" || return 1
+	plant_connection "$file"
+}
+
+# The same connection opened somewhere else: a call site that skips the list
+# entirely, in a crate that has never heard of it. It compiles, so the build
+# gate has nothing to say about it, and it changes no output, so nothing that
+# compares results does either — which is what leaves it to this gate and no
+# other. Whichever crate source comes first, for the reason above.
+violate_egress() {
+	local file
+	file="$(crate_source "$1")" || return 1
+	plant_connection "$file"
 }
 
 # The fixture contracts the contracts proof runs over. They live here, with the
