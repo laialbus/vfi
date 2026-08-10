@@ -12,12 +12,25 @@
 //! and needs no transport at all — is not something the compiler can see, and
 //! the `egress` gate in `scripts/gates.sh` is what reads the workspace for it.
 //!
+//! The same seam is where the source's published access policy is kept:
+//! requests leave no faster than [`MAX_REQUESTS_PER_SECOND`], counted by a
+//! [`Pace`] that callers share rather than each keep, and every one of them
+//! carries the [`Declaration`] of who is asking. That declaration names a
+//! person and how to reach them, so it is the user's to supply and arrives as
+//! a parameter.
+//!
 //! Nothing here reaches a real source yet. What does arrives as an
 //! implementation of [`Transport`], and it arrives inside the chokepoint,
 //! because that is the one place the gate allows it.
 
 mod egress;
 mod hosts;
+mod pace;
+mod policy;
 
 pub use egress::{Cleared, Egress, Error, Response, Transport};
 pub use hosts::ALLOWED_HOSTS;
+pub use pace::{Clock, Pace, SystemClock};
+pub use policy::{
+    DECLARATION_HEADER, Declaration, MAX_REQUESTS_PER_SECOND, MINIMUM_SPACING, Undeclared,
+};
