@@ -18,19 +18,28 @@
 
 use std::io;
 
-use vfi_fetch::{ALLOWED_HOSTS, Cleared, Egress, Error, Response, Transport};
+use vfi_fetch::{
+    ALLOWED_HOSTS, Cleared, DECLARATION_HEADER, Declaration, Egress, Error, Pace, Response,
+    Transport,
+};
 
 /// A transport with no wire under it. It answers every cleared request the same
-/// way and keeps the host of each, which is what a case reads to find out
+/// way and keeps what each was to send, which is what a case reads to find out
 /// whether anything was sent at all.
 #[derive(Default)]
 struct Recorder {
     sent: Vec<String>,
+    declared: Vec<String>,
 }
 
 impl Transport for Recorder {
     fn send(&mut self, request: Cleared<'_>) -> io::Result<Response> {
         self.sent.push(request.host().to_owned());
+        for (name, value) in request.headers() {
+            if name == DECLARATION_HEADER {
+                self.declared.push(value.to_owned());
+            }
+        }
         Ok(Response {
             status: 200,
             body: b"a filing, if this were a real source".to_vec(),
@@ -47,6 +56,23 @@ fn listed() -> &'static str {
         .expect("the list allows no host, so there is nothing to fetch from")
 }
 
+/// Who these cases say is asking. A declaration is the user's to supply, and
+/// this is a test standing in for one; the address is `.invalid`, which by
+/// RFC 2606 reaches nobody.
+fn declaration() -> Declaration {
+    Declaration::new("VFI test suite nobody@example.invalid").expect("this names somebody")
+}
+
+/// A chokepoint over a fresh recorder, paced against the machine's clock.
+///
+/// The real pace costs these cases nothing: each builds its own, and a pace
+/// owes its first request no wait. A case here that sent twice would sleep, and
+/// what a turn is worth belongs in `pacing.rs` anyway, where the clock is the
+/// test's.
+fn chokepoint() -> Egress<Recorder> {
+    Egress::new(Recorder::default(), declaration(), Pace::system())
+}
+
 fn withheld_host(url: &str, egress: &mut Egress<Recorder>) -> String {
     match egress.fetch(url) {
         Err(Error::Withheld { host }) => host,
@@ -56,7 +82,7 @@ fn withheld_host(url: &str, egress: &mut Egress<Recorder>) -> String {
 
 #[test]
 fn a_listed_host_is_sent() {
-    let mut egress = Egress::new(Recorder::default());
+    let mut egress = chokepoint();
     let host = listed();
 
     let response = egress
@@ -72,7 +98,7 @@ fn a_listed_host_is_sent() {
 /// that without knowing which host was refused.
 #[test]
 fn an_unlisted_host_is_withheld_by_name_and_nothing_is_sent() {
-    let mut egress = Egress::new(Recorder::default());
+    let mut egress = chokepoint();
 
     let refusal = egress
         .fetch("https://filings.example.invalid/latest")
@@ -96,7 +122,7 @@ fn an_unlisted_host_is_withheld_by_name_and_nothing_is_sent() {
 /// instead of the whole of it, and each belongs to somebody else.
 #[test]
 fn a_host_that_only_resembles_a_listed_one_is_withheld() {
-    let mut egress = Egress::new(Recorder::default());
+    let mut egress = chokepoint();
     let listed = listed();
 
     for url in [
@@ -115,7 +141,7 @@ fn a_host_that_only_resembles_a_listed_one_is_withheld() {
 /// there.
 #[test]
 fn a_url_that_reads_two_ways_is_unreadable_and_nothing_is_sent() {
-    let mut egress = Egress::new(Recorder::default());
+    let mut egress = chokepoint();
     let listed = listed();
 
     for url in [
@@ -144,11 +170,31 @@ fn a_transport_that_fails_is_not_a_withheld_host() {
         }
     }
 
-    let mut egress = Egress::new(Broken);
+    let mut egress = Egress::new(Broken, declaration(), Pace::system());
     let host = listed();
 
     match egress.fetch(&format!("https://{host}/")) {
         Err(Error::Unreachable { host: tried, .. }) => assert_eq!(tried, host),
         other => panic!("unreachable is the outcome, and this was {other:?}"),
     }
+}
+
+/// The source asks to be told who is asking, and what it is told is what the
+/// caller supplied — this crate has no name of its own to give and does not
+/// invent one. A transport reads the headers rather than the declaration
+/// itself, so the case reads them the same way.
+#[test]
+fn a_request_that_is_sent_declares_who_is_asking() {
+    let mut egress = chokepoint();
+    let host = listed();
+
+    egress
+        .fetch(&format!("https://{host}/cgi-bin/browse-edgar"))
+        .expect("a listed host is what the transport is for");
+
+    assert_eq!(
+        egress.transport().declared,
+        vec![declaration().as_str().to_owned()],
+        "a request left under a declaration that was not the one supplied"
+    );
 }

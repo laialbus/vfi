@@ -13,6 +13,12 @@
 //! reads the workspace for the names that do it and allows them in this
 //! directory alone.
 //!
+//! Being the one way out is also what makes this the place the source's access
+//! policy is kept: a request takes its turn from the shared [`Pace`] here, and
+//! leaves carrying the declaration the [`Egress`] was built with. A transport
+//! neither counts nor declares — it is handed a [`Cleared`] that already says
+//! what to send.
+//!
 //! That is what this directory is for. Code that talks to a real source belongs
 //! here, underneath the check; everything else in the crate belongs outside it,
 //! where the ban holds.
@@ -21,6 +27,8 @@ use std::fmt;
 use std::io;
 
 use crate::hosts;
+use crate::pace::Pace;
+use crate::policy::{self, Declaration};
 
 /// The scheme a fetch speaks, and the only one. A list of hosts is a statement
 /// about who answers and says nothing about a URL that would reach the same
@@ -37,6 +45,7 @@ const SCHEME: &str = "https://";
 pub struct Cleared<'a> {
     url: &'a str,
     host: &'a str,
+    declaration: &'a str,
 }
 
 impl<'a> Cleared<'a> {
@@ -51,6 +60,14 @@ impl<'a> Cleared<'a> {
     /// is reached come apart.
     pub fn host(&self) -> &'a str {
         self.host
+    }
+
+    /// What the source's access policy asks a client to send, whatever else the
+    /// protocol underneath needs. A transport sends these and does not decide
+    /// which of them matter: the policy is read in one place, and this is that
+    /// place saying what it came to.
+    pub fn headers(&self) -> [(&'static str, &'a str); 1] {
+        [(policy::DECLARATION_HEADER, self.declaration)]
     }
 }
 
@@ -138,12 +155,23 @@ impl std::error::Error for Error {
 /// The chokepoint itself, holding the transport that requests leave through.
 pub struct Egress<T> {
     transport: T,
+    declaration: Declaration,
+    pace: Pace,
 }
 
 impl<T: Transport> Egress<T> {
     /// Take `transport`, and be the only way anything reaches it.
-    pub fn new(transport: T) -> Self {
-        Self { transport }
+    ///
+    /// `declaration` is who the source is told is asking, and it goes on every
+    /// request this sends. `pace` is the rate those requests may leave at;
+    /// hand every `Egress` a clone of one pace, because the published rate is
+    /// over the source and one per chokepoint is one per caller.
+    pub fn new(transport: T, declaration: Declaration, pace: Pace) -> Self {
+        Self {
+            transport,
+            declaration,
+            pace,
+        }
     }
 
     /// The transport, to read what it has been given. Lending it out hands over
@@ -153,12 +181,18 @@ impl<T: Transport> Egress<T> {
         &self.transport
     }
 
-    /// Fetch `url`, if its host is one this stage may reach.
+    /// Fetch `url`, if its host is one this stage may reach, when the pace says
+    /// it may leave.
     ///
     /// The list is read first and the transport is touched only after it
     /// answers, so a host it does not allow is refused with nothing sent and
     /// nothing opened. The refusal names that host: a caller looking at a
     /// withheld URL is deciding whether the list is wrong or the URL is.
+    ///
+    /// The turn is taken after that and before the send, in that order for two
+    /// reasons. A refusal reaches no source, so it is not something the source
+    /// is owed a wait for. And a request the transport then fails on may well
+    /// have arrived anyway, so it costs its turn like any other.
     pub fn fetch(&mut self, url: &str) -> Result<Response, Error> {
         let host = host_of(url).map_err(|why| Error::Unreadable {
             url: url.to_owned(),
@@ -171,8 +205,15 @@ impl<T: Transport> Egress<T> {
             });
         }
 
+        self.pace.release();
+
+        let request = Cleared {
+            url,
+            host,
+            declaration: self.declaration.as_str(),
+        };
         self.transport
-            .send(Cleared { url, host })
+            .send(request)
             .map_err(|why| Error::Unreachable {
                 host: host.to_owned(),
                 why,
