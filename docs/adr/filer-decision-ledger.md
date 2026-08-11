@@ -1,9 +1,9 @@
 # Fetch records filer verdicts through a ledger it is handed, into a journal of its own
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-09, by `M3-04`
-- **Decided:** —
+- **Decided:** 2026-08-09, by the decider
 - **Touches:** a new explicit interface, for the component ANCHORS.md names as
   the filer decision ledger, and the storage schema of the records behind it.
   Either alone is above a worker, which is why this is a proposal and not a
@@ -161,4 +161,31 @@ only guard they have.
 
 ## Decision review
 
-Left for the decider.
+- **Authority:** Structural, which is within the decider's reach: a new
+  explicit interface and the record schema behind it are the template's own
+  examples of the tier. Nothing Constitutional is taken — no anchor edited, no
+  gate changed, and the one move that would need one (widening
+  `allowed_edges`) is explicitly declined and left to the second-consumer ADR.
+  Accepted, so it stands, flagged on PR #86 for later human review and
+  possible revert.
+- **Checked:** anchor 2 — the trait and both implementations live in
+  `vfi-fetch`, no workspace edge is added, and the move that would break it is
+  the first alternative, rejected as the backward edge it is. The
+  walled-component invariant — ANCHORS.md names the filer decision ledger as
+  reached only through an explicit interface, and this is that interface. No
+  per-user state — the journal path arrives as a parameter. The premise
+  against GOALS.md M3, which asks for a verdict and a reason for every filer
+  evaluated, rejected ones included. No prior ADR touches this ground. The
+  four alternatives as argued, in particular that verdicts cannot ride the
+  pipeline: a rejected filer's history is never fetched, so its verdict has no
+  forward vehicle.
+- **Verdict and why:** accepted. The design threads the real constraint — the
+  stage that produces verdicts may not call the stage that persists — without
+  touching a gate, and it makes the milestone's "every filer evaluated has a
+  verdict" structural rather than habitual, by deriving the survivor set from
+  the recorded verdicts instead of assembling it beside them.
+- **What would have changed it:** a journal placed in the metrics store or a
+  trait placed in `contracts/`, either of which forces a decision above this
+  tier — or a record schema that merged "not judged" into "rejected", because
+  a transport failure becoming a permanent exclusion is the quiet corruption
+  this project treats as its worst failure mode.
