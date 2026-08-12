@@ -22,15 +22,29 @@
 //! Nothing here reaches a real source yet. What does arrives as an
 //! implementation of [`Transport`], and it arrives inside the chokepoint,
 //! because that is the one place the gate allows it.
+//!
+//! What the stage asks those hosts for is [`filing_history`]: a ticker, the map
+//! EDGAR keys it by, and then everything that filer has filed. Every record it
+//! hands back carries the [`Source`] of the request that produced it, so a
+//! later stage traces a value to the document it came out of without asking
+//! again.
 
+mod company;
+mod edgar;
 mod egress;
+mod filing;
 mod hosts;
 mod pace;
 mod policy;
+mod source;
 
+pub use company::{Cik, Company, Ticker};
+pub use edgar::{Directory, Retrieved, Unretrieved, filing_history, history};
 pub use egress::{Cleared, Egress, Error, Response, Transport};
+pub use filing::{Filing, History};
 pub use hosts::ALLOWED_HOSTS;
 pub use pace::{Clock, Pace, SystemClock};
 pub use policy::{
     DECLARATION_HEADER, Declaration, MAX_REQUESTS_PER_SECOND, MINIMUM_SPACING, Undeclared,
 };
+pub use source::Source;

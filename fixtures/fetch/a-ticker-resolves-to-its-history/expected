@@ -1,0 +1,47 @@
+ticker MGSD
+company 0002003750 Maitong Sunshine Cultural Development Co., Ltd
+  named by https://www.sec.gov/files/company_tickers.json
+filings 41
+  published by https://data.sec.gov/submissions/CIK0002003750.json
+  from https://data.sec.gov/submissions/CIK0002003750.json
+    0001213900-26-059248 10-Q filed 2026-05-20 period 2026-03-31 doc ea0289183-10q_maitong.htm
+    0001213900-26-058262 NT 10-Q filed 2026-05-18 period 2026-03-31 doc ea0291244-nt10q_maitong.htm
+    0001213900-26-018584 10-Q filed 2026-02-20 period 2025-12-31 doc ea0274392-10q_maitong.htm
+    0001213900-26-016907 NT 10-Q filed 2026-02-17 period 2025-12-31 doc ea0277193-nt10q_maitong.htm
+    0001213900-26-002691 10-K filed 2026-01-09 period 2025-09-30 doc ea0265929-10k_maitong.htm
+    0001213900-25-125810 NT 10-K filed 2025-12-29 period 2025-09-30 doc ea0271058-nt10k_maitong.htm
+    0001213900-25-078735 10-Q filed 2025-08-20 period 2025-06-30 doc ea0253848-10q_maitong.htm
+    0001213900-25-076403 NT 10-Q filed 2025-08-14 period 2025-06-30 doc ea0253355-nt10q_maitong.htm
+    0001213900-25-051741 8-K filed 2025-06-06 period 2025-06-05 doc ea0244916-8k_maitong.htm
+    0001213900-25-042964 10-Q filed 2025-05-14 period 2025-03-31 doc ea0241385-10q_maitong.htm
+    0001213900-25-020761 8-K filed 2025-03-05 period 2025-03-05 doc ea0233361-8k_maitong.htm
+    0001213900-25-016307 8-K filed 2025-02-24 period 2025-02-20 doc ea0231900-8k_maitong.htm
+    0001213900-25-013785 10-Q filed 2025-02-14 period 2024-12-31 doc ea0230292-10q_maitong.htm
+    0001213900-25-002311 8-K filed 2025-01-10 period 2025-01-09 doc ea0227348-8k_maitong.htm
+    0001213900-24-108612 8-K filed 2024-12-13 period 2024-12-11 doc ea0224543-8k_maitong.htm
+    0001213900-24-101777 10-K filed 2024-11-25 period 2024-09-30 doc ea0222101-10k_maitong.htm
+    0001290929-24-000002 SCHEDULE 13D filed 2024-11-06 period none doc xslSCHEDULE_13D_X01/primary_doc.xml
+    0002002221-24-000002 3 filed 2024-09-11 period 2024-08-19 doc xslF345X02/primary_doc.xml
+    0002002221-24-000001 3 filed 2024-09-11 period 2024-08-19 doc xslF345X02/primary_doc.xml
+    0001213900-24-070414 8-A12G filed 2024-08-19 period none doc ea0211711-8a12g_maitong.htm
+    0001213900-24-067900 10-Q filed 2024-08-13 period 2024-06-30 doc ea0211075-10q_maitong.htm
+    0001213900-24-062729 8-K filed 2024-07-19 period 2024-07-17 doc ea0209641-8k_maitong.htm
+    0001213900-24-040632 10-Q filed 2024-05-08 period 2024-03-31 doc ea0205302-10q_maitongsun.htm
+    9999999995-24-001076 EFFECT filed 2024-04-23 period none doc xslEFFECTX01/primary_doc.xml
+    0001213900-24-034288 CORRESP filed 2024-04-19 period none doc filename1.htm
+    0001213900-24-033628 S-1/A filed 2024-04-17 period none doc ea0204054-s1a5_maitongsun.htm
+    0001213900-24-033629 CORRESP filed 2024-04-17 period none doc filename1.htm
+    0001213900-24-032883 CORRESP filed 2024-04-15 period none doc filename1.htm
+    0001213900-24-032880 S-1/A filed 2024-04-15 period none doc ea0203885-s1a4_maitongsun.htm
+    0001213900-24-027142 CORRESP filed 2024-03-28 period none doc filename1.htm
+    0000000000-24-003285 UPLOAD filed 2024-03-26 period none doc filename1.pdf
+    0001213900-24-021565 S-1/A filed 2024-03-12 period none doc ea0201540-s1a3_maitongsun.htm
+    0001213900-24-021566 CORRESP filed 2024-03-12 period none doc filename1.htm
+    0000000000-24-002552 UPLOAD filed 2024-03-07 period none doc filename1.pdf
+    0001213900-24-016036 S-1/A filed 2024-02-22 period none doc ea0200478-s1a2_maitongsun.htm
+    0001213900-24-016038 CORRESP filed 2024-02-22 period none doc filename1.htm
+    0000000000-24-001543 UPLOAD filed 2024-02-08 period none doc filename1.pdf
+    0001213900-24-006800 CORRESP filed 2024-01-26 period none doc filename1.htm
+    0001213900-24-006799 S-1/A filed 2024-01-26 period none doc ea192257-s1a1_maitongsun.htm
+    0000000000-24-000541 UPLOAD filed 2024-01-16 period none doc filename1.pdf
+    0001213900-23-097149 S-1 filed 2023-12-20 period none doc ea190309-s1_maitongsun.htm
