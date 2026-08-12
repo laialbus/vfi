@@ -28,12 +28,19 @@
 //! hands back carries the [`Source`] of the request that produced it, so a
 //! later stage traces a value to the document it came out of without asking
 //! again.
+//!
+//! What the stage decides about a filer it is asked to consider goes on record
+//! through [`ledger`], which is the one way to a verdict and the only way back
+//! to one. That stays a module of its own rather than more names out here,
+//! because a step, a reason, and a verdict mean something beside the ledger
+//! they belong to and very little without it.
 
 mod company;
 mod edgar;
 mod egress;
 mod filing;
 mod hosts;
+pub mod ledger;
 mod pace;
 mod policy;
 mod source;
