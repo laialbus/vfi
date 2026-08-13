@@ -10,6 +10,7 @@
 //! by nothing, for no stated reason, at no known time — is not a record anybody
 //! can write.
 
+use std::borrow::Cow;
 use std::fmt;
 use std::time::SystemTime;
 
@@ -116,14 +117,14 @@ impl Filer {
 /// judgement again.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Judged {
-    what: &'static str,
+    what: Cow<'static, str>,
     value: Box<str>,
 }
 
 impl Judged {
     /// What was looked at.
-    pub fn what(&self) -> &'static str {
-        self.what
+    pub fn what(&self) -> &str {
+        &self.what
     }
 
     /// What it said.
@@ -133,8 +134,17 @@ impl Judged {
 
     fn new(what: &'static str, value: impl fmt::Display) -> Self {
         Self {
-            what,
+            what: Cow::Borrowed(what),
             value: value.to_string().into_boxed_str(),
+        }
+    }
+
+    /// One value as a ledger read it back, out of what it holds rather than out
+    /// of the code that wrote it. See [`Reason::read_back`].
+    pub(super) fn read_back(what: String, value: String) -> Self {
+        Self {
+            what: Cow::Owned(what),
+            value: value.into_boxed_str(),
         }
     }
 }
@@ -148,9 +158,16 @@ impl Judged {
 /// it cites the same rule — so "why was this filer dropped" and "which filers
 /// did this rule drop" are the same question asked twice. What varies per filer
 /// is the evidence beside it.
+///
+/// The name is borrowed where it was written and owned where it was read back,
+/// and only the first of those is a call site. Writing one still costs a
+/// `&'static str`, so a rule composed out of the filer at hand does not compile;
+/// reading one costs a `String`, because a ledger outlives the ruleset that
+/// wrote it and a rule this binary no longer names is still what the record
+/// says.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Reason {
-    name: &'static str,
+    name: Cow<'static, str>,
     judged_on: Vec<Judged>,
 }
 
@@ -162,8 +179,20 @@ impl Reason {
     /// that was read.
     pub fn new(name: &'static str, what: &'static str, value: impl fmt::Display) -> Self {
         Self {
-            name,
+            name: Cow::Borrowed(name),
             judged_on: vec![Judged::new(what, value)],
+        }
+    }
+
+    /// The reason a ledger read back, out of what it holds.
+    ///
+    /// Reachable only from inside the ledger, which is what keeps it from being
+    /// the way around [`Reason::new`]: everything that reaches this is a record
+    /// some earlier run wrote through that constructor.
+    pub(super) fn read_back(name: String, judged_on: Vec<Judged>) -> Self {
+        Self {
+            name: Cow::Owned(name),
+            judged_on,
         }
     }
 
@@ -174,8 +203,8 @@ impl Reason {
     }
 
     /// The rule that was applied.
-    pub fn name(&self) -> &'static str {
-        self.name
+    pub fn name(&self) -> &str {
+        &self.name
     }
 
     /// The values it was applied to, in the order they were given.

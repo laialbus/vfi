@@ -29,13 +29,22 @@
 //!
 //! The half that is review: that nothing reaches a recorded verdict except
 //! through here, and that no second thing opens what is behind it.
+//!
+//! Two implementations, and which one a caller is handed is the caller's:
+//! [`Journal`], which keeps verdicts in an append-only file at a path it is
+//! given, and [`InMemory`], which keeps them for the length of a test. Both hold
+//! to the same shape — nothing overwritten, a later verdict behind the earlier
+//! one — so a test that passes against the second is a test about the interface
+//! rather than about the one that forgets less.
 
+mod journal;
 mod memory;
 mod record;
 
 use std::fmt;
 use std::io;
 
+pub use journal::Journal;
 pub use memory::InMemory;
 pub use record::{Filer, FilerKey, Judged, Pass, Reason, Record, Ruleset, Step, Verdict, When};
 
