@@ -29,6 +29,11 @@
 //! later stage traces a value to the document it came out of without asking
 //! again.
 //!
+//! Which filers it asks about at all is [`funnel`]: the filers EDGAR publishes,
+//! then the ones its metadata does not rule out, then a history for those. Most
+//! of the corpus stops before the last of those, which is the point — the funnel
+//! is the requests it does not send.
+//!
 //! What the stage decides about a filer it is asked to consider goes on record
 //! through [`ledger`], which is the one way to a verdict and the only way back
 //! to one. That stays a module of its own rather than more names out here,
@@ -39,6 +44,7 @@ mod company;
 mod edgar;
 mod egress;
 mod filing;
+pub mod funnel;
 mod hosts;
 pub mod ledger;
 mod pace;
@@ -46,7 +52,10 @@ mod policy;
 mod source;
 
 pub use company::{Cik, Company, Ticker};
-pub use edgar::{Directory, Retrieved, Unretrieved, filing_history, history};
+pub use edgar::{
+    Directory, Entry, Listed, Metadata, Retrieved, Seeds, Unretrieved, filing_history, history,
+    metadata, seed_set,
+};
 pub use egress::{Cleared, Egress, Error, Response, Transport};
 pub use filing::{Filing, History};
 pub use hosts::ALLOWED_HOSTS;

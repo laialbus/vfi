@@ -38,6 +38,11 @@ pub(super) struct TickerRow<'a> {
 
 /// A filer's submissions document, at
 /// <https://data.sec.gov/submissions/CIK##########.json>.
+///
+/// EDGAR publishes what it holds about a filer and a page of that filer's
+/// filings in the one document, so both steps that ask about a filer read this
+/// type. What each of them may take out of it is the step's business, and the
+/// types they hand back are where that line is drawn.
 #[derive(Deserialize)]
 pub(super) struct Submissions<'a> {
     /// The CIK the document is about, padded to ten digits.

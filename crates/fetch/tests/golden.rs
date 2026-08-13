@@ -3,11 +3,14 @@
 //! A fixture is a directory under `fixtures/fetch/`, and the directory's name
 //! says what the case pins. It holds:
 //!
-//! - `ticker` — the symbol the case asks about, one line.
 //! - `expected` — what the stage must answer, rendered by this file.
 //! - one file per recorded response, at the path its URL names:
 //!   `www.sec.gov/files/company_tickers.json` is the answer to
 //!   `https://www.sec.gov/files/company_tickers.json`.
+//! - `ticker` — the symbol the case asks about, one line, where the case is
+//!   about one. A case that holds no `ticker` is a pass of the funnel over the
+//!   filers its recordings publish, and what it pins is the verdicts that pass
+//!   put on record.
 //!
 //! The responses are recordings, taken from EDGAR and committed as they
 //! arrived. Nothing here is written by hand, and that is the point: a response
@@ -21,6 +24,14 @@
 //! curl -A "you you@example.com" https://www.sec.gov/files/company_tickers.json \
 //!     -o fixtures/fetch/<case>/www.sec.gov/files/company_tickers.json
 //! ```
+//!
+//! The seed document a funnel case reads is the one exception to "committed as
+//! it arrived", and it is worth saying out loud. EDGAR's ticker map publishes
+//! every listed filer, and a pass over all of them would want a recorded
+//! metadata document for each — ten thousand of them, which is not a fixture
+//! anybody commits. So a funnel case keeps the rows for the filers it is about
+//! and drops the rest. Every row it keeps is EDGAR's, byte for byte, under the
+//! row number EDGAR gave it; nothing is written, only left out.
 //!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
@@ -42,7 +53,10 @@ use std::fmt::Write as _;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
+use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use vfi_fetch::funnel::{Calendar, Sweep, gate, seed};
+use vfi_fetch::ledger::{FilerKey, FilerLedger, InMemory, Pass, Record, Step, Verdict};
 use vfi_fetch::{
     Cleared, Declaration, Egress, Filing, History, Pace, Response, Retrieved, Ticker, Transport,
     filing_history,
@@ -261,6 +275,127 @@ fn render_filing(filing: &Filing, out: &mut String) {
     );
 }
 
+/// The sweep a funnel case runs as. Both halves are the case's rather than the
+/// machine's: the pass so that every verdict carries a number the file can pin,
+/// and the moment because a record that read the machine's clock could only be
+/// checked by running the case at the instant it was recorded.
+const PASS: Pass = Pass::new(1);
+const MOMENT: Duration = Duration::from_secs(1_767_225_600);
+
+/// A calendar standing still at [`MOMENT`]. That every verdict carries the date
+/// the pass was given, rather than the one the machine holds, is half of what a
+/// funnel case pins — a step that reached for the clock itself would show up
+/// here as every line changing at once.
+struct Stopped;
+
+impl Calendar for Stopped {
+    fn now(&self) -> SystemTime {
+        UNIX_EPOCH + MOMENT
+    }
+}
+
+/// A pass of the funnel over the filers the case's recordings publish, rendered
+/// as the verdicts it put on record.
+///
+/// The ledger is in memory, because what a case is about is the verdicts and
+/// not the file they would be written to. What comes back from each step is the
+/// keys it considered; who those verdicts admitted is read out of the ledger,
+/// which is the same derivation the funnel itself does.
+fn render_pass<T: Transport>(edgar: &mut Egress<T>, out: &mut String) {
+    let sweep = Sweep::new(PASS, Stopped);
+    let mut ledger = InMemory::new();
+
+    let considered = match seed(edgar, &mut ledger, &sweep) {
+        Ok(considered) => considered,
+        Err(why) => {
+            let _ = writeln!(out, "no pass, {why}");
+            return;
+        }
+    };
+
+    let admitted = match gate(edgar, &mut ledger, &sweep, &considered) {
+        Ok(admitted) => admitted,
+        Err(why) => {
+            let _ = writeln!(out, "no pass, {why}");
+            return;
+        }
+    };
+
+    for key in &considered {
+        render_filer(&ledger, key, out);
+    }
+
+    if admitted.is_empty() {
+        let _ = writeln!(out, "admitted nobody");
+    }
+    for record in &admitted {
+        let _ = writeln!(out, "admitted {}", key_of(record.filer().key()));
+    }
+}
+
+fn render_filer(ledger: &InMemory, key: &FilerKey, out: &mut String) {
+    let verdicts = ledger
+        .verdicts(key)
+        .expect("a ledger in memory refuses nothing");
+
+    let _ = writeln!(out, "filer {}", key_of(key));
+    if let Some(first) = verdicts.first() {
+        if let Some(ticker) = first.filer().ticker() {
+            let _ = writeln!(out, "  seen as {ticker}");
+        }
+        if let Some(name) = first.filer().name() {
+            let _ = writeln!(out, "  named {name}");
+        }
+    }
+
+    for record in &verdicts {
+        render_verdict(record, out);
+    }
+}
+
+fn render_verdict(record: &Record, out: &mut String) {
+    let step = match record.step() {
+        Step::Seed => "seed",
+        Step::Metadata => "metadata",
+        Step::History => "history",
+    };
+    let verdict = match record.verdict() {
+        Verdict::Admitted(_) => "admitted",
+        Verdict::Rejected(_) => "rejected",
+        Verdict::Unjudged(_) => "not judged",
+    };
+    let reason = record.verdict().reason();
+
+    let _ = writeln!(out, "  {step} {verdict}: {}", reason.name());
+    for judged in reason.judged_on() {
+        let _ = writeln!(out, "    {} {}", judged.what(), judged.value());
+    }
+    let _ = writeln!(out, "    from {}", record.source());
+
+    let when = record.when();
+    let moment = when
+        .moment()
+        .duration_since(UNIX_EPOCH)
+        .expect("the moment a case gives is after the epoch");
+    let _ = writeln!(
+        out,
+        "    at {} pass {} rules {}",
+        moment.as_secs(),
+        when.pass().as_number(),
+        when.ruleset().as_number()
+    );
+}
+
+/// A key as one line: the identifier where there is one, and what the entry was
+/// listed as where there is not. The two cannot be confused for each other,
+/// which is the distinction a seed verdict exists to keep.
+fn key_of(key: &FilerKey) -> String {
+    match key {
+        FilerKey::Cik(cik) => cik.to_string(),
+        FilerKey::Unresolved(listed) => format!("unresolved {listed}"),
+    }
+}
+
 /// The first line the two disagree on, rather than both files whole. A golden
 /// failure is read by someone deciding which of the two is wrong, and that
 /// decision is made at the difference.
@@ -315,7 +450,6 @@ fn every_fixture_produces_its_expected_result() {
 
     for case in &cases {
         let name = case.file_name().unwrap_or_default().to_string_lossy();
-        let ticker = Ticker::new(read(case, TICKER).trim());
         let expected = read(case, EXPECTED);
 
         // A pace of its own per case, against the machine's clock. Nothing
@@ -324,12 +458,17 @@ fn every_fixture_produces_its_expected_result() {
         let mut egress = Egress::new(Recorded::of(case), declaration(), Pace::system());
 
         produced.clear();
-        match filing_history(&mut egress, &ticker) {
-            Ok(retrieved) => render(&ticker, &retrieved, &mut produced),
-            Err(why) => {
-                let _ = writeln!(produced, "ticker {ticker}");
-                let _ = writeln!(produced, "not retrieved, {why}");
+        if case.join(TICKER).exists() {
+            let ticker = Ticker::new(read(case, TICKER).trim());
+            match filing_history(&mut egress, &ticker) {
+                Ok(retrieved) => render(&ticker, &retrieved, &mut produced),
+                Err(why) => {
+                    let _ = writeln!(produced, "ticker {ticker}");
+                    let _ = writeln!(produced, "not retrieved, {why}");
+                }
             }
+        } else {
+            render_pass(&mut egress, &mut produced);
         }
 
         if produced != expected {
