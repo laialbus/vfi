@@ -8,6 +8,13 @@ publish.workspace = true
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = "1.0.151"
 
+# TLS, and only TLS: the HTTP above it is written out in the chokepoint, because
+# a client library takes a URL and finds the host itself, which is the second
+# reading the chokepoint hands a host over to avoid. This verifies against the
+# trust store the machine already keeps, so no copy of the root list is
+# committed here to go stale.
+native-tls = "0.2.18"
+
 # The golden fixture harness. `test = false` keeps it out of what `cargo test`
 # selects on its own; scripts/gates.sh runs it by name, as its own gate. Why it
 # is kept apart from the test gate is in the target's own header.

@@ -19,9 +19,12 @@
 //! person and how to reach them, so it is the user's to supply and arrives as
 //! a parameter.
 //!
-//! Nothing here reaches a real source yet. What does arrives as an
-//! implementation of [`Transport`], and it arrives inside the chokepoint,
-//! because that is the one place the gate allows it.
+//! What reaches a real source is [`Https`], and it sits inside the chokepoint
+//! because that is the one place the gate allows a connection to be opened. It
+//! connects to the host the list cleared rather than reading the URL again, and
+//! it follows no redirect: a 3xx comes back as the answer it is, and a caller
+//! that wants it followed asks for the new URL, which reads the list for that
+//! host like any other.
 //!
 //! What the stage asks those hosts for is [`filing_history`]: a ticker, the map
 //! EDGAR keys it by, and then everything that filer has filed. Every record it
@@ -56,7 +59,7 @@ pub use edgar::{
     Directory, Entry, Listed, Metadata, Retrieved, Seeds, Unretrieved, filing_history, history,
     metadata, seed_set,
 };
-pub use egress::{Cleared, Egress, Error, Response, Transport};
+pub use egress::{Cleared, Egress, Error, Https, Response, Transport};
 pub use filing::{Filing, History};
 pub use hosts::ALLOWED_HOSTS;
 pub use pace::{Clock, Pace, SystemClock};
