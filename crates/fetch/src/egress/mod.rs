@@ -23,12 +23,16 @@
 //! here, underneath the check; everything else in the crate belongs outside it,
 //! where the ban holds.
 
+mod https;
+
 use std::fmt;
 use std::io;
 
 use crate::hosts;
 use crate::pace::Pace;
 use crate::policy::{self, Declaration};
+
+pub use https::Https;
 
 /// The scheme a fetch speaks, and the only one. A list of hosts is a statement
 /// about who answers and says nothing about a URL that would reach the same
@@ -60,6 +64,26 @@ impl<'a> Cleared<'a> {
     /// is reached come apart.
     pub fn host(&self) -> &'a str {
         self.host
+    }
+
+    /// What that host is asked for: the URL from the path on, which is what
+    /// goes on the request line.
+    ///
+    /// Cut where the cleared host ends rather than by finding the path in the
+    /// URL, for the reason [`Cleared::host`] exists at all — the reading that
+    /// finds the path is the reading that would find the host, and a transport
+    /// that made it would be back to two answers about one URL.
+    ///
+    /// A fragment is dropped. It addresses something inside what comes back and
+    /// no source is sent one.
+    pub fn target(&self) -> &'a str {
+        let target = &self.url[SCHEME.len() + self.host.len()..];
+        let target = match target.find('#') {
+            Some(fragment) => &target[..fragment],
+            None => target,
+        };
+
+        if target.is_empty() { "/" } else { target }
     }
 
     /// What the source's access policy asks a client to send, whatever else the
@@ -256,7 +280,38 @@ fn host_of(url: &str) -> Result<&str, &'static str> {
 
 #[cfg(test)]
 mod tests {
-    use super::host_of;
+    use super::{Cleared, host_of};
+
+    /// What a transport asks the cleared host for. Cut where that host ends, so
+    /// a URL the check read one way cannot be asked for another.
+    #[test]
+    fn the_target_is_the_url_from_the_path_on() {
+        for (url, target) in [
+            ("https://data.sec.gov", "/"),
+            ("https://data.sec.gov/", "/"),
+            ("https://data.sec.gov#top", "/"),
+            (
+                "https://data.sec.gov/submissions/CIK0000320193.json",
+                "/submissions/CIK0000320193.json",
+            ),
+            (
+                "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany",
+                "/cgi-bin/browse-edgar?action=getcompany",
+            ),
+            (
+                "https://www.sec.gov/Archives/x.htm#part2",
+                "/Archives/x.htm",
+            ),
+        ] {
+            let cleared = Cleared {
+                url,
+                host: host_of(url).expect("a URL the check clears"),
+                declaration: "VFI vfi@example.invalid",
+            };
+
+            assert_eq!(cleared.target(), target, "{url}");
+        }
+    }
 
     #[test]
     fn the_host_is_the_authority_and_stops_where_it_stops() {
