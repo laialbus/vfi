@@ -8,9 +8,9 @@
 //!   `www.sec.gov/files/company_tickers.json` is the answer to
 //!   `https://www.sec.gov/files/company_tickers.json`.
 //! - `ticker` — the symbol the case asks about, one line, where the case is
-//!   about one. A case that holds no `ticker` is a pass of the funnel over the
-//!   filers its recordings publish, and what it pins is the verdicts that pass
-//!   put on record.
+//!   about one. A case that holds no `ticker` is a pass of the whole funnel over
+//!   the filers its recordings publish, and what it pins is the verdicts that
+//!   pass put on record and the histories it handed on.
 //!
 //! The responses are recordings, taken from EDGAR and committed as they
 //! arrived. Nothing here is written by hand, and that is the point: a response
@@ -55,7 +55,7 @@ use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
-use vfi_fetch::funnel::{Calendar, Sweep, gate, seed};
+use vfi_fetch::funnel::{Calendar, Sweep, admitted, run};
 use vfi_fetch::ledger::{FilerKey, FilerLedger, InMemory, Pass, Record, Step, Verdict};
 use vfi_fetch::{
     Cleared, Declaration, Egress, Filing, History, Pace, Response, Retrieved, Ticker, Transport,
@@ -294,27 +294,26 @@ impl Calendar for Stopped {
     }
 }
 
-/// A pass of the funnel over the filers the case's recordings publish, rendered
-/// as the verdicts it put on record.
+/// A pass of the whole funnel over the filers the case's recordings publish,
+/// rendered as the verdicts it put on record and the histories it handed on.
 ///
 /// The ledger is in memory, because what a case is about is the verdicts and
-/// not the file they would be written to. What comes back from each step is the
+/// not the file they would be written to. What comes back from the pass is the
 /// keys it considered; who those verdicts admitted is read out of the ledger,
 /// which is the same derivation the funnel itself does.
+///
+/// A retrieved history is shown as a line and not as its filings. What the
+/// filings are is pinned by the cases that ask about one ticker, and pinning
+/// them twice would mean a filer that filed once more moving two files.
 fn render_pass<T: Transport>(edgar: &mut Egress<T>, out: &mut String) {
     let sweep = Sweep::new(PASS, Stopped);
     let mut ledger = InMemory::new();
+    let mut retrieved = Vec::new();
 
-    let considered = match seed(edgar, &mut ledger, &sweep) {
+    let considered = match run(edgar, &mut ledger, &sweep, |history| {
+        retrieved.push(history)
+    }) {
         Ok(considered) => considered,
-        Err(why) => {
-            let _ = writeln!(out, "no pass, {why}");
-            return;
-        }
-    };
-
-    let admitted = match gate(edgar, &mut ledger, &sweep, &considered) {
-        Ok(admitted) => admitted,
         Err(why) => {
             let _ = writeln!(out, "no pass, {why}");
             return;
@@ -325,11 +324,23 @@ fn render_pass<T: Transport>(edgar: &mut Egress<T>, out: &mut String) {
         render_filer(&ledger, key, out);
     }
 
+    let admitted =
+        admitted(&ledger, Step::History, &considered).expect("a ledger in memory refuses nothing");
+
     if admitted.is_empty() {
         let _ = writeln!(out, "admitted nobody");
     }
     for record in &admitted {
         let _ = writeln!(out, "admitted {}", key_of(record.filer().key()));
+    }
+
+    for history in &retrieved {
+        let _ = writeln!(
+            out,
+            "retrieved {} {} filings",
+            history.company().cik(),
+            history.filings().len()
+        );
     }
 }
 

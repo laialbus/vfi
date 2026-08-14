@@ -10,4 +10,9 @@ filer 0002003750
     filed 2026-01-09
     from https://data.sec.gov/submissions/CIK0002003750.json
     at 1767225600 pass 1 rules 1
+  history admitted: the filings EDGAR publishes for this filer were retrieved
+    filings 42
+    from https://data.sec.gov/submissions/CIK0002003750.json
+    at 1767225600 pass 1 rules 1
 admitted 0002003750
+retrieved 0002003750 42 filings

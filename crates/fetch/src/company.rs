@@ -69,10 +69,13 @@ impl fmt::Display for Cik {
     }
 }
 
-/// A filer EDGAR names, and where it said so.
+/// A filer EDGAR names, and the request that identifies it.
 ///
-/// The name is the one carried beside the ticker in EDGAR's map, not a name
-/// this crate composed, and [`Company::source`] is the request that carried it.
+/// The name is one EDGAR published — the title beside the ticker in its map —
+/// and never one this crate composed. [`Company::source`] is the request the
+/// filer was identified by, which is that map where a ticker was resolved
+/// through it, and the filer's own document where a pass of the funnel already
+/// holds the key and carries a name it recorded under it.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Company {
     cik: Cik,
@@ -99,7 +102,7 @@ impl Company {
         &self.name
     }
 
-    /// The request that named this company.
+    /// The request this filer was identified by.
     pub fn source(&self) -> &Source {
         &self.source
     }
