@@ -16,14 +16,23 @@
 //! arrived. Nothing here is written by hand, and that is the point: a response
 //! composed from memory has the shape somebody remembers rather than the shape
 //! the source publishes, and the difference between the two is invisible until
-//! it has been believed for a while. To add or refresh a case, ask EDGAR for
-//! the URL the file is named after, declaring who you are as its access policy
-//! requires, and save the body unchanged:
+//! it has been believed for a while. To add or refresh a case, run the stage's
+//! own recorder — `crates/fetch/src/bin/record.rs` — naming who you are as
+//! EDGAR's access policy requires, the case to record into, and the URLs to
+//! ask for:
 //!
 //! ```text
-//! curl -A "you you@example.com" https://www.sec.gov/files/company_tickers.json \
-//!     -o fixtures/fetch/<case>/www.sec.gov/files/company_tickers.json
+//! cargo run -p vfi-fetch --bin record -- \
+//!     "you you@example.com" fixtures/fetch/<case> \
+//!     https://www.sec.gov/files/company_tickers.json
 //! ```
+//!
+//! That is the one way to record a case, and it goes out through this stage
+//! rather than through some other client because the two do not receive the
+//! same thing. A coding undone, a redirect followed, an answer read as a
+//! document that is not one — each of those happens between the wire and the
+//! body, and a case recorded elsewhere pins whoever did them, leaving this
+//! stage only assumed to agree.
 //!
 //! The seed document a funnel case reads is the one exception to "committed as
 //! it arrived", and it is worth saying out loud. EDGAR's ticker map publishes

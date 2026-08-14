@@ -84,6 +84,23 @@ package `vfi-jobs` — which runs a long job without holding up whoever started
 it. It sits beside the pipeline rather than in it: no stage depends on it and it
 depends on none, so it adds no edge to the order anchor 2 fixes.
 
+## Development entry points
+
+A tool a person runs by hand — not part of the shipped application, and not a
+test — is a binary of the crate whose work it does: `crates/<stage>/src/bin/`,
+one file per tool, run as `cargo run -p vfi-<stage> --bin <name>`. That is
+Cargo's own home for one, so nothing is declared anywhere for it to be found and
+the build gate compiles it with everything else.
+
+Inside the crate rather than under `scripts/`, because a tool of this kind does
+the stage's work and must do it the way the stage does — through the same
+interfaces, under the same gates. One that reached around them would be a second
+implementation of the stage, and the day the two disagreed the tool would be
+believed.
+
+There is one today: `crates/fetch/src/bin/record.rs`, which records a golden
+fixture from the live source through the fetch stage's own chokepoint.
+
 ## The shell
 
 All Python lives under `shell/`. The shell displays what the engine produces and
