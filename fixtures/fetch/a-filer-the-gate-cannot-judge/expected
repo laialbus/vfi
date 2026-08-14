@@ -1,0 +1,12 @@
+filer 0002141099
+  seen as RGKUY
+  named Rigaku Holdings Corporation/ADR
+  seed admitted: the entry names the filer EDGAR keys it under
+    cik 0002141099
+    from https://www.sec.gov/files/company_tickers.json
+    at 1767225600 pass 1 rules 1
+  metadata not judged: the metadata names no annual report
+    filings named 1
+    from https://data.sec.gov/submissions/CIK0002141099.json
+    at 1767225600 pass 1 rules 1
+admitted nobody

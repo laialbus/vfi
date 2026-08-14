@@ -1,0 +1,13 @@
+filer 0002070534
+  seen as SLBT
+  named SL Science Holding Ltd
+  seed admitted: the entry names the filer EDGAR keys it under
+    cik 0002070534
+    from https://www.sec.gov/files/company_tickers.json
+    at 1767225600 pass 1 rules 1
+  metadata rejected: files its annual report as a foreign private issuer
+    annual report 20-F
+    filed 2026-06-18
+    from https://data.sec.gov/submissions/CIK0002070534.json
+    at 1767225600 pass 1 rules 1
+admitted nobody

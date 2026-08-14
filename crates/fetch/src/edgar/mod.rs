@@ -18,14 +18,23 @@
 //! carries inline. The first two are [`Retrieved`]; the third is followed,
 //! because a history that stopped at the first page would be missing its oldest
 //! years and would look complete.
+//!
+//! The same two documents answer the funnel's first two steps, which ask
+//! smaller questions of them. The ticker map is also the list of filers there
+//! are — [`seed_set`] — and a submissions document is also what EDGAR publishes
+//! about one filer before anybody asks what it has filed — [`metadata`]. That
+//! second one is the one to read carefully: it stops at the document, and the
+//! overflow pages it names are not followed, so a filer judged out of the
+//! corpus costs one request and never the rest of them.
 
 mod documents;
 
+use std::borrow::Cow;
 use std::collections::HashMap;
-use std::collections::hash_map::Entry;
+use std::collections::hash_map::Entry as Taken;
 use std::fmt;
 
-use documents::{Page, Submissions, TickerMap};
+use documents::{Page, Submissions, TickerMap, TickerRow};
 
 use crate::company::{Cik, Company, Ticker};
 use crate::egress::{Egress, Transport};
@@ -127,6 +136,20 @@ impl fmt::Display for Unretrieved {
     }
 }
 
+impl Unretrieved {
+    /// The request that produced no record.
+    ///
+    /// Every variant carries one, and a caller that has to say what it was
+    /// doing when nothing came back should not have to match to find out which.
+    pub fn request(&self) -> &Source {
+        match self {
+            Unretrieved::Unfetched { source, .. }
+            | Unretrieved::Refused { source, .. }
+            | Unretrieved::Unreadable { source, .. } => source,
+        }
+    }
+}
+
 impl std::error::Error for Unretrieved {
     fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
         match self {
@@ -190,13 +213,13 @@ impl Directory {
             let company = Company::new(Cik::new(row.cik_str), &row.title, source.clone());
 
             match filers.entry(ticker) {
-                Entry::Vacant(slot) => {
+                Taken::Vacant(slot) => {
                     slot.insert(company);
                 }
                 // Two filers under one ticker, which is EDGAR's map saying two
                 // things. Answering with either would be picking the company
                 // the caller meant, so nothing is answered at all.
-                Entry::Occupied(taken) if taken.get().cik() != company.cik() => {
+                Taken::Occupied(taken) if taken.get().cik() != company.cik() => {
                     return Err(Unretrieved::Unreadable {
                         source,
                         why: format!(
@@ -207,7 +230,7 @@ impl Directory {
                         ),
                     });
                 }
-                Entry::Occupied(_) => {}
+                Taken::Occupied(_) => {}
             }
         }
 
@@ -223,6 +246,222 @@ impl Directory {
     pub fn source(&self) -> &Source {
         &self.source
     }
+}
+
+/// One entry of the seed set, as EDGAR published it.
+///
+/// The identifier is optional because this is what the map carried and not what
+/// a reader wishes it had carried. An entry naming no filer is an answer about
+/// that entry — one the funnel puts on record under whatever the entry did have
+/// — rather than a reason to stop reading the ten thousand around it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Entry {
+    row: u64,
+    ticker: Ticker,
+    title: Box<str>,
+    key: u64,
+}
+
+impl Entry {
+    /// The filer this entry names, where it names one. EDGAR assigns no filer
+    /// the key zero, so an entry carrying that names none.
+    pub fn cik(&self) -> Option<Cik> {
+        (self.key != 0).then(|| Cik::new(self.key))
+    }
+
+    /// The key as the entry carried it, whether or not it names a filer. This
+    /// is the value a verdict about the entry is checked against later, so it
+    /// is handed over as it read.
+    pub fn key(&self) -> u64 {
+        self.key
+    }
+
+    /// The symbol the entry was listed under.
+    pub fn ticker(&self) -> &Ticker {
+        &self.ticker
+    }
+
+    /// The name beside it.
+    pub fn title(&self) -> &str {
+        &self.title
+    }
+
+    /// What there is to file this entry under when it names no filer: the
+    /// symbol, the name beside it, or failing both the row it was read from.
+    /// One of the three is always there, so an entry nothing resolved is never
+    /// recorded under nothing.
+    pub fn listed_as(&self) -> Cow<'_, str> {
+        if !self.ticker.as_str().is_empty() {
+            Cow::Borrowed(self.ticker.as_str())
+        } else if !self.title.is_empty() {
+            Cow::Borrowed(&self.title)
+        } else {
+            Cow::Owned(self.row.to_string())
+        }
+    }
+}
+
+/// The filers EDGAR publishes, and where it published them.
+pub struct Seeds {
+    entries: Vec<Entry>,
+    source: Source,
+}
+
+impl Seeds {
+    /// The entries, in the order the map publishes them.
+    pub fn entries(&self) -> &[Entry] {
+        &self.entries
+    }
+
+    /// The request the map came from.
+    pub fn source(&self) -> &Source {
+        &self.source
+    }
+}
+
+/// The seed set: every filer EDGAR's map publishes, in the order it publishes
+/// them.
+///
+/// The same document [`Directory`] is built from, read as a list rather than as
+/// a map, because the two steps want different things of it. A lookup wants one
+/// filer by ticker and does not care what order the rows came in; a pass over
+/// the seed set is the rows themselves, and it has to make the same set in the
+/// same order every time it runs. So the row numbers, which a lookup reads and
+/// drops, are what this orders by.
+pub fn seed_set<T: Transport>(edgar: &mut Egress<T>) -> Result<Seeds, Unretrieved> {
+    let source = Source::new(TICKER_MAP);
+    let body = get(edgar, &source)?;
+
+    let map: TickerMap<'_> = read(&body, &source)?;
+    let mut rows: Vec<(u64, &TickerRow<'_>)> = Vec::with_capacity(map.len());
+
+    for (row, entry) in &map {
+        let number = row.parse::<u64>().map_err(|_| Unretrieved::Unreadable {
+            source: source.clone(),
+            why: format!("{row:?} is not a row number, and this map is keyed by one"),
+        })?;
+        rows.push((number, entry));
+    }
+    rows.sort_unstable_by_key(|(number, _)| *number);
+
+    let entries = rows
+        .into_iter()
+        .map(|(row, entry)| Entry {
+            row,
+            ticker: Ticker::new(&entry.ticker),
+            title: Box::from(entry.title.as_ref()),
+            key: entry.cik_str,
+        })
+        .collect();
+
+    Ok(Seeds { entries, source })
+}
+
+/// One filing as a metadata document lists it: which form it was filed on, and
+/// when.
+///
+/// Deliberately less than a [`Filing`]. What is missing — the accession number,
+/// the document it names — is what a later stage would need to read the filing
+/// itself, and leaving it out is what keeps a metadata document from standing
+/// in for the history the step after this one retrieves. The step boundary is
+/// this type rather than a rule somebody remembers.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Listed {
+    form: Box<str>,
+    filed: Box<str>,
+}
+
+impl Listed {
+    /// The form it was filed on, as EDGAR spells it.
+    pub fn form(&self) -> &str {
+        &self.form
+    }
+
+    /// The day it was filed, as EDGAR writes one.
+    pub fn filed(&self) -> &str {
+        &self.filed
+    }
+}
+
+/// What EDGAR publishes about one filer, before its history is asked for.
+pub struct Metadata {
+    cik: Cik,
+    listed: Vec<Listed>,
+    source: Source,
+}
+
+impl Metadata {
+    /// The filer this is about.
+    pub fn cik(&self) -> Cik {
+        self.cik
+    }
+
+    /// The filings the document names, in the order it names them.
+    pub fn listed(&self) -> &[Listed] {
+        &self.listed
+    }
+
+    /// The request it came from.
+    pub fn source(&self) -> &Source {
+        &self.source
+    }
+}
+
+/// What EDGAR publishes about the filer it keys as `cik`.
+///
+/// One request, and the pages of older filings the document names are not
+/// among them. That is the whole point of the step this answers: a filer the
+/// funnel is about to judge costs the same whether it has filed twice or two
+/// thousand times, and one it judges out costs nothing after that.
+pub fn metadata<T: Transport>(edgar: &mut Egress<T>, cik: Cik) -> Result<Metadata, Unretrieved> {
+    let source = Source::new(&submissions_url(cik));
+    let body = get(edgar, &source)?;
+
+    let submissions: Submissions<'_> = read(&body, &source)?;
+    filed_under(&submissions, cik, &source)?;
+
+    let page = &submissions.filings.recent;
+    let rows = page.filings().map_err(|why| Unretrieved::Unreadable {
+        source: source.clone(),
+        why,
+    })?;
+
+    let mut listed = Vec::with_capacity(rows);
+    for row in 0..rows {
+        listed.push(Listed {
+            form: Box::from(page.form[row].as_ref()),
+            filed: Box::from(page.filing_date[row].as_ref()),
+        });
+    }
+
+    Ok(Metadata {
+        cik,
+        listed,
+        source,
+    })
+}
+
+/// That the document EDGAR answered with is the one that was asked for.
+///
+/// A document filed under a key nobody asked about would be a whole company's
+/// worth of wrong facts, every one of them well-formed, and it would be as
+/// wrong for a verdict as for a history.
+fn filed_under(
+    submissions: &Submissions<'_>,
+    cik: Cik,
+    source: &Source,
+) -> Result<(), Unretrieved> {
+    if submissions.cik.parse::<u64>().ok() == Some(cik.as_number()) {
+        return Ok(());
+    }
+
+    Err(Unretrieved::Unreadable {
+        source: source.clone(),
+        why: format!(
+            "it is filed under {}, and {cik} is what was asked for",
+            submissions.cik
+        ),
+    })
 }
 
 /// Every filing EDGAR publishes for `company`, newest first.
@@ -241,20 +480,7 @@ pub fn history<T: Transport>(
     let mut filings = Vec::new();
     let overflow: Vec<String> = {
         let submissions: Submissions<'_> = read(&body, &source)?;
-
-        // The document EDGAR answered with has to be the one that was asked
-        // for. A history filed under a key nobody asked about would be a whole
-        // company's worth of wrong facts, every one of them well-formed.
-        if submissions.cik.parse::<u64>().ok() != Some(company.cik().as_number()) {
-            return Err(Unretrieved::Unreadable {
-                source: source.clone(),
-                why: format!(
-                    "it is filed under {}, and {} is what was asked for",
-                    submissions.cik,
-                    company.cik()
-                ),
-            });
-        }
+        filed_under(&submissions, company.cik(), &source)?;
 
         collect(&submissions.filings.recent, &source, &mut filings)?;
         submissions
