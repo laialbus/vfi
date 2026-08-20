@@ -1,9 +1,9 @@
 # The canonical concepts are what M5's metrics consume, and each resolves to a value, a kind it does not apply to, or a mapping that failed
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-17, by `M4-02`
-- **Decided:** —
+- **Decided:** 2026-08-18, by `decider`
 - **Touches:** the normalize → analyze contract (anchor 3), and the canonical
   concept definitions ANCHORS.md names among the surfaces reached only through
   one explicit interface. Either alone is above a worker, which is why this is a
@@ -534,4 +534,34 @@ What nothing checks, said plainly:
 
 ## Decision review
 
-By the decider, not the proposer.
+- **Authority:** Structural, and within reach: a contract and its fields, the
+  tier's own example. No anchor is edited, no gate weakened, no protected-path
+  entry changed. The protected directory it names is written later, by a task
+  carrying its own `owns` grant and the human-approved label — nothing here
+  writes it.
+- **Checked:** anchors 2, 3 and 5 as applied, and the one-source-of-truth
+  invariant behind both the directory's name and the exclusion of derived
+  values. `protect-paths-owns-grant.md`, which the follow-on note relies on,
+  says what this record says it says. No accepted ADR is contradicted; M4-01's
+  record does not exist yet, so this one is decided first and its TOML proposal
+  settles the contract file format for the repository. The five alternatives
+  are argued for real — per-filing applicability and the single reasoned
+  `Absent` state are the two that would have quietly rebuilt the confusion M4
+  forbids, and both rejections give the mechanism, not a preference.
+- **Verdict and why:** accepted. The set is a derivation with its own check —
+  every concept names the metric that consumes it, so a definition can be
+  tested against its consumer — and the two absences are separated by what
+  each state can be constructed from, not by convention. Where two defensible
+  readings differ, the record stops and says so: eight open questions gate v1
+  instead of being closed by whichever answer unblocks the next task. That is
+  M4's "nothing is ever guessed" applied to a vocabulary, and it is why this
+  is acceptable with the questions still open.
+- **What would have changed it:** a concept with no named consumer, an
+  applicability clause stated per filing rather than per kind, or any
+  construction path from a failed lookup to `NotApplicable`. Any one would
+  have meant the record's two shaping constraints did not actually hold, and
+  it would have gone back as a rejection.
+
+Flagged for later human review, as the tier requires. The open questions are
+not this review's to close; three of them change numbers, and v1 does not
+publish until they are decided.
