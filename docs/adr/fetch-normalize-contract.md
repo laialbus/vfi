@@ -1,9 +1,9 @@
 # Fetch retrieves a filer's XBRL company facts and hands normalize every fact in it, each carrying the tag it was reported under, the filing it was reported in, and the request it came from
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-19, by `M4-01`
-- **Decided:** —
+- **Decided:** 2026-08-20, by `decider`
 - **Touches:** the fetch → normalize contract (anchor 3), and the retrieval that
   produces it. One decision rather than two, because a contract cannot carry a
   field no retrieval ever asked for. A contract between stages is above a
@@ -366,4 +366,38 @@ no code — each is one the task that builds the contract must not walk past.
 
 ## Decision review
 
-By the decider, not the proposer.
+- **Authority:** Structural, and within reach: it adds a contract and its
+  fields, the tier's own example. No anchor is edited, no gate weakened, no
+  protected-path entry changed. `contracts/` is named as the surface a
+  follow-on task writes under its own `owns` grant and the human-approved
+  label — nothing here creates it.
+- **Checked:** anchors 2, 3 and 5 as applied. The unfiltered crossing and the
+  refusal to put the registry's tag list inside fetch are anchor 2 stated
+  twice; provenance riding on every value is anchor 3 together with the
+  invariant that every resolved fact records where it came from; nothing
+  parsed and nothing defaulted is anchor 5's ban arriving a stage early. No
+  accepted ADR is contradicted: `canonical-concepts.md`'s eighth open question
+  says it turns on M4-01 and closes when that record decides, so the closure
+  here is the one that record scheduled, and TOML was settled by the sibling
+  being decided first — the two records agree. The factual claims hold against
+  the repository: the `filing.rs` doctrine, the contracts gate's `versions`
+  shape, the five zero-silence concepts, and the dividend-suspension fixture
+  GOALS.md names. The five alternatives are argued for real — each rejection
+  names a mechanism (a backward edge, a join's failure mode, the funnel's
+  arithmetic), not a preference.
+- **Verdict and why:** accepted. The record settles retrieval and contract as
+  one decision and keeps every reading out of fetch, so nothing crosses that
+  normalize cannot check or redo. Its two hard calls are handled the way this
+  project demands: the presentation cost is priced rather than waved off —
+  stated, routed to the sibling's open question, with the safe fallback and
+  the two concepts that cannot take it both named — and the dimensioned-fact
+  unknown is made detectable by the five-field key instead of assumed, with a
+  collision routed to an escalation rather than a winner picked blind.
+- **What would have changed it:** a field crossing with no consuming rule
+  named, any filter or parse inside fetch, or provenance carried beside the
+  values rather than on them. Each would contradict the doctrine the record
+  itself quotes, and any one would have sent it back as a rejection.
+
+Flagged for later human review, as the tier requires. The five-field
+uniqueness property has no mechanical check until the first fixture is
+recorded; the task that builds the contract owns closing that gap.
