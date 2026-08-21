@@ -1,0 +1,115 @@
+# The fetch -> normalize contract at v1: what fetch hands normalize, and nothing
+# about how either side does its work.
+#
+# Frozen. The versions record beside this file holds its sha256, and the
+# contracts gate goes red if these bytes change. A change publishes v2.toml with
+# its own line, edits nothing here, and deletes nothing the record names.
+#
+# Why each field crosses, and what was left out and for what reason, is
+# docs/adr/fetch-normalize-contract.md. This file is the surface, not the
+# argument.
+#
+# There is no version field. The version is this file's name and its line in the
+# record; a third copy inside would be one nothing checks.
+
+name = "fetch-normalize"
+
+[boundary]
+produced_by = "fetch"
+consumed_by = "normalize"
+carries = "one value per filer"
+
+# The document is EDGAR's collation of the XBRL exhibits of the filer's own
+# periodic filings, so a fact reaches normalize stamped with the filing it was
+# reported in without that filing being retrieved.
+[retrieval]
+url = "https://data.sec.gov/api/xbrl/companyfacts/CIK##########.json"
+requests = "one per filer, keyed by the filer's CIK left-padded with zeros to ten digits"
+
+[filer]
+one_per = "retrieval"
+holds = "the two fields below, and every fact the document publishes for this filer"
+
+[[filer.field]]
+name = "cik"
+meaning = "the filer the document is about, as the document states it"
+as_published = true
+
+[[filer.field]]
+name = "retrieved_from"
+meaning = "the request the document came back from, recorded by the retrieval rather than published by the document, and held once per document rather than once per fact"
+as_published = false
+
+[fact]
+one_per = "fact the document publishes"
+holds = "the eight fields below"
+
+[[fact.field]]
+name = "taxonomy"
+meaning = "the taxonomy the element is defined in: us-gaap, dei, and whatever else the document publishes"
+as_published = true
+
+[[fact.field]]
+name = "tag"
+meaning = "the element name"
+as_published = true
+
+[[fact.field]]
+name = "unit"
+meaning = "the unit key: USD, shares, USD/shares"
+as_published = true
+
+[[fact.field]]
+name = "period"
+meaning = "the fact's own period, in one of the two shapes below"
+as_published = true
+
+[[fact.field]]
+name = "value"
+meaning = "the amount, as the decimal literal the document publishes, unparsed"
+as_published = true
+
+[[fact.field]]
+name = "accession"
+meaning = "the accession number of the filing the fact was reported in"
+as_published = true
+
+[[fact.field]]
+name = "form"
+meaning = "that filing's form type: 10-K, 10-K/A"
+as_published = true
+
+[[fact.field]]
+name = "filed"
+meaning = "the date that filing was received"
+as_published = true
+
+# A period is one of these, never both and never neither. Its dates cross as the
+# characters the document publishes, by the second property below.
+[[period.shape]]
+name = "instant"
+dates = 1
+meaning = "the date the fact is stated at"
+
+[[period.shape]]
+name = "duration"
+dates = 2
+meaning = "the date the fact's period starts and the date it ends"
+
+[[property]]
+name = "fetch filters nothing"
+holds = "every fact the document publishes crosses: not filtered by tag, not by taxonomy, not by form"
+
+[[property]]
+name = "nothing is parsed"
+holds = "values and dates cross as the characters the document publishes"
+
+[[property]]
+name = "a fact is identified by five fields"
+holds = "taxonomy, tag, unit, period and accession identify a fact, and no two facts crossing share those five with different values"
+
+# What this contract does not state, and where each is stated instead.
+[elsewhere]
+tag_to_concept = "the mapping registry, versioned separately"
+which_facts_matter = "the canonical concept vocabulary, which is its own contract"
+thresholds_and_defaults = "the settings layer, by anchor 5"
