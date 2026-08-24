@@ -26,7 +26,7 @@ Nothing else.
 | `Cargo.toml`, `Cargo.lock` | The Rust workspace manifest and its lockfile. |
 | `.gitignore` | What git never tracks, for the whole tree. At the root and nowhere else: git honours an ignore file in any directory, so a second one would make "is this ignored?" a question with more than one answer. |
 | `crates/` | The engine. One directory per crate — see naming below. |
-| `contracts/` | The typed, versioned contracts between stages (anchor 3). A workspace member like any crate, but at the root because the protected-path list puts it there. |
+| `contracts/` | The typed, versioned contracts between stages (anchor 3), as data. Protected. One directory per contract and nothing else — see below. |
 | `shell/` | The Python presentation shell, including its `pyproject.toml`. |
 | `scripts/` | Every operational script. See below. |
 | `scripts/tests/` | What those scripts must do, as data: one directory per script under test, named for it, holding one file per case. The harness that runs a corpus is code and lives with the gate that reads it, exactly as the fixture harness lives with the crate it exercises. Nothing here is a script, so nothing here is an exception to the rule below. |
@@ -75,14 +75,46 @@ package carries the `vfi-` prefix because package names are global and a crate
 called `analyze` says nothing about whose it is. The underscore form is Cargo's
 own translation of the package name; do not set it by hand.
 
-The stages are `fetch`, `normalize`, `analyze`, and `store`. `contracts` follows
-the same naming — package `vfi-contracts` — at its own root path.
+The stages are `fetch`, `normalize`, `analyze`, and `store`.
 
 A crate that is not a pipeline stage still follows the pattern. Adding one is a
 layout change: amend this file in the same diff. There is one today — `jobs`,
 package `vfi-jobs` — which runs a long job without holding up whoever started
 it. It sits beside the pipeline rather than in it: no stage depends on it and it
 depends on none, so it adds no edge to the order anchor 2 fixes.
+
+## Contracts
+
+A directory under `contracts/` is one contract, and `contracts/` holds nothing
+else. What a contract presents at version N is the single file
+`contracts/<name>/v<N>.<ext>`, and `contracts/<name>/versions` records one
+`v<N> <sha256>` line per published version, consecutive from v1. That rule
+belongs to `scripts/gates.sh` and is stated there; it is repeated here only as
+far as placement needs it, and if the two ever disagree the gate is the one that
+is read.
+
+A contract is data — bytes a gate digests and freezes, and nothing about one
+needs compiling to be read. That is the shape `fixtures/`, `benchmarks/`, and
+`scripts/tests/` already have: the data sits at the root, and the code that reads
+it lives with the crate that uses it. So the Rust type the stages compile against
+is not a contract but the code beside one, and it lives under `crates/` like any
+other crate — `crates/contracts/`, package `vfi-contracts`, import path
+`vfi_contracts`. No such crate exists yet; the task that writes it creates it
+there.
+
+This settles a collision the first contract was always going to hit, and which
+`docs/adr/fetch-normalize-contract.md` and `docs/adr/canonical-concepts.md` both
+record and leave to whoever writes it. This file used to call `contracts/` a
+workspace member with a `src/`, while the gate reads every directory under
+`contracts/` as a contract — so `src` would be a contract with no `versions`
+file, and the gate would fail. The layout gives, for three reasons. The
+protected-path list puts `contracts/` at the root and never asked for a crate
+there, so moving the crate costs nothing the list wanted. The gate is the only
+place the shape of a contract is written down, and this keeps it that way. And
+the other direction costs a check: a gate that passed over `src` would pass over
+it by name, and what would have to go with it is the missing-`versions` report,
+which is the one thing that catches a contract published with no record of what
+it published.
 
 ## Development entry points
 
@@ -108,8 +140,10 @@ holds no analysis logic (anchor 1), so nothing under `shell/` reads a filing,
 computes a metric, or reaches storage directly. Secrets are the shell's job and
 are read here, never in the engine.
 
-`shell/` is also the path the Python style rules scope to, and `crates/` and
-`contracts/` are the paths the Rust rules scope to.
+`shell/` is also the path the Python style rules scope to, and `crates/` is the
+path the Rust rules scope to. `.claude/rules/rust.md` names `contracts/` as well,
+left from when that directory was a crate; it now matches no Rust, and correcting
+it belongs to a run that owns `.claude/rules/`.
 
 ## One file per item
 
