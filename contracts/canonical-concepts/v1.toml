@@ -1,0 +1,428 @@
+# The canonical concept vocabulary at v1: what normalize resolves and analyze
+# consumes, and nothing about how either side does its work.
+#
+# Frozen. The versions record beside this file holds its sha256, and the
+# contracts gate goes red if these bytes change. A change publishes v2.toml with
+# its own line, edits nothing here, and deletes nothing the record names.
+#
+# Why each concept is in the set, which metric consumes it, and what each reading
+# was argued against, are docs/adr/canonical-concepts.md and
+# docs/adr/canonical-concepts-open-questions.md. This file is the surface, not
+# the argument.
+#
+# There is no version field. The version is this file's name and its line in the
+# record; a third copy inside would be one nothing checks.
+
+name = "canonical-concepts"
+
+[boundary]
+produced_by = "normalize"
+consumed_by = "analyze"
+carries = "one of the three states below per concept, per filer"
+
+# A concept resolves to exactly one of the three states. The set is closed: no
+# fourth state, no default, and no empty case, so silence in an implementation
+# produces nothing rather than an absence.
+#
+# What keeps the two absences apart is that each is constructible only from a
+# witness the other cannot obtain, and the two witnesses come from disjoint
+# inputs.
+[state_set]
+closed = true
+resolves_to = "exactly one of the three states below"
+
+[[state]]
+name = "Value"
+means = "the concept resolved to an amount"
+constructible_from = "a resolution attempt that ran and found one"
+carries = "the source tag it was read from, the filing it was reported in, and the rule that set it"
+
+[[state]]
+name = "NotApplicable"
+means = "the concept does not exist for this filer's accounting shape — the company could not present the line and be understood. Not that it did not present it, not that the amount is small, and never that the mapping failed"
+constructible_from = "a filer kind together with the applicability clause below that excludes that kind, and nothing else. No filing is consulted"
+carries = "the kind and the clause"
+
+[[state]]
+name = "Unknown"
+means = "a resolution attempt ran and returned nothing"
+constructible_from = "an attempt that ran, and nothing else"
+carries = "what was attempted: the candidates considered and the rule that declined each"
+
+[[property]]
+name = "applicability is asked first"
+holds = "a concept whose applies_to omits the filer's kind resolves NotApplicable and is never looked up, so a lookup failure has no path to NotApplicable"
+
+[[property]]
+name = "no kind, no NotApplicable"
+holds = "a filer whose kind has not been established resolves every concept through the attempt, to Value or Unknown, and never to a correct absence nobody established"
+
+[[property]]
+name = "NotApplicable does not vary by filing"
+holds = "it is a function of the kind, so it holds for every period that kind holds; a concept not applicable in one period and a value in the next means the kind changed"
+
+[[property]]
+name = "an absence keeps its state"
+holds = "the state and what it carries travel with the concept into storage and presentation, because an absent result is shown as absent with its reason"
+
+[[property]]
+name = "negative is a value"
+holds = "a negative amount is a Value and never an absence"
+
+[[property]]
+name = "silence is silence in the fact set"
+holds = "a silence reading below is read over the facts the filer tagged for the period, not over the statements it presented"
+
+# A kind names an accounting shape. It decides which concepts apply to a filer
+# and, for revenue, what one means. A kind is a fact about the filer, established
+# before any concept is looked up and never re-derived per filing.
+#
+# The set is closed and there is no default kind: a filer whose shape fits none
+# is assigned none, which costs precision and never produces a wrong answer.
+[kind_set]
+closed = true
+default = "none — a filer that fits no kind is unassigned"
+
+[[kind]]
+name = "operating"
+names = "a non-financial filer presenting a classified balance sheet, current against non-current, and an income statement running revenue to cost of revenue to operating expenses to operating income. A regulated utility is an operating filer: it leads with plant rather than with current assets, but it subtotals both current sections and carries fuel, materials and supplies as inventory"
+
+[[kind]]
+name = "bank"
+names = "a depository or lender earning net interest income and fees, funded by deposits and borrowings, presenting an unclassified balance sheet ordered by liquidity rather than by term"
+
+[[kind]]
+name = "insurer"
+names = "a filer earning premiums and investment income against claims and reserves, presenting an unclassified balance sheet and no cost of revenue"
+
+[[kind]]
+name = "reit"
+names = "a real estate investment trust earning rental and related income from property it owns, presenting an unclassified balance sheet led by real estate carried at cost less accumulated depreciation, and an income statement running revenues to property operating expenses and depreciation to a profit before interest"
+
+[[kind]]
+name = "investment_company"
+names = "a filer whose business is holding a portfolio of investments carried at fair value, presenting a statement of assets and liabilities rather than a classified balance sheet, and a statement of operations running investment income to the expenses of running the portfolio, its own interest among them, to net investment income, with realised and unrealised results below"
+
+# The three properties every concept carries, defined once here and named once
+# per concept. Which period or instant a figure belongs to is not this
+# contract's; see [elsewhere].
+[measure.flow]
+means = "measured over a period"
+
+[measure.balance]
+means = "measured at an instant"
+
+[unit.currency]
+means = "a single figure in the filing's reporting currency at a scale of one, never a figure left implicitly in thousands"
+
+[unit.currency_per_share]
+means = "an amount in the filing's reporting currency at a scale of one, per common share"
+
+[unit.shares]
+means = "a count of shares"
+
+[sign.as_presented]
+means = "signed as the statement presents the thing the concept names"
+
+[sign.magnitude]
+means = "positive when the amount is money the company spent or a charge against it, whichever sign the statement it is read from carries — the same amount appears negative in a cash flow statement and positive in an expense line, and a ratio that divides by one cannot tell which it received"
+
+# The silence readings a concept may carry. A reading of zero is published only
+# where a wrongly-read zero cannot flatter the filer on a metric that consumes
+# the concept.
+[silence.unknown]
+means = "the period's facts carry nothing this concept resolves from, and the concept is Unknown"
+
+[silence.zero]
+means = "the period's facts carry nothing this concept resolves from, and the concept is a Value of zero"
+
+[silence.conditional]
+means = "the reading depends on a stated condition, published with the concept as zero_when and unknown_when"
+
+# ---------------------------------------------------------------------------
+# The set: twenty-eight concepts.
+# ---------------------------------------------------------------------------
+
+# Income statement — flows over a period.
+
+[[concept]]
+name = "revenue"
+meaning = "the figure the filer's own income statement presents as the base from which the costs of running the business are subtracted, read per kind below. Where the filer presents that subtotal it is the value; where it presents only the components, the concept is their sum by a rule stated elsewhere, which the resolved value records"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[concept.reading]
+operating = "sales of goods and services in the period, net of returns, discounts and allowances, before any cost — the top line, excluding interest and investment income and gains on disposals"
+bank = "net interest income together with non-interest income, the statement having subtracted interest expense above the operating-expense block"
+insurer = "total revenues as presented: premiums earned net of reinsurance ceded, net investment income, and the investment results the statement places there"
+reit = "total revenues as presented"
+investment_company = "total investment income, before the expenses of running the portfolio and therefore before its own interest, because that is the base its statement subtracts those expenses from"
+
+[[concept]]
+name = "gross_profit"
+meaning = "revenue less the cost of producing what was sold: direct materials, direct labour, and the overheads the filer charges to cost of revenue. Where a filer presents a cost of revenue rather than a gross profit, this is revenue less that cost — one concept, arrived at by a rule stated elsewhere, which the resolved value records"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating"]
+silence = "unknown"
+
+[[concept]]
+name = "operating_income"
+meaning = "profit from the ordinary business after all operating costs and before interest and tax, as the income statement presents it. Excludes interest expense, interest and investment income, and tax"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "reit"]
+silence = "unknown"
+
+[[concept]]
+name = "pretax_income"
+meaning = "profit before income tax and after interest"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "income_tax_expense"
+meaning = "total income tax charged against the period's profit, current and deferred together, as the income statement presents it — the charge, not the cash paid"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+sign_note = "negative when it is a benefit"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "net_income"
+meaning = "income before discontinued operations and extraordinary items, after tax and after the share attributable to non-controlling interests: income from continuing operations belonging to the parent's shareholders. Extraordinary items ceased to be a GAAP classification for fiscal years beginning after 2015, so that half of the clause governs only the older part of a filer's history"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "interest_expense"
+meaning = "the cost of borrowed money charged to the period, gross of interest income. Where a filer presents only a net interest figure, a rule stated elsewhere resolves it, and a net figure that cannot be decomposed is Unknown rather than taken as gross"
+measure = "flow"
+unit = "currency"
+sign = "magnitude"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "depreciation_and_amortization"
+meaning = "depreciation of tangible assets and amortisation of intangibles charged to the period, read from the cash flow statement's reconciliation where the income statement does not present it separately"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "preferred_dividends"
+meaning = "the deduction between the period's profit and the profit available to common shareholders: preferred dividends declared for the period together with the accretion and redemption adjustments the filer charges in the same reconciliation, because what is needed is the whole of what leaves the common numerator"
+measure = "flow"
+unit = "currency"
+sign = "magnitude"
+sign_note = "positive when it reduces income available to common, negative where the filer's own reconciliation adds to it, as a redemption below carrying amount produces"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+# Shares and per-share amounts.
+
+[[concept]]
+name = "earnings_per_share_diluted"
+meaning = "profit per share from continuing operations on a fully diluted basis, as the filer reports it. Not net income divided by a share count: dilution adjusts the numerator as well, and the two disagree wherever convertibles exist. Where a filer has discontinued operations and presents per-share amounts for continuing operations and for the total, the first is meant; where it has none, the single figure it presents is that figure"
+measure = "flow"
+unit = "currency_per_share"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "diluted_shares_weighted_average"
+meaning = "the weighted average share count that is the denominator of reported diluted earnings per share"
+measure = "flow"
+unit = "shares"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "shares_outstanding"
+meaning = "common shares outstanding at a stated date at or near the period end. A count at an instant, not an average, and not interchangeable with diluted_shares_weighted_average"
+measure = "balance"
+unit = "shares"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "dividends_declared_per_share"
+meaning = "dividends declared per common share for the period, regular and special together. Where a filer reports a special dividend under a distinct element, the concept is the sum of the two by a rule stated elsewhere, which the resolved value records"
+measure = "flow"
+unit = "currency_per_share"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "conditional"
+zero_when = "the period's facts are silent on this concept and on dividends_paid alike"
+unknown_when = "dividends_paid resolves to a non-zero value"
+
+# Balance sheet — balances at an instant.
+
+[[concept]]
+name = "total_assets"
+meaning = "everything the company controls at the period-end date, as the balance sheet totals it"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "current_assets"
+meaning = "assets expected to become cash within the operating cycle or one year, as a classified balance sheet subtotals them"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating"]
+silence = "unknown"
+
+[[concept]]
+name = "inventory"
+meaning = "goods held for sale, in production, or as materials for production, at the period-end carrying amount"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating"]
+silence = "unknown"
+
+[[concept]]
+name = "cash_and_equivalents"
+meaning = "cash and demand deposits plus investments near enough to maturity that their value is not sensitive to rates: the balance the cash flow statement reconciles to. Excludes marketable securities held outside that balance, which short_term_investments carries"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "short_term_investments"
+meaning = "investments in marketable securities held at the period-end date that the balance sheet presents outside cash and equivalents and within current assets: the liquid portfolio a filer holds instead of cash. Excludes cash and equivalents, and excludes holdings the filer classifies as non-current"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating"]
+silence = "zero"
+
+[[concept]]
+name = "total_liabilities"
+meaning = "everything owed at the period-end date"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "current_liabilities"
+meaning = "obligations due within the operating cycle or one year, as a classified balance sheet subtotals them"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating"]
+silence = "unknown"
+
+[[concept]]
+name = "short_term_debt"
+meaning = "interest-bearing borrowings due within a year: the current portion of long-term debt, notes payable, commercial paper, and finance lease obligations. Excludes trade payables, accrued expenses, a bank's deposits, and operating lease liabilities, none of which is a borrowing in the leverage sense"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "long_term_debt"
+meaning = "interest-bearing borrowings due beyond a year, including finance lease obligations. Excludes the current portion, which short_term_debt carries, and excludes operating lease liabilities"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "shareholders_equity"
+meaning = "the parent's shareholders' residual claim: total equity less the portion attributable to non-controlling interests. The preferred claim is included, and analysis forms common equity as this less preferred_equity"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+sign_note = "negative when liabilities exceed assets, which is a value"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "preferred_equity"
+meaning = "the carrying amount of the preferred claim outstanding at the period-end date: preferred stock as the equity section presents it, together with redeemable preferred a filer presents outside permanent equity, since both rank ahead of the common shareholder"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "retained_earnings"
+meaning = "cumulative profit retained rather than distributed since inception"
+measure = "balance"
+unit = "currency"
+sign = "as_presented"
+sign_note = "negative when accumulated losses exceed profits"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+# Cash flow — flows over a period.
+
+[[concept]]
+name = "operating_cash_flow"
+meaning = "net cash generated by operations in the period, as the cash flow statement subtotals it, after working capital movements and after interest and tax where the filer classifies them there"
+measure = "flow"
+unit = "currency"
+sign = "as_presented"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "capital_expenditure"
+meaning = "cash spent in the period acquiring and improving property, plant and equipment and capitalised software"
+measure = "flow"
+unit = "currency"
+sign = "magnitude"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "unknown"
+
+[[concept]]
+name = "dividends_paid"
+meaning = "cash paid to shareholders as dividends during the period, from financing activities, for all classes of shareholder — common and preferred together, as filers commonly present one line for them"
+measure = "flow"
+unit = "currency"
+sign = "magnitude"
+applies_to = ["operating", "bank", "insurer", "reit", "investment_company"]
+silence = "conditional"
+zero_when = "the period's facts are silent on this concept and on dividends_declared_per_share alike"
+unknown_when = "dividends_declared_per_share resolves to a non-zero value"
+
+# What this contract does not state, and where each is stated instead.
+[elsewhere]
+tag_to_concept = "the mapping registry, versioned separately, with its per-company overrides"
+kind_assignment = "the same registry"
+candidate_choice_and_period_alignment = "their own rulesets"
+which_metric_consumes_a_concept = "the derivation, in the two records this file transcribes"
+how_an_absent_input_makes_a_metric_absent = "analyze"
+thresholds_and_defaults = "the settings layer, by anchor 5"
