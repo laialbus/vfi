@@ -1,9 +1,9 @@
 # The vocabulary's seven open questions close: three concepts join the set, two filer kinds join it, and silence reads as `Unknown` wherever a fabricated zero would flatter
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-24, by `M4-04`
-- **Decided:** —
+- **Decided:** 2026-08-25, by the decider
 - **Touches:** the canonical concept definitions, and through them the
   normalize → analyze contract (anchor 3). It changes what four concepts mean,
   adds three, widens the closed set of filer kinds, and restates five silence
@@ -695,4 +695,28 @@ code.
 
 ## Decision review
 
-By the decider, not the proposer.
+- **Authority:** Structural, and within reach: it settles contract fields, the
+  tier's own example. No anchor is edited, no gate weakened or removed, no
+  protected path or GOALS.md scope touched. Flagged for later human review and
+  possible revert, as the tier requires.
+- **Checked:** anchors 3 and 5 and the one-source-of-truth invariant, each
+  applied rather than moved; the parent record — untouched, and the seven
+  answers close exactly items 1–7 of its open list, the eighth having closed
+  with `fetch-normalize-contract.md`; the alternatives as argued — per-question
+  records, always-split, never-split, all-`Unknown`, restoring the old zeroes,
+  a kind per industry, and deferral to M5 are each rejected for a reason that
+  holds, not for being inconvenient.
+- **Verdict and why:** accepted. The load-bearing move is the silence test —
+  zero only where a wrongly-read zero cannot flatter — and it is not a new
+  rule but the parent record's own `capital_expenditure` reasoning, named and
+  applied uniformly; the dividend pair's exception is earned by the
+  double-failure condition and required by the suspension fixture GOALS.md
+  names. The kind check behaves as a check: the regulated utility staying
+  `operating` shows the test can refuse a kind. The real cost the record takes
+  on — a kind now decides a meaning, so a mis-kinded filer gets wrong numbers
+  rather than wrong applicability — is named, and routed to the registry with
+  the one known trap (the insurer/fund shared caption) recorded.
+- **What would have changed it:** a fetch → normalize contract that carries
+  the dimensional axis, which flips answer 6 and the record says so; or an M5
+  metric consuming a bank's gross interest income, which would un-refuse the
+  revenue split. Neither exists today.
