@@ -78,10 +78,15 @@ own translation of the package name; do not set it by hand.
 The stages are `fetch`, `normalize`, `analyze`, and `store`.
 
 A crate that is not a pipeline stage still follows the pattern. Adding one is a
-layout change: amend this file in the same diff. There is one today — `jobs`,
-package `vfi-jobs` — which runs a long job without holding up whoever started
-it. It sits beside the pipeline rather than in it: no stage depends on it and it
-depends on none, so it adds no edge to the order anchor 2 fixes.
+layout change: amend this file in the same diff. There are two today, and
+neither adds an edge to the order anchor 2 fixes. `jobs`, package `vfi-jobs`,
+runs a long job without holding up whoever started it; it sits beside the
+pipeline rather than in it, since no stage depends on it and it depends on none.
+`contracts`, package `vfi-contracts`, is the code beside the contract files —
+see below — and it is a leaf: the stages on either side of a boundary depend on
+it and it depends on nothing, which is an edge apiece onto something that is not
+a stage and none between stages. `scripts/gates.sh` names those edges with the
+pipeline's own, and is the only place any of them is written down.
 
 ## Contracts
 
@@ -99,8 +104,15 @@ needs compiling to be read. That is the shape `fixtures/`, `benchmarks/`, and
 it lives with the crate that uses it. So the Rust type the stages compile against
 is not a contract but the code beside one, and it lives under `crates/` like any
 other crate — `crates/contracts/`, package `vfi-contracts`, import path
-`vfi_contracts`. No such crate exists yet; the task that writes it creates it
-there.
+`vfi_contracts`. One module per contract inside it, named for the contract.
+
+The bytes stay the single source, and the gate that freezes them digests the
+file rather than reading it — so a type that drifted from the surface it states
+would go unnoticed by every gate that reads `contracts/`. Each module therefore
+carries the comparison as its own test: the type's fields read off its own
+declaration, the published names read out of `contracts/<name>/v<N>.<ext>`, and
+both printed when they part. `cargo test` runs it, so it is the tests gate that
+carries it and no gate was added for it.
 
 This settles a collision the first contract was always going to hit, and which
 `docs/adr/fetch-normalize-contract.md` and `docs/adr/canonical-concepts.md` both

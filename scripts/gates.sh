@@ -105,10 +105,20 @@ gates="$(expected_gates | tr '\n' ' ')"
 # purpose: anchor 3 gives a stage the contract on either side of it and nothing
 # else about its neighbours. Adding an edge here changes the shape anchor 2
 # fixes, so it belongs to a task that says so, never to a task that wants one.
+#
+# The last two are not the pipeline's. vfi-contracts is not a stage: it is the
+# code beside the contract files, it depends on nothing, and the layout put the
+# type the stages compile against there. So the two stages on either side of the
+# fetch → normalize boundary reach the same type without either learning
+# anything about the other, which is the shape anchor 3 asks for and the reverse
+# of what a stage-to-stage edge would be. A stage not named here does not reach
+# it, and a task that wants one added says so, exactly as above.
 allowed_edges="
 	vfi-fetch>vfi-normalize
 	vfi-normalize>vfi-analyze
 	vfi-analyze>vfi-store
+	vfi-fetch>vfi-contracts
+	vfi-normalize>vfi-contracts
 "
 
 # Anchor 4: analyze takes data in and returns results out — no network, no disk,
