@@ -360,6 +360,10 @@ name = "vfi-analyze"
 version = "0.1.0"
 
 [[package]]
+name = "vfi-contracts"
+version = "0.1.0"
+
+[[package]]
 name = "vfi-fetch"
 version = "0.1.0"
 dependencies = [
