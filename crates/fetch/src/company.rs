@@ -51,7 +51,13 @@ pub struct Cik(u64);
 const PADDED_DIGITS: usize = 10;
 
 impl Cik {
-    pub(crate) fn new(key: u64) -> Self {
+    /// Take `key` as the filer EDGAR assigned it to.
+    ///
+    /// Public because a caller may hold EDGAR's key for a filer without holding
+    /// a document this crate read it out of — a fixture naming the filer it is
+    /// about, a job resuming from a key it stored — and a retrieval keyed by a
+    /// CIK is unusable to them otherwise.
+    pub fn new(key: u64) -> Self {
         Self(key)
     }
 

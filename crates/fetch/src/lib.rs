@@ -32,6 +32,12 @@
 //! later stage traces a value to the document it came out of without asking
 //! again.
 //!
+//! What it asks them for once a filer is worth asking about is
+//! [`company_facts`]: every fact that filer reported, in one request, each one
+//! stamped with the filing that reported it. That is the only retrieval here
+//! whose answer is a type the fetch → normalize boundary defines rather than
+//! one this crate defines, because the answer is what crosses the boundary.
+//!
 //! Which filers it asks about at all is [`funnel`]: the filers EDGAR publishes,
 //! then the ones its metadata does not rule out, then a history for those. Most
 //! of the corpus stops before the last of those, which is the point — the funnel
@@ -56,8 +62,8 @@ mod source;
 
 pub use company::{Cik, Company, Ticker};
 pub use edgar::{
-    Directory, Entry, Listed, Metadata, Retrieved, Seeds, Unretrieved, filing_history, history,
-    metadata, seed_set,
+    Directory, Entry, Listed, Metadata, Retrieved, Seeds, Unretrieved, company_facts,
+    filing_history, history, metadata, seed_set,
 };
 pub use egress::{Cleared, Egress, Error, Https, Response, Transport};
 pub use filing::{Filing, History};

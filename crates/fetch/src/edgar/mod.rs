@@ -19,6 +19,12 @@
 //! because a history that stopped at the first page would be missing its oldest
 //! years and would look complete.
 //!
+//! A third document answers a different question, and it is [`company_facts`]:
+//! not what the filer filed but what it reported, collated out of the XBRL
+//! exhibits of its own filings. It is kept in a module of its own because it is
+//! the one retrieval here that hands back a value the boundary defines rather
+//! than a value this crate does.
+//!
 //! The same two documents answer the funnel's first two steps, which ask
 //! smaller questions of them. The ticker map is also the list of filers there
 //! are — [`seed_set`] — and a submissions document is also what EDGAR publishes
@@ -28,6 +34,7 @@
 //! corpus costs one request and never the rest of them.
 
 mod documents;
+mod facts;
 
 use std::borrow::Cow;
 use std::collections::HashMap;
@@ -35,6 +42,8 @@ use std::collections::hash_map::Entry as Taken;
 use std::fmt;
 
 use documents::{Page, Submissions, TickerMap, TickerRow};
+
+pub use facts::company_facts;
 
 use crate::company::{Cik, Company, Ticker};
 use crate::egress::{Egress, Transport};
