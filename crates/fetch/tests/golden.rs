@@ -8,9 +8,15 @@
 //!   `www.sec.gov/files/company_tickers.json` is the answer to
 //!   `https://www.sec.gov/files/company_tickers.json`.
 //! - `ticker` — the symbol the case asks about, one line, where the case is
-//!   about one. A case that holds no `ticker` is a pass of the whole funnel over
-//!   the filers its recordings publish, and what it pins is the verdicts that
-//!   pass put on record and the histories it handed on.
+//!   about what one filer has filed.
+//! - `cik` — the filer the case asks about, one line, where the case is about
+//!   the facts that filer reported rather than the filings it made.
+//!
+//! A case holds one of those two, or neither. Neither makes it a pass of the
+//! whole funnel over the filers its recordings publish, and what it pins is the
+//! verdicts that pass put on record and the histories it handed on. Both would
+//! be two cases in one directory, and the harness refuses it rather than
+//! resolving it in an order a reader would have to know.
 //!
 //! The responses are recordings, taken from EDGAR and committed as they
 //! arrived. Nothing here is written by hand, and that is the point: a response
@@ -42,6 +48,18 @@
 //! and drops the rest. Every row it keeps is EDGAR's, byte for byte, under the
 //! row number EDGAR gave it; nothing is written, only left out.
 //!
+//! The filer a facts case is recorded from is a choice, and the first one is
+//! recorded here so the second is a different case rather than a copy of this
+//! one. `every-fact-a-filer-reported` is CIK 0002003750, the filer
+//! `a-filer-the-gate-admits` already admits — a domestic 10-K filer whose whole
+//! history fits one page. It was chosen for being small enough to commit whole
+//! and still wide enough to have something to say: two taxonomies, six units
+//! including two nobody would filter for, both period shapes, both an annual
+//! and a quarterly form, and amounts that are decimals as well as integers. A
+//! second facts case earns its place by differing in one of those — a filer
+//! that amended a filing, one that changed its fiscal year, one whose history
+//! is decades rather than years.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
@@ -58,17 +76,19 @@
 //! gives: the test gate and the fixtures gate have to be able to go red apart.
 
 use std::collections::BTreeMap;
+use std::collections::btree_map::Entry as Taken;
 use std::fmt::Write as _;
 use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
 
+use vfi_contracts::fetch_normalize::{Filer, Period};
 use vfi_fetch::funnel::{Calendar, Sweep, admitted, run};
 use vfi_fetch::ledger::{FilerKey, FilerLedger, InMemory, Pass, Record, Step, Verdict};
 use vfi_fetch::{
-    Cleared, Declaration, Egress, Filing, History, Pace, Response, Retrieved, Ticker, Transport,
-    filing_history,
+    Cik, Cleared, Declaration, Egress, Filing, History, Pace, Response, Retrieved, Ticker,
+    Transport, company_facts, filing_history,
 };
 
 /// `fixtures/<stage>/` is this harness's half of `fixtures/`, and it is what
@@ -77,9 +97,10 @@ use vfi_fetch::{
 /// there rather than here.
 const STAGE: &str = "fetch";
 
-/// The two files a case holds itself, as opposed to the recordings, which sit
-/// under a directory named for the host they came from.
+/// The files a case holds itself, as opposed to the recordings, which sit under
+/// a directory named for the host they came from.
 const TICKER: &str = "ticker";
+const CIK: &str = "cik";
 const EXPECTED: &str = "expected";
 
 fn stage_fixtures() -> PathBuf {
@@ -115,6 +136,46 @@ fn read(case: &Path, name: &str) -> String {
     let path = case.join(name);
     fs::read_to_string(&path)
         .unwrap_or_else(|e| panic!("{}: a case holds a {name} ({e})", path.display()))
+}
+
+/// What a case asks the stage for, read off which of its own files it holds.
+enum Asked {
+    /// What one filer has filed, looked up by the symbol it trades under.
+    History(Ticker),
+    /// What one filer reported, asked for by the key EDGAR answers to.
+    Facts(Cik),
+    /// A pass of the whole funnel over the filers the case's recordings
+    /// publish.
+    Pass,
+}
+
+impl Asked {
+    fn of(case: &Path) -> Self {
+        let names_ticker = case.join(TICKER).exists();
+        let names_filer = case.join(CIK).exists();
+
+        assert!(
+            !(names_ticker && names_filer),
+            "{}: holds a {TICKER} and a {CIK}, and a case asks one thing",
+            case.display()
+        );
+
+        if names_ticker {
+            Asked::History(Ticker::new(read(case, TICKER).trim()))
+        } else if names_filer {
+            let named = read(case, CIK);
+            let named = named.trim();
+            let key = named.parse().unwrap_or_else(|_| {
+                panic!(
+                    "{}: a {CIK} is the number EDGAR keys a filer by, and {named:?} is not one",
+                    case.display()
+                )
+            });
+            Asked::Facts(Cik::new(key))
+        } else {
+            Asked::Pass
+        }
+    }
 }
 
 /// Every recorded response in a case, keyed by the URL it is the answer to.
@@ -282,6 +343,84 @@ fn render_filing(filing: &Filing, out: &mut String) {
         filing.period().unwrap_or("none"),
         filing.document(),
     );
+}
+
+/// What the retrieval hands the boundary, as text.
+///
+/// Every fact on a line of its own, in the order the retrieval put them in, and
+/// every one of its eight fields on that line. Nothing is summarised and
+/// nothing is sampled, because the two properties this shape of case exists for
+/// are that no fact was dropped and no value was rewritten — and a rendering
+/// that folded a thousand facts into a count would be blind to both.
+fn render_facts(filer: &Filer, out: &mut String) {
+    let _ = writeln!(out, "filer {}", filer.cik);
+    let _ = writeln!(out, "  retrieved from {}", filer.retrieved_from);
+    let _ = writeln!(out, "facts {}", filer.facts.len());
+
+    for fact in &filer.facts {
+        let _ = writeln!(
+            out,
+            "    {} {} {} {} value {} in {} {} filed {}",
+            fact.taxonomy,
+            fact.tag,
+            fact.unit,
+            period(&fact.period),
+            fact.value,
+            fact.accession,
+            fact.form,
+            fact.filed,
+        );
+    }
+}
+
+/// A period as whichever of the two shapes it is.
+fn period(period: &Period) -> String {
+    match period {
+        Period::Instant { at } => format!("at {at}"),
+        Period::Duration { start, end } => format!("from {start} to {end}"),
+    }
+}
+
+/// The boundary's third property, read off what a case produced: taxonomy, tag,
+/// unit, period and accession identify a fact, and no two facts crossing share
+/// those five while carrying different values.
+///
+/// Checked over a recorded document rather than stated as a type, because it is
+/// a property of what EDGAR publishes and not of the code that reads it. Two
+/// values under one key would mean the document publishes a dimensioned fact —
+/// a consolidated figure and a segment of it, say — and which of them a later
+/// stage should take is a decision above the run that finds one. So both are
+/// reported and neither is chosen, and the case goes red until somebody decides.
+fn collisions(filer: &Filer) -> Vec<String> {
+    let mut carried: BTreeMap<(&str, &str, &str, String, &str), &str> = BTreeMap::new();
+    let mut found = Vec::new();
+
+    for fact in &filer.facts {
+        let identity = (
+            fact.taxonomy.as_ref(),
+            fact.tag.as_ref(),
+            fact.unit.as_ref(),
+            period(&fact.period),
+            fact.accession.as_ref(),
+        );
+
+        match carried.entry(identity) {
+            Taken::Vacant(slot) => {
+                slot.insert(&fact.value);
+            }
+            Taken::Occupied(taken) if *taken.get() != fact.value.as_ref() => {
+                let (taxonomy, tag, unit, period, accession) = taken.key();
+                found.push(format!(
+                    "{taxonomy} {tag} {unit} {period} in {accession} carries {} and {}",
+                    taken.get(),
+                    fact.value
+                ));
+            }
+            Taken::Occupied(_) => {}
+        }
+    }
+
+    found
 }
 
 /// The sweep a funnel case runs as. Both halves are the case's rather than the
@@ -478,17 +617,30 @@ fn every_fixture_produces_its_expected_result() {
         let mut egress = Egress::new(Recorded::of(case), declaration(), Pace::system());
 
         produced.clear();
-        if case.join(TICKER).exists() {
-            let ticker = Ticker::new(read(case, TICKER).trim());
-            match filing_history(&mut egress, &ticker) {
+        match Asked::of(case) {
+            Asked::History(ticker) => match filing_history(&mut egress, &ticker) {
                 Ok(retrieved) => render(&ticker, &retrieved, &mut produced),
                 Err(why) => {
                     let _ = writeln!(produced, "ticker {ticker}");
                     let _ = writeln!(produced, "not retrieved, {why}");
                 }
-            }
-        } else {
-            render_pass(&mut egress, &mut produced);
+            },
+            Asked::Facts(cik) => match company_facts(&mut egress, cik) {
+                Ok(filer) => {
+                    render_facts(&filer, &mut produced);
+                    for collision in collisions(&filer) {
+                        failures.push_str(&format!(
+                            "    fixtures/{STAGE}/{name}: two facts share what identifies one, \
+                             and {collision}\n"
+                        ));
+                    }
+                }
+                Err(why) => {
+                    let _ = writeln!(produced, "filer {cik}");
+                    let _ = writeln!(produced, "not retrieved, {why}");
+                }
+            },
+            Asked::Pass => render_pass(&mut egress, &mut produced),
         }
 
         if produced != expected {

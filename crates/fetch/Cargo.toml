@@ -6,7 +6,12 @@ publish.workspace = true
 
 [dependencies]
 serde = { version = "1.0.229", features = ["derive"] }
-serde_json = "1.0.151"
+
+# `raw_value` is what lets an amount cross as the characters EDGAR published
+# rather than as a number read out of them. Without it the only way to hold a
+# published decimal is a binary float, and a float written back out is not the
+# literal that was published.
+serde_json = { version = "1.0.151", features = ["raw_value"] }
 
 # TLS, and only TLS: the HTTP above it is written out in the chokepoint, because
 # a client library takes a URL and finds the host itself, which is the second
@@ -14,6 +19,11 @@ serde_json = "1.0.151"
 # trust store the machine already keeps, so no copy of the root list is
 # committed here to go stale.
 native-tls = "0.2.18"
+
+# The types the fetch to normalize boundary is written in. Not a stage and not
+# a neighbour: the crate depends on nothing, so naming it teaches this stage
+# nothing about the one on the other side.
+vfi-contracts = { path = "../contracts" }
 
 # The golden fixture harness. `test = false` keeps it out of what `cargo test`
 # selects on its own; scripts/gates.sh runs it by name, as its own gate. Why it
