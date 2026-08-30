@@ -1,9 +1,9 @@
 # The tag mapping is data under `registry/`, versioned by the digest of its own bytes, reached through one interface, and overridden one filer at a time
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-30, by `M4-08`
-- **Decided:** not yet, by the decider
+- **Decided:** 2026-08-30, by the decider
 - **Touches:** a new versioned data surface and the gate over it, a new explicit
   interface for the component ANCHORS.md names as the tag mapping, and a new
   top-level directory, which is an amendment to `docs/layout.md`. Any one of the
@@ -549,4 +549,31 @@ What nothing checks, said plainly.
 
 ## Decision review
 
-By the decider, not the proposer.
+- **Authority:** Structural, and within reach: a new data surface, a new gate,
+  and a new interface are the tier's own examples. Nothing here edits an
+  anchor, weakens a gate, or moves the protected-path list or GOALS.md scope;
+  the `docs/layout.md` amendment is deferred to the diff of the task that
+  creates `registry/`. Flagged for later human review, as the tier requires.
+- **Checked:** ANCHORS.md's normalization-is-data invariant, the
+  explicit-interface rule, one-source-of-truth, and anchor 5's uncited-literal
+  ban — applied, none edited. Against `contracts/canonical-concepts/v1.toml`:
+  the twenty-eight concepts listed are exactly the published set, the silence
+  tally (25 unknown, 1 zero, 2 conditional) matches, and the `NotApplicable`
+  construction rule and unassigned-filer rule are restated verbatim. The
+  open-questions citations (answers 1, 4, 6, the override recovery) are
+  accurate. The six alternatives are argued honestly; the contracts/ rejection
+  in particular follows from the protected path and the one-file-per-version
+  shape, not from taste.
+- **Verdict and why:** Accepted. The record decides exactly what the queue
+  asked it to and visibly refuses the two decisions that would have been easy
+  to smuggle in — ranking entries (candidate choice) and reading `form` or
+  `filed` (the alignment ruleset). The digest-as-version argument is the
+  strongest part: the registry's write pattern is many parallel small edits,
+  which is the one pattern the contracts' `v<N>` sequence handles worst. The
+  under-mapping of `cash_and_equivalents` and `preferred_equity` takes the
+  cheap failure (an absence) over the expensive one (a plausible wrong number),
+  which is the milestone's own rule.
+- **What would have changed it:** an ordered entry list, an unbounded assert,
+  or any read of `form`/`filed`/`accession` — each smuggles a separate record
+  into this one. Or a concept list that did not match the published twenty-
+  eight, which would have made the "accounted for" claim false.
