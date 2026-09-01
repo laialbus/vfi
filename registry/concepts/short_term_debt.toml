@@ -1,0 +1,57 @@
+# AccountsPayableCurrent, AccruedLiabilitiesCurrent, Deposits and
+# OperatingLeaseLiabilityCurrent are not this concept: none is a borrowing in
+# the leverage sense.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "DebtCurrent" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "LongTermDebtCurrent" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "ShortTermBorrowings" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "OtherShortTermBorrowings" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "CommercialPaper" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "NotesPayableCurrent" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "FinanceLeaseLiabilityCurrent" },
+]
+
+# For the filer presenting the components and no total.
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "LongTermDebtCurrent" },
+  { taxonomy = "us-gaap", tag = "ShortTermBorrowings" },
+  { taxonomy = "us-gaap", tag = "OtherShortTermBorrowings" },
+  { taxonomy = "us-gaap", tag = "CommercialPaper" },
+  { taxonomy = "us-gaap", tag = "NotesPayableCurrent" },
+  { taxonomy = "us-gaap", tag = "FinanceLeaseLiabilityCurrent" },
+]

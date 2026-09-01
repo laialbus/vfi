@@ -1,0 +1,15 @@
+# ProfitLoss is not this concept: it includes the non-controlling interest the
+# meaning removes.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperations" },
+]
+
+# The same figure for a filer presenting no discontinued operations to separate.
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "NetIncomeLoss" },
+]

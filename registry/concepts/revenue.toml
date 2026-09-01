@@ -1,0 +1,94 @@
+# Every entry is scoped. The vocabulary publishes a reading of this concept per
+# kind, so an unscoped entry would read one kind's statement under another's
+# meaning, and a filer whose kind is not established resolves it Unknown.
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "RevenueFromContractWithCustomerExcludingAssessedTax" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "RevenueFromContractWithCustomerIncludingAssessedTax" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "Revenues" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "SalesRevenueNet" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "SalesRevenueGoodsNet" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["operating"]
+operands = [
+  { taxonomy = "us-gaap", tag = "SalesRevenueServicesNet" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["bank"]
+operands = [
+  { taxonomy = "us-gaap", tag = "RevenuesNetOfInterestExpense" },
+]
+
+# The net reading: interest income already less interest expense, together with
+# non-interest income. InterestAndDividendIncomeOperating is the gross interest
+# income that reading refuses, and is not here.
+[[entry]]
+form = "sum"
+kinds = ["bank"]
+operands = [
+  { taxonomy = "us-gaap", tag = "InterestIncomeExpenseNet" },
+  { taxonomy = "us-gaap", tag = "NoninterestIncome" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["insurer"]
+operands = [
+  { taxonomy = "us-gaap", tag = "Revenues" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["reit"]
+operands = [
+  { taxonomy = "us-gaap", tag = "Revenues" },
+]
+
+[[entry]]
+form = "tag"
+kinds = ["reit"]
+operands = [
+  { taxonomy = "us-gaap", tag = "RealEstateRevenueNet" },
+]
+
+# The total before the expenses of running the portfolio, which is the base the
+# statement subtracts them from. The least attested entry in the registry, and
+# the first the fixtures will correct.
+[[entry]]
+form = "tag"
+kinds = ["investment_company"]
+operands = [
+  { taxonomy = "us-gaap", tag = "GrossInvestmentIncomeOperating" },
+]

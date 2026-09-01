@@ -1,0 +1,9 @@
+# InventoryGross is not this concept: it is before reserves. Nor are the
+# component elements — a sum of them is right only where the filer tagged every
+# one, and a partial sum is a number that looks right.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "InventoryNet" },
+]

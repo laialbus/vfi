@@ -1,0 +1,36 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsToAcquirePropertyPlantAndEquipment" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsToAcquireProductiveAssets" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsForCapitalImprovements" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsToAcquireOtherPropertyPlantAndEquipment" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsToDevelopSoftware" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsToAcquirePropertyPlantAndEquipment" },
+  { taxonomy = "us-gaap", tag = "PaymentsToDevelopSoftware" },
+]

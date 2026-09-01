@@ -1,0 +1,11 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PreferredStockDividendsAndOtherAdjustments" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PreferredStockDividendsIncomeStatementImpact" },
+]

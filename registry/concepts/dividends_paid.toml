@@ -1,0 +1,15 @@
+# PaymentsOfDividendsMinorityInterest is not part of this concept: the
+# non-controlling interest is not a shareholder of the parent.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsOfDividends" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "PaymentsOfDividendsCommonStock" },
+  { taxonomy = "us-gaap", tag = "PaymentsOfDividendsPreferredStockAndPreferenceStock" },
+]

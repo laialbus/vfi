@@ -1,0 +1,27 @@
+# InterestIncomeExpenseNet is not this concept. A net figure that cannot be
+# decomposed is Unknown rather than taken as gross, so it is never eligible
+# here — it is eligible only as one operand of a bank's revenue.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "InterestExpense" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "InterestExpenseDebt" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "InterestAndDebtExpense" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "InterestExpenseBorrowings" },
+]

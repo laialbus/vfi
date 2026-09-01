@@ -1,0 +1,22 @@
+# LongTermDebt is not this concept: it is the total including current
+# maturities, which short_term_debt already carries. Nor is
+# OperatingLeaseLiabilityNoncurrent, which the meaning excludes.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "LongTermDebtNoncurrent" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "FinanceLeaseLiabilityNoncurrent" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "LongTermDebtNoncurrent" },
+  { taxonomy = "us-gaap", tag = "FinanceLeaseLiabilityNoncurrent" },
+]

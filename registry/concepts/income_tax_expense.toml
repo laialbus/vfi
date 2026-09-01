@@ -1,0 +1,12 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "IncomeTaxExpenseBenefit" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "CurrentIncomeTaxExpenseBenefit" },
+  { taxonomy = "us-gaap", tag = "DeferredIncomeTaxExpenseBenefit" },
+]

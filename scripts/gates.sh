@@ -65,7 +65,7 @@ at_once="$(machine_lanes)"
 # is none of them. What would not belong is a name stubbed green, because a gate
 # that cannot fail reads exactly like a gate that is holding.
 #
-# Three names here are not on AGENTS.md's list. scripts is over the operational
+# Four names here are not on AGENTS.md's list. scripts is over the operational
 # scripts themselves, which that list passes over, and it runs first because it
 # is the cheapest and because every other gate is reached through a script.
 # queue is the one WORKPLAN.md asks for — "the queue gate refuses structural
@@ -74,6 +74,9 @@ at_once="$(machine_lanes)"
 # asks for at M3 — "the fetcher cannot reach a host outside the allowed list.
 # This is checked, not intended" — and it sits beside deps and purity, the other
 # two that read the tree for a shape an anchor fixes rather than running it.
+# registry is the one docs/adr/tag-concept-registry.md asks for, over the tag
+# mapping that record makes data; it runs after the gate above it because the
+# concepts and kinds it validates against are read out of a published contract.
 #
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
@@ -92,6 +95,7 @@ expected_gates() {
 	purity
 	egress
 	contracts
+	registry
 	benchmark
 	EOF
 }
@@ -1107,6 +1111,627 @@ gate_contracts() {
 	fi
 }
 
+# ANCHORS.md's "Normalization is data, not code". docs/adr/tag-concept-registry.md
+# fixes the shape of that data — TOML under registry/, one file per concept at
+# registry/concepts/<concept>.toml — and puts this gate in the same diff as the
+# first bytes of it, because a new surface with no gate over it is itself an
+# escalation.
+#
+# The concepts and the kinds an entry may name are read out of the published
+# vocabulary and never restated here. That is what makes the record's promise
+# true: the day a twenty-ninth concept is published, this goes red until the
+# registry accounts for it, and a copy of the list in this file is the one thing
+# that promise cannot survive.
+#
+# What this gate does not do is freeze the registry's bytes. A contract is frozen
+# because the stage on the other side compiled against it; the registry is meant
+# to change whenever a filer uses a tag not yet listed, and its version is the
+# digest of its own bytes, computed by the one interface the registry is reached
+# through. Nothing here computes one, so there is no second digest to drift.
+#
+# The per-filer half — registry/filers/<cik>.toml, its overrides, its assertions
+# and the kind it assigns — is not written yet, and neither are its checks.
+
+# The surface the vocabulary publishes: the highest version its own record names.
+# Read from the record rather than from whichever file is newest, because what is
+# published is what the record says is published.
+vocabulary_surface() {
+	local record version digest number highest match count surface
+
+	record="contracts/canonical-concepts/versions"
+	if [ ! -f "$record" ]; then
+		echo "$prog: no published vocabulary to read the concepts and kinds out of" >&2
+		return 1
+	fi
+
+	highest=0
+	while read -r version digest; do
+		[ -n "$version" ] || continue
+		number="${version#v}"
+		case "$number" in
+		"" | *[!0-9]*) continue ;;
+		esac
+		if [ "$number" -gt "$highest" ]; then
+			highest="$number"
+		fi
+	done <"$record"
+
+	if [ "$highest" -eq 0 ]; then
+		echo "$prog: the vocabulary record publishes no version to read" >&2
+		return 1
+	fi
+
+	count=0
+	surface=""
+	for match in "${record%/*}/v$highest".*; do
+		if [ -f "$match" ]; then
+			count=$((count + 1))
+			surface="$match"
+		fi
+	done
+	if [ "$count" -ne 1 ]; then
+		echo "$prog: the vocabulary publishes v$highest and no single file is it" >&2
+		return 1
+	fi
+
+	printf '%s\n' "$surface"
+}
+
+# The names one table of that surface carries. A sub-table under a concept — the
+# per-kind reading revenue publishes — is a table of its own, so its header ends
+# the block above it and its keys are never mistaken for names.
+vocabulary_names() {
+	awk -v want="$2" '
+		/^\[\[concept\]\]/ { table = "concept"; next }
+		/^\[\[kind\]\]/ { table = "kind"; next }
+		/^\[/ { table = ""; next }
+		table != "" && /^name = "/ {
+			value = $0
+			sub(/^name = "/, "", value)
+			sub(/".*$/, "", value)
+			if (table == want) {
+				print value
+			}
+			table = ""
+		}
+	' "$1"
+}
+
+# The whole registry, read once: a line per problem, and the tally on the last
+# line. A return of 1 means the reading could not be made at all, which is not
+# the same answer as a registry that failed it.
+#
+# The grammar is a subset of TOML and deliberately a narrow one — a table header
+# alone on its line, a field written key = value, and an operand list written one
+# operand to a line. Anything outside it is refused rather than guessed at, which
+# is the only honest answer over a surface where a plausible misreading is the
+# failure mode. Narrow is also what lets one reader be both the parser and the
+# rule: there is no second reading of these bytes here to drift from the first.
+#
+# A file that fails on its shape stops there, for the reason a malformed contract
+# record does: what the rest of it claims is not worth reading once the shape is
+# wrong, and its concept is left out of the accounting rather than reported twice.
+read_registry() {
+	local surface concepts kinds files
+
+	# Joined onto one line: the awk below takes them as a variable, and a
+	# variable assignment carrying a newline is not something every awk reads.
+	surface="$(vocabulary_surface)" || return 1
+	concepts="$(vocabulary_names "$surface" concept | tr '\n' ' ')" || return 1
+	kinds="$(vocabulary_names "$surface" kind | tr '\n' ' ')" || return 1
+	if [ -z "$concepts" ] || [ -z "$kinds" ]; then
+		echo "$prog: no concepts or no kinds to read out of $surface" >&2
+		return 1
+	fi
+
+	files=""
+	if [ -d registry/concepts ]; then
+		files="$(find registry/concepts -type f | sort)"
+	fi
+	if [ -z "$files" ]; then
+		echo "  registry/concepts: holds no file, so no published concept is accounted for"
+		printf '0 of %s published concepts accounted for, 0 rules\n' \
+			"$(printf '%s\n' "$concepts" | awk '{ print NF }')"
+		return 0
+	fi
+
+	awk -v concept_list="$concepts" -v kind_list="$kinds" '
+		function trim(s) {
+			sub(/^[ \t]+/, "", s)
+			sub(/[ \t]+$/, "", s)
+			return s
+		}
+
+		function say(message) {
+			printf "  %s\n", message
+		}
+
+		# A shape this reader cannot make sense of. It names the line, and it
+		# stops the file: everything after it is read against a state that is
+		# already wrong.
+		function fault(message) {
+			say(FILENAME " line " FNR ": " message)
+			broken = 1
+		}
+
+		# The scope is a set, so it renders sorted; a scope that rendered in the
+		# order written would give one rule two ids.
+		function kinds_rendered(   i, j, held, rendered_scope, sorted) {
+			if (nkinds == 0) {
+				return "*"
+			}
+			for (i = 1; i <= nkinds; i++) {
+				sorted[i] = entry_kind[i]
+			}
+			for (i = 2; i <= nkinds; i++) {
+				held = sorted[i]
+				for (j = i - 1; j >= 1 && sorted[j] > held; j--) {
+					sorted[j + 1] = sorted[j]
+				}
+				sorted[j + 1] = held
+			}
+			rendered_scope = sorted[1]
+			for (i = 2; i <= nkinds; i++) {
+				rendered_scope = rendered_scope "," sorted[i]
+			}
+			return rendered_scope
+		}
+
+		# A rule is its concept, its kind scope, its form and its operands in the
+		# order written, and its id is those rendered rather than written beside
+		# them — so it cannot be mistyped, cannot be copied onto a second rule,
+		# and cannot drift from what it names. Each operand carries which kind of
+		# operand it is, so no taxonomy name can collide with a concept name.
+		function rule_id(   i, id) {
+			id = concept "|" kinds_rendered() "|" form "|"
+			for (i = 1; i <= nops; i++) {
+				if (i > 1) {
+					id = id "+"
+				}
+				if (op_kind[i] == "concept") {
+					id = id "concept:" op_concept[i]
+				} else {
+					id = id "element:" op_taxonomy[i] ":" op_tag[i]
+				}
+			}
+			return id
+		}
+
+		function finish_entry(   i, id, shaped) {
+			if (!pending) {
+				return
+			}
+			pending = 0
+
+			if (!has_form) {
+				say(concept ": has an entry with no form, so nothing says what it is")
+				return
+			}
+			if (nops == 0) {
+				say(concept ": has a " form " entry with no operands")
+				return
+			}
+
+			shaped = 1
+			if (form == "tag") {
+				if (nops != 1 || op_kind[1] != "element") {
+					say(concept ": has a tag entry that is not one element")
+					shaped = 0
+				}
+			} else if (form == "sum") {
+				if (nops < 2) {
+					say(concept ": has a sum entry of fewer than two elements")
+					shaped = 0
+				}
+				for (i = 1; i <= nops; i++) {
+					if (op_kind[i] != "element") {
+						say(concept ": has a sum entry whose operands are not all elements")
+						shaped = 0
+						break
+					}
+				}
+			} else if (form == "difference") {
+				if (nops != 2 || op_kind[1] != "concept" || op_kind[2] != "element") {
+					say(concept ": has a difference entry that is not one concept less one element")
+					shaped = 0
+				}
+			} else if (form == "assert") {
+				say(concept ": states an assertion, which belongs to a filer file and never to the general mapping")
+				shaped = 0
+			} else {
+				say(concept ": has an entry whose form is " form ", and the four are tag, sum, difference and assert")
+				shaped = 0
+			}
+			if (!shaped) {
+				return
+			}
+
+			id = rule_id()
+			if (id in rendered) {
+				say(concept ": renders one id for two rules, " id)
+			}
+			rendered[id] = 1
+			nrules++
+
+			if (form == "difference") {
+				edge[concept] = edge[concept] " " op_concept[1]
+			}
+		}
+
+		function finish_file(   how) {
+			if (concept == "") {
+				return
+			}
+			if (broken) {
+				accounted[concept] = "broken"
+				concept = ""
+				return
+			}
+			finish_entry()
+			if (in_operands) {
+				say(concept ": leaves an operand list open")
+				accounted[concept] = "broken"
+				concept = ""
+				return
+			}
+
+			how = ""
+			if (nentries > 0) {
+				how = "mapped"
+			}
+			if (has_unreachable) {
+				if (!has_reason) {
+					say(concept ": is declared unreachable and states no reason for it")
+					how = "broken"
+				} else if (how == "mapped") {
+					say(concept ": is both mapped and declared unreachable")
+					how = "broken"
+				} else {
+					how = "unreachable"
+				}
+			}
+			accounted[concept] = how
+			concept = ""
+		}
+
+		# The concept a file is about is its name. Nothing inside restates it:
+		# one place says which concept these entries reach, and it is the place
+		# the record fixed. Which also means the path has to be exactly the one
+		# the record fixed — a concept file one directory deeper would name a
+		# concept already named, and both would be read.
+		function begin_file(   base, stem) {
+			finish_file()
+			broken = 0
+			section = ""
+			pending = 0
+			in_operands = 0
+			nentries = 0
+			nops = 0
+			nkinds = 0
+			has_form = 0
+			has_kinds = 0
+			has_operands = 0
+			has_unreachable = 0
+			has_reason = 0
+			form = ""
+			concept = ""
+
+			if (FILENAME !~ /^registry\/concepts\/[^\/]+\.toml$/) {
+				say(FILENAME ": is not a concept file, and this directory holds one per concept and nothing else")
+				broken = 1
+				return
+			}
+			base = FILENAME
+			sub(/^.*\//, "", base)
+			stem = base
+			sub(/\.toml$/, "", stem)
+			concept = stem
+			if (!(stem in published_concept)) {
+				say(FILENAME ": names " stem ", which the published vocabulary does not publish")
+				broken = 1
+			}
+		}
+
+		function parse_kinds(value,   body, count, i, j, part, name) {
+			if (value !~ /^\[.*\]$/) {
+				fault("scopes an entry to something that is not a list of kinds")
+				return
+			}
+			body = value
+			sub(/^\[/, "", body)
+			sub(/\]$/, "", body)
+			body = trim(body)
+			if (body == "") {
+				say(concept ": has an entry scoped to no kind, which no filer can match")
+				return
+			}
+
+			count = split(body, part, ",")
+			for (i = 1; i <= count; i++) {
+				name = trim(part[i])
+				if (name !~ /^"[a-z_]+"$/) {
+					fault("scopes an entry to a kind that is not a bare name")
+					return
+				}
+				sub(/^"/, "", name)
+				sub(/"$/, "", name)
+				for (j = 1; j <= nkinds; j++) {
+					if (entry_kind[j] == name) {
+						fault("scopes one entry to the same kind twice")
+						return
+					}
+				}
+				if (!(name in published_kind)) {
+					say(concept ": scopes an entry to " name ", which the published vocabulary does not publish")
+				}
+				nkinds++
+				entry_kind[nkinds] = name
+			}
+		}
+
+		# An operand carries its comma even when it is the last one. TOML allows
+		# that, and requiring it is what keeps this grammar a subset: a reader
+		# that took the comma as optional would accept files no TOML library can.
+		function parse_operand(line,   body, count, i, part, key, value, nkeys, taxonomy, tag, named) {
+			if (line !~ /^\{.*\},$/) {
+				fault("is neither an operand ending in its comma nor the end of the operand list")
+				return
+			}
+			body = line
+			sub(/,$/, "", body)
+			sub(/^\{/, "", body)
+			sub(/\}$/, "", body)
+
+			nkeys = 0
+			taxonomy = ""
+			tag = ""
+			named = ""
+			count = split(body, part, ",")
+			for (i = 1; i <= count; i++) {
+				value = trim(part[i])
+				if (value !~ /^[a-z]+ = "[^"]*"$/) {
+					fault("writes an operand field that is not a name and a quoted value")
+					return
+				}
+				key = value
+				sub(/ = .*$/, "", key)
+				sub(/^[a-z]+ = "/, "", value)
+				sub(/"$/, "", value)
+				nkeys++
+				if (key == "taxonomy") {
+					taxonomy = value
+				} else if (key == "tag") {
+					tag = value
+				} else if (key == "concept") {
+					named = value
+				} else {
+					fault("writes the operand field " key ", which an operand does not have")
+					return
+				}
+			}
+
+			nops++
+			if (nkeys == 2 && taxonomy != "" && tag != "") {
+				if (taxonomy !~ /^[a-z][a-z0-9-]*$/ || tag !~ /^[A-Za-z][A-Za-z0-9]*$/) {
+					fault("names an element no taxonomy and tag spell")
+					return
+				}
+				op_kind[nops] = "element"
+				op_taxonomy[nops] = taxonomy
+				op_tag[nops] = tag
+			} else if (nkeys == 1 && named != "") {
+				op_kind[nops] = "concept"
+				op_concept[nops] = named
+				if (!(named in published_concept)) {
+					say(concept ": has an operand naming " named ", which the published vocabulary does not publish")
+				}
+			} else {
+				fault("writes an operand that is neither an element nor a concept")
+			}
+		}
+
+		# The edges the difference form draws, walked for a cycle. A concept
+		# resolved from a concept resolved from itself has no first step, so the
+		# set of these edges has to stay acyclic.
+		function visit(node,   i, count, part, target) {
+			state[node] = 1
+			count = split(edge[node], part, " ")
+			for (i = 1; i <= count; i++) {
+				target = part[i]
+				if (state[target] == 1) {
+					if (cycle == "") {
+						cycle = node " to " target
+					}
+					continue
+				}
+				if (state[target] == 0) {
+					visit(target)
+				}
+			}
+			state[node] = 2
+		}
+
+		BEGIN {
+			nconcepts = split(concept_list, name, " ")
+			for (i = 1; i <= nconcepts; i++) {
+				published_concept[name[i]] = 1
+				published[i] = name[i]
+			}
+			count = split(kind_list, name, " ")
+			for (i = 1; i <= count; i++) {
+				published_kind[name[i]] = 1
+			}
+			concept = ""
+			cycle = ""
+		}
+
+		FNR == 1 { begin_file() }
+
+		broken { next }
+
+		{
+			line = trim($0)
+			if (line == "" || line ~ /^#/) {
+				next
+			}
+
+			if (in_operands) {
+				if (line == "]") {
+					in_operands = 0
+					next
+				}
+				parse_operand(line)
+				next
+			}
+
+			if (line == "[[entry]]") {
+				finish_entry()
+				section = "entry"
+				pending = 1
+				nentries++
+				nops = 0
+				nkinds = 0
+				has_form = 0
+				has_kinds = 0
+				has_operands = 0
+				form = ""
+				next
+			}
+
+			if (line == "[unreachable]") {
+				finish_entry()
+				if (has_unreachable) {
+					fault("declares the concept unreachable twice")
+					next
+				}
+				section = "unreachable"
+				has_unreachable = 1
+				next
+			}
+
+			if (line ~ /^\[/) {
+				fault("names a table this format does not have")
+				next
+			}
+
+			if (line !~ /^[a-z_]+ = /) {
+				fault("is neither a comment, a table, nor a field")
+				next
+			}
+
+			key = line
+			sub(/ = .*$/, "", key)
+			value = line
+			sub(/^[a-z_]+ = /, "", value)
+
+			if (section == "") {
+				fault("writes a field with no table above it")
+				next
+			}
+
+			if (section == "unreachable") {
+				if (key != "reason") {
+					fault("writes the field " key ", which an unreachable declaration does not have")
+				} else if (has_reason) {
+					fault("states its reason twice")
+				} else if (value !~ /^"[^"]+"$/) {
+					fault("states a reason that is not a string with something in it")
+				} else {
+					has_reason = 1
+				}
+				next
+			}
+
+			if (key == "form") {
+				if (has_form) {
+					fault("states form twice in one entry")
+				} else if (value !~ /^"[a-z_]+"$/) {
+					fault("states a form that is not a bare name")
+				} else {
+					form = value
+					sub(/^"/, "", form)
+					sub(/"$/, "", form)
+					has_form = 1
+				}
+				next
+			}
+
+			if (key == "kinds") {
+				if (has_kinds) {
+					fault("states kinds twice in one entry")
+					next
+				}
+				has_kinds = 1
+				parse_kinds(value)
+				next
+			}
+
+			if (key == "operands") {
+				if (has_operands) {
+					fault("states operands twice in one entry")
+				} else if (value != "[") {
+					fault("opens an operand list on a line that carries more than the bracket")
+				} else {
+					has_operands = 1
+					in_operands = 1
+				}
+				next
+			}
+
+			fault("writes the field " key ", which an entry does not have")
+		}
+
+		END {
+			finish_file()
+
+			for (from in edge) {
+				if (state[from] == 0) {
+					visit(from)
+				}
+			}
+			if (cycle != "") {
+				say("the difference form draws a cycle in the concept edges, from " cycle)
+			}
+
+			covered = 0
+			for (i = 1; i <= nconcepts; i++) {
+				held = published[i]
+				if (accounted[held] == "mapped" || accounted[held] == "unreachable") {
+					covered++
+				} else if (accounted[held] != "broken") {
+					say(held ": is accounted for neither way, by no entry and no unreachable declaration")
+				}
+			}
+
+			printf "%d of %d published concepts accounted for, %d rules\n", covered, nconcepts, nrules
+		}
+	' $files
+}
+
+# The problems alone, which is what a planted case asks for.
+check_registry() {
+	read_registry | sed '$d'
+}
+
+gate_registry() {
+	local output tally problems
+
+	# The checker before what it checks: its cases sit with the proofs below.
+	check_registry_cases || return 1
+
+	output="$(read_registry)" || return 1
+	tally="$(printf '%s\n' "$output" | tail -1)"
+	problems="$(printf '%s\n' "$output" | sed '$d')"
+
+	if [ -n "$problems" ]; then
+		echo "$prog: the registry is not what its record and the published vocabulary allow:" >&2
+		printf '%s\n' "$problems" >&2
+		return 1
+	fi
+
+	echo "registry: $tally"
+}
+
 # AGENTS.md's "the benchmark shows no regression past the set threshold". A
 # workload is a directory under benchmarks/<stage>/ holding what the stage runs
 # over and what it cost, both committed; the thresholds it is allowed to drift by
@@ -1627,6 +2252,351 @@ check_contract_cases() {
 		printf '%s' "$failures" >&2
 		return 1
 	fi
+}
+
+# The registry the case proofs run over, and the vocabulary it is read against.
+# Both are planted rather than taken from the tree, for the reason the queue
+# fixtures give: a proof that read the real mapping would change every time a tag
+# was added to it, and a proof that changes is not pinning anything.
+#
+# This is the shape the rule allows — three concepts, two kinds, every form the
+# general half has, and one concept accounted for by declaring itself out of
+# reach. The copy carrying it must stay green, because a gate that refused every
+# registry it saw would catch each violation below just as well.
+#
+# The digest in the record is not read here. Which version is published is this
+# gate's business; whether its bytes still match is the contracts gate.
+registry_fixture() {
+	local root dir
+
+	root="$1"
+	dir="$root/contracts/canonical-concepts"
+	mkdir -p "$dir" || return 1
+	printf 'v1 %s\n' "0000000000000000000000000000000000000000000000000000000000000000" \
+		>"$dir/versions"
+
+	cat >"$dir/v1.toml" <<'EOF'
+name = "canonical-concepts"
+
+[[kind]]
+name = "alpha"
+
+[[kind]]
+name = "beta"
+
+[[concept]]
+name = "first"
+applies_to = ["alpha", "beta"]
+
+[concept.reading]
+alpha = "a per-kind reading, here so this fixture has a sub-table to pass over"
+
+[[concept]]
+name = "second"
+applies_to = ["alpha"]
+
+[[concept]]
+name = "third"
+applies_to = ["alpha"]
+EOF
+
+	dir="$root/registry/concepts"
+	mkdir -p "$dir" || return 1
+
+	cat >"$dir/first.toml" <<'EOF'
+[[entry]]
+form = "tag"
+kinds = ["alpha"]
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstElement" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstPart" },
+  { taxonomy = "dei", tag = "SecondPart" },
+]
+EOF
+
+	cat >"$dir/second.toml" <<'EOF'
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondElement" },
+]
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "first" },
+  { taxonomy = "us-gaap", tag = "SecondCost" },
+]
+EOF
+
+	cat >"$dir/third.toml" <<'EOF'
+[unreachable]
+reason = "nothing the meaning of this fixture concept admits is attested for it"
+EOF
+}
+
+# One case apiece for every refusal, each the fixture above differing in one way,
+# and what the checker must say about it. A refusal with no case here is a
+# refusal nobody has watched happen, which is the same as not having it.
+registry_cases() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	mapped                      clean
+	does-not-parse              caught
+	operand-without-comma       caught
+	field-with-no-table         caught
+	undeclared-field            caught
+	unknown-form                caught
+	assertion-in-general        caught
+	tag-of-two-elements         caught
+	sum-of-one-element          caught
+	difference-of-two-elements  caught
+	entry-without-form          caught
+	entry-without-operands      caught
+	unpublished-concept-named   caught
+	unpublished-concept-file    caught
+	unpublished-kind            caught
+	scoped-to-no-kind           caught
+	one-id-for-two-rules        caught
+	concept-edges-cycle         caught
+	accounted-neither-way       caught
+	accounted-both-ways         caught
+	unreachable-without-reason  caught
+	not-a-concept-file          caught
+	EOF
+}
+
+plant_registry_case() {
+	local dir
+
+	registry_fixture "$1" || return 1
+	dir="$1/registry/concepts"
+
+	case "$2" in
+	mapped) ;;
+	does-not-parse) printf 'a line that is not a field\n' >>"$dir/first.toml" ;;
+	operand-without-comma)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" }
+]
+EOF
+		;;
+	field-with-no-table) printf 'form = "tag"\n' >"$dir/first.toml" ;;
+	undeclared-field) printf 'reading = "exact"\n' >>"$dir/second.toml" ;;
+	unknown-form)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "ratio"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondElement" },
+]
+EOF
+		;;
+	assertion-in-general)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "assert"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondElement" },
+]
+EOF
+		;;
+	tag-of-two-elements)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+  { taxonomy = "us-gaap", tag = "SecondOtherPart" },
+]
+EOF
+		;;
+	sum-of-one-element)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	difference-of-two-elements)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "difference"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondElement" },
+  { taxonomy = "us-gaap", tag = "SecondCost" },
+]
+EOF
+		;;
+	entry-without-form)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	entry-without-operands)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+EOF
+		;;
+	unpublished-concept-named)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "fourth" },
+  { taxonomy = "us-gaap", tag = "SecondCost" },
+]
+EOF
+		;;
+	unpublished-concept-file) cp "$dir/second.toml" "$dir/fourth.toml" ;;
+	unpublished-kind)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+kinds = ["gamma"]
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	scoped-to-no-kind)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+kinds = []
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	one-id-for-two-rules)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondElement" },
+]
+EOF
+		;;
+	concept-edges-cycle)
+		cat >>"$dir/first.toml" <<'EOF'
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "second" },
+  { taxonomy = "us-gaap", tag = "FirstCost" },
+]
+EOF
+		;;
+	accounted-neither-way) rm "$dir/third.toml" ;;
+	accounted-both-ways)
+		cat >>"$dir/third.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "ThirdElement" },
+]
+EOF
+		;;
+	unreachable-without-reason) printf '[unreachable]\n' >"$dir/third.toml" ;;
+	not-a-concept-file) printf 'a file in the concept directory that is not one\n' >"$dir/notes.md" ;;
+	*)
+		echo "$prog: no registry case named $2" >&2
+		return 1
+		;;
+	esac
+}
+
+# These run in-band with the gate, for the reason the contract cases do: a
+# checker that has quietly stopped checking must not be able to report a clean
+# registry.
+check_registry_cases() {
+	local lab name expectation found verdict failures
+
+	lab="$(mktemp -d "${TMPDIR:-/tmp}/vfi-registry-cases.XXXXXX")" || return 1
+
+	failures=""
+	while read -r name expectation; do
+		if ! plant_registry_case "$lab/$name" "$name"; then
+			failures="$failures  $name: the case could not be built
+"
+			continue
+		fi
+		if ! found="$(cd "$lab/$name" && check_registry)"; then
+			failures="$failures  $name: the checker could not run over it
+"
+			continue
+		fi
+		if [ -n "$found" ]; then
+			verdict=caught
+		else
+			verdict=clean
+		fi
+		if [ "$verdict" != "$expectation" ]; then
+			failures="$failures  $name: the checker leaves it $verdict, and the rule says $expectation
+"
+		fi
+	done <<-EOF
+	$(registry_cases)
+	EOF
+
+	rm -rf "$lab"
+
+	if [ -n "$failures" ]; then
+		echo "$prog: the registry checker does not hold to its own rule:" >&2
+		printf '%s' "$failures" >&2
+		return 1
+	fi
+}
+
+# A published concept accounted for neither way, which is the refusal this gate
+# leans on hardest: it is the shape the registry is in the day a concept is
+# published and nobody has said what reaches it. Whichever concept file comes
+# first will do, for the reason violate_fixtures gives — naming one would leave
+# this proof passing over a file that had been renamed out from under it.
+#
+# Nothing reads registry/ but this gate, so the copy still builds and still
+# tests, which is what leaves the violation to this gate and no other. The tree
+# itself is the shape the gate accepts, so the control proves that side and there
+# is no accept_registry here.
+violate_registry() {
+	local file
+	for file in "$1"/registry/concepts/*.toml; do
+		if [ -f "$file" ]; then
+			rm "$file"
+			return 0
+		fi
+	done
+
+	echo "$prog: no concept file to take out of the registry" >&2
+	return 1
 }
 
 # Work the stage did not do before, on every call: the slowdown a benchmark gate
