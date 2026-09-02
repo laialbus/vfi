@@ -1,9 +1,9 @@
 # A concept takes the candidate that reads it exactly over the one that stands in for it, at the period asked for and no other, and a contest that survives both is `Unknown`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-08-31, by `M4-12`
-- **Decided:** not yet, by the decider
+- **Decided:** 2026-08-31, by the decider
 - **Touches:** two fields on a registry entry, and the gate over them — a surface
   `docs/adr/tag-concept-registry.md` fixes and `registry/` does not yet hold.
   Adding a field to a versioned surface is above a worker, which is why this is a
@@ -545,4 +545,32 @@ What nothing checks, said plainly.
 
 ## Decision review
 
-By the decider, not the proposer.
+- **Authority:** Structural, and within reach: two closed-set fields on the
+  registry entry surface and two strengthening checks on its gate are schema
+  additions and new gates, the tier's own examples. No anchor is edited, no gate
+  weakened, no protected-path entry or GOALS.md scope moved. Flagged for later
+  human review, as the tier requires.
+- **Checked:** the four anchors it names — normalization-is-data, anchor 5's
+  unsourced-value ban, one-source-of-truth, and the vocabulary's construction
+  rules — applied, none edited. Against the accepted records: the registry's
+  "set, not a list" hand-off and its seven named cases match verbatim; the
+  vocabulary's carriage for `Value` and `Unknown` and the silence test are
+  quoted accurately; the fetch contract's five-field identity is as published;
+  the merged fixture it reads exists on main. The six alternatives are argued
+  honestly — the tagged-over-composed rejection in particular falls to the
+  `capital_expenditure` counterexample, not to taste.
+- **Verdict and why:** Accepted. The record turns seven handed-on cases into one
+  four-step procedure with no concept name in it, and the intrinsic-versus-
+  relational argument for `reading` is the answer the registry record's refusal
+  of an ordering asked for: a field answerable about one entry alone survives
+  the parallel write pattern that a rank cannot. Every strictness is priced in a
+  recoverable absence rather than a plausible number — two agreeing survivors
+  are still `Unknown` because a `Value` records one rule — which is the
+  milestone's own rule. And the seam with alignment is drawn where the boundary
+  forces it: nothing inside one filing can name the filing's own period of
+  report, so the caller must.
+- **What would have changed it:** a tie-break among agreeing survivors, a
+  day-count window on the period test, or any read of `form` or `filed` — each
+  is an unsourced pick or a smuggled piece of the alignment ruleset. Or a
+  consolidated-over-segment rule written as a resolution-time preference, which
+  the fixture shows would decide over facts that never arrive.
