@@ -1,0 +1,11 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "NetCashProvidedByUsedInOperatingActivities" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations" },
+]

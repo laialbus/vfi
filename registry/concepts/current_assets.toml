@@ -1,0 +1,5 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "AssetsCurrent" },
+]

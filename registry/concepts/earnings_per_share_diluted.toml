@@ -1,0 +1,12 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperationsPerDilutedShare" },
+]
+
+# The same figure for a filer presenting no discontinued operations to separate.
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "EarningsPerShareDiluted" },
+]

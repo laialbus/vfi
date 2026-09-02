@@ -1,0 +1,17 @@
+# Deliberately under-mapped at v1: only the permanent-equity elements. None of
+# the attested temporary-equity elements is specific to the preferred claim, and
+# they would carry redeemable common and redeemable non-controlling interests
+# into a concept the vocabulary defines as the preferred claim. A filer whose
+# redeemable preferred sits in mezzanine needs an override.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PreferredStockValue" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "PreferredStockValueOutstanding" },
+]

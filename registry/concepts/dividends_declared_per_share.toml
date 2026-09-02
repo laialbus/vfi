@@ -1,0 +1,11 @@
+# CommonStockDividendsPerShareCashPaid is not this concept: the concept is
+# declared, not paid.
+#
+# The sum form — regular and special together, where a filer reports the special
+# under a distinct element — carries no element at v1 because none is attested.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "CommonStockDividendsPerShareDeclared" },
+]

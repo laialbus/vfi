@@ -1,0 +1,11 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments" },
+]

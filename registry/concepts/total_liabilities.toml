@@ -1,0 +1,8 @@
+# LiabilitiesAndStockholdersEquity is not this concept: it is total assets under
+# another name.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "Liabilities" },
+]

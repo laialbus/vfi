@@ -1,0 +1,11 @@
+# Deliberately under-mapped at v1. The concept's own clauses point both ways for
+# a filer with restricted cash, so the wide elements —
+# CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents and its variants
+# — are not here. The narrow element can produce an absence; the wide one can
+# produce a wrong number.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "CashAndCashEquivalentsAtCarryingValue" },
+]

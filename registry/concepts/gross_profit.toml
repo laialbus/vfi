@@ -1,0 +1,36 @@
+# cost_of_revenue is not a concept — the vocabulary left it out — so it appears
+# here as an operand of the difference and nowhere else.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "GrossProfit" },
+]
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "revenue" },
+  { taxonomy = "us-gaap", tag = "CostOfRevenue" },
+]
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "revenue" },
+  { taxonomy = "us-gaap", tag = "CostOfGoodsAndServicesSold" },
+]
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "revenue" },
+  { taxonomy = "us-gaap", tag = "CostOfGoodsSold" },
+]
+
+[[entry]]
+form = "difference"
+operands = [
+  { concept = "revenue" },
+  { taxonomy = "us-gaap", tag = "CostOfServices" },
+]

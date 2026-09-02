@@ -1,0 +1,9 @@
+# StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest is not
+# this concept: the meaning removes that portion, and the element below already
+# excludes it.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "StockholdersEquity" },
+]

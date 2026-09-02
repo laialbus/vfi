@@ -1,0 +1,24 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "DepreciationDepletionAndAmortization" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "DepreciationAndAmortization" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "DepreciationAmortizationAndAccretionNet" },
+]
+
+[[entry]]
+form = "sum"
+operands = [
+  { taxonomy = "us-gaap", tag = "Depreciation" },
+  { taxonomy = "us-gaap", tag = "AmortizationOfIntangibleAssets" },
+]

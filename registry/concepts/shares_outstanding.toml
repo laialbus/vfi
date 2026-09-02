@@ -1,0 +1,11 @@
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "dei", tag = "EntityCommonStockSharesOutstanding" },
+]
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "CommonStockSharesOutstanding" },
+]

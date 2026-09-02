@@ -1,0 +1,8 @@
+# WeightedAverageNumberOfSharesOutstandingBasic is not this concept: it is the
+# other denominator.
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "WeightedAverageNumberOfDilutedSharesOutstanding" },
+]

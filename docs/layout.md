@@ -27,6 +27,7 @@ Nothing else.
 | `.gitignore` | What git never tracks, for the whole tree. At the root and nowhere else: git honours an ignore file in any directory, so a second one would make "is this ignored?" a question with more than one answer. |
 | `crates/` | The engine. One directory per crate — see naming below. |
 | `contracts/` | The typed, versioned contracts between stages (anchor 3), as data. Protected. One directory per contract and nothing else — see below. |
+| `registry/` | The mapping from filing tags to canonical concepts, as data. `registry/concepts/` holds the general mapping, one file per published concept; `registry/filers/` holds the per-company half, one file per filer — its overrides, its assertions, and the kind it is assigned. Not protected, deliberately — see below. |
 | `shell/` | The Python presentation shell, including its `pyproject.toml`. |
 | `scripts/` | Every operational script. See below. |
 | `scripts/tests/` | What those scripts must do, as data: one directory per script under test, named for it, holding one file per case. The harness that runs a corpus is code and lives with the gate that reads it, exactly as the fixture harness lives with the crate it exercises. Nothing here is a script, so nothing here is an exception to the rule below. |
@@ -128,6 +129,33 @@ it by name, and what would have to go with it is the missing-`versions` report,
 which is the one thing that catches a contract published with no record of what
 it published.
 
+## The registry
+
+`registry/` holds the tag mapping, in the shape
+`docs/adr/tag-concept-registry.md` fixes. Two halves, and both are data:
+`registry/concepts/<concept>.toml` says which rules may reach that canonical
+concept for any filer, and `registry/filers/<cik>.toml` says what one filer
+changes about that — a rule added, a general rule excluded, a value asserted,
+and the kind the filer is assigned. Nothing is read from a filer file that is
+not about that filer.
+
+Data at the root, with the code that reads it in the crate that uses it, exactly
+as `fixtures/`, `benchmarks/` and `scripts/tests/` sit. The reader is one
+interface owned by `vfi-normalize`, and the registry is reached through it and
+no other way.
+
+Not under `contracts/`, and the difference is not cosmetic. A contract is a
+boundary between two stages, published whole, one file per version, and frozen;
+this has one reader, no producing stage, and changes whenever a filer uses a tag
+not yet listed. Its version is the digest of its own bytes rather than a
+hand-written sequence, so two runs adding tags collide over nothing.
+
+Not protected, and that is the load-bearing part: adding a tag and writing an
+override are ordinary per-filer work, and a signature at that rate would not
+slow the registry down, it would stop it — and push the mapping back toward the
+branching code the anchor bans. What stands in for protection is the `registry`
+gate, which refuses a registry the next change would corrupt.
+
 ## Development entry points
 
 A tool a person runs by hand — not part of the shipped application, and not a
@@ -159,8 +187,9 @@ it belongs to a run that owns `.claude/rules/`.
 
 ## One file per item
 
-`tasks/`, `sessions/`, `escalations/`, and `docs/adr/` each hold **one file per
-item**. Never an index, a log, or a shared list.
+`tasks/`, `sessions/`, `escalations/`, `docs/adr/`, `registry/concepts/` and
+`registry/filers/` each hold **one file per item**. Never an index, a log, or a
+shared list.
 
 This is not tidiness. Agents run in parallel and unattended; two runs appending
 to one file collide, and the loser's record is lost or the merge is a conflict
@@ -177,6 +206,8 @@ Naming:
 | `sessions/` | `<YYYY-MM-DD>-<task-id>.md` | `sessions/2026-07-28-M1-04.md` |
 | `escalations/` | `<YYYY-MM-DD>-<task-id>.md` | `escalations/2026-07-28-M1-04.md` |
 | `docs/adr/` | `<slug>.md`, named for the decision | `docs/adr/gui-toolkit.md` |
+| `registry/concepts/` | `<concept>.toml`, named for the published concept | `registry/concepts/revenue.toml` |
+| `registry/filers/` | `<cik>.toml`, ten digits, left-padded with zeros | `registry/filers/0000320193.toml` |
 
 A run with no task id — the lead and the decider claim none — uses a short slug
 for the subject instead: `sessions/2026-07-28-lead.md`. If the name is already
