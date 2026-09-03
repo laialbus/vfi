@@ -1145,14 +1145,18 @@ gate_contracts() {
 # nothing, and a defect hidden behind it is the plausible-looking wrong answer
 # this milestone exists to prevent.
 #
+# The concept edges the difference form draws are walked for a cycle twice over:
+# once as the general half draws them, and once per filer over the edges its own
+# file leaves in place — the general ones less the rules it excludes, plus the
+# difference rules it includes. That second walk is the one thing here that
+# composes anything, and it composes only the edges: which of them a filer's kind
+# admits is the interface's question, and a subset of an acyclic graph is acyclic
+# either way.
+#
 # What nothing here checks, said plainly. That an assertion's citation is true,
 # or its value right: a required source puts something visible in front of the one
 # number that enters normalize with no tag behind it, and nothing stands behind
-# that. That a filer's asserted kind is its real accounting shape. And the
-# acyclicity below does not reach a filer's own difference rules — the graph that
-# would have to be walked is the eligible set, general less what this filer
-# excludes plus what it includes, and composing that is the interface's job rather
-# than a second copy of it here.
+# that. That a filer's asserted kind is its real accounting shape.
 #
 # registry/filers/ holds no file yet, and an absent directory is a registry with
 # no override in it rather than a fault. Asserting a company's accounting shape,
@@ -1407,6 +1411,11 @@ $filers"
 					say(subject ": both includes and excludes the rule " id)
 				}
 				included[filer SUBSEP id] = 1
+				if (form == "difference") {
+					nfd[filer]++
+					fd_from[filer SUBSEP nfd[filer]] = concept
+					fd_to[filer SUBSEP nfd[filer]] = op_concept[1]
+				}
 				return
 			}
 
@@ -1418,6 +1427,10 @@ $filers"
 
 			if (form == "difference") {
 				edge[concept] = edge[concept] " " op_concept[1]
+				ndiff++
+				diff_id[ndiff] = id
+				diff_from[ndiff] = concept
+				diff_to[ndiff] = op_concept[1]
 			}
 		}
 
@@ -1817,6 +1830,9 @@ $filers"
 				say(subject ": leaves an operand list open")
 				return
 			}
+			nwalk++
+			walk_filer[nwalk] = filer
+			walk_subject[nwalk] = subject
 			if (!has_cik) {
 				say(subject ": states no cik, so nothing in it says which filer it is about")
 			} else if (cik != filer) {
@@ -1907,8 +1923,7 @@ $filers"
 		# An exclude names a general rule by the id that half renders, and this
 		# reads only as much of it as says which concept and which kinds it is
 		# about. Whether a rule of that id is in the general half is not asked
-		# here: composing the eligible set is what the interface does, and an
-		# exclude that names nothing removes nothing.
+		# here: an exclude that names nothing removes nothing.
 		function finish_exclude(   id, count, part, named, i) {
 			if (!has_id) {
 				say(subject ": excludes no rule, so nothing says which one is removed")
@@ -1977,10 +1992,12 @@ $filers"
 
 		# The edges the difference form draws, walked for a cycle. A concept
 		# resolved from a concept resolved from itself has no first step, so the
-		# set of these edges has to stay acyclic.
-		function visit(node,   i, count, part, target) {
+		# set of these edges has to stay acyclic. The graph is a parameter
+		# because the same walk runs over the general half and again over
+		# the edges each filer is left with.
+		function visit(node, graph,   i, count, part, target) {
 			state[node] = 1
-			count = split(edge[node], part, " ")
+			count = split(graph[node], part, " ")
 			for (i = 1; i <= count; i++) {
 				target = part[i]
 				if (state[target] == 1) {
@@ -1990,7 +2007,7 @@ $filers"
 					continue
 				}
 				if (state[target] == 0) {
-					visit(target)
+					visit(target, graph)
 				}
 			}
 			state[node] = 2
@@ -2226,11 +2243,44 @@ $filers"
 
 			for (from in edge) {
 				if (state[from] == 0) {
-					visit(from)
+					visit(from, edge)
 				}
 			}
 			if (cycle != "") {
 				say("the difference form draws a cycle in the concept edges, from " cycle)
+			}
+
+			# The same walk per filer, over the general edges less the rules
+			# its file excludes plus the difference rules it includes. A filer
+			# whose file touches no difference edge has the general set for its
+			# own, and that was walked above.
+			for (f = 1; f <= nwalk; f++) {
+				held = walk_filer[f]
+				split("", graph)
+				touched = (nfd[held] > 0)
+				for (i = 1; i <= ndiff; i++) {
+					if ((held SUBSEP diff_id[i]) in excluded) {
+						touched = 1
+						continue
+					}
+					graph[diff_from[i]] = graph[diff_from[i]] " " diff_to[i]
+				}
+				if (!touched) {
+					continue
+				}
+				for (i = 1; i <= nfd[held]; i++) {
+					graph[fd_from[held SUBSEP i]] = graph[fd_from[held SUBSEP i]] " " fd_to[held SUBSEP i]
+				}
+				split("", state)
+				cycle = ""
+				for (from in graph) {
+					if (state[from] == 0) {
+						visit(from, graph)
+					}
+				}
+				if (cycle != "") {
+					say(walk_subject[f] ": draws a cycle in the concept edges of its own eligible set, from " cycle)
+				}
 			}
 
 			covered = 0
@@ -2967,6 +3017,8 @@ registry_cases() {
 	assertion-without-a-source          caught
 	assertion-citing-no-accession       caught
 	assertion-of-an-unpublished-concept caught
+	include-closing-a-cycle             caught
+	include-reversing-an-excluded-edge  clean
 	EOF
 }
 
@@ -3290,6 +3342,36 @@ concept = "fourth"
 period = { instant = "2024-12-31" }
 value = "0"
 source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	include-closing-a-cycle)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "first"
+form = "difference"
+operands = [
+  { concept = "second" },
+  { taxonomy = "us-gaap", tag = "FirstCost" },
+]
+EOF
+		;;
+	# The general half draws second to first. This filer removes that edge and
+	# draws the reverse, so its own set is acyclic: the walk composes rather
+	# than unions, and a general edge the file excludes is gone for it.
+	include-reversing-an-excluded-edge)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "second|*|difference|concept:first+element:us-gaap:SecondCost"
+
+[[include]]
+concept = "first"
+form = "difference"
+operands = [
+  { concept = "second" },
+  { taxonomy = "us-gaap", tag = "FirstCost" },
+]
 EOF
 		;;
 	*)
