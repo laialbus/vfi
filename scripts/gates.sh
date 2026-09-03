@@ -1129,8 +1129,39 @@ gate_contracts() {
 # digest of its own bytes, computed by the one interface the registry is reached
 # through. Nothing here computes one, so there is no second digest to drift.
 #
-# The per-filer half — registry/filers/<cik>.toml, its overrides, its assertions
-# and the kind it assigns — is not written yet, and neither are its checks.
+# The per-filer half is registry/filers/<cik>.toml, one file per filer, named for
+# the CIK the fetch → normalize contract keys its retrieval by — ten digits,
+# left-padded, and never a ticker, which is reassigned between companies and does
+# not cross the boundary at all. The file states that cik back, the kind the filer
+# is assigned, and the three overrides: `include`, a rule added for this filer;
+# `exclude`, a general rule removed for it, named by the id the general half
+# renders; and `assert`, a value stated outright for one concept over one period.
+#
+# `include` and `exclude` compose to one eligible set however they are written, so
+# there is no precedence to settle and none is written here. What is refused is
+# the pair that cannot compose — a rule both included and excluded — and two
+# assertions for one concept whose periods overlap. Neither is settled by picking
+# one, and neither is Unknown: Unknown means a filing was consulted and gave
+# nothing, and a defect hidden behind it is the plausible-looking wrong answer
+# this milestone exists to prevent.
+#
+# The concept edges the difference form draws are walked for a cycle twice over:
+# once as the general half draws them, and once per filer over the edges its own
+# file leaves in place — the general ones less the rules it excludes, plus the
+# difference rules it includes. That second walk is the one thing here that
+# composes anything, and it composes only the edges: which of them a filer's kind
+# admits is the interface's question, and a subset of an acyclic graph is acyclic
+# either way.
+#
+# What nothing here checks, said plainly. That an assertion's citation is true,
+# or its value right: a required source puts something visible in front of the one
+# number that enters normalize with no tag behind it, and nothing stands behind
+# that. That a filer's asserted kind is its real accounting shape.
+#
+# registry/filers/ holds no file yet, and an absent directory is a registry with
+# no override in it rather than a fault. Asserting a company's accounting shape,
+# or a value on its behalf, is a reading of that company's filings and belongs to
+# the task whose fixture asks for it; the shape and the refusals land first.
 
 # The surface the vocabulary publishes: the highest version its own record names.
 # Read from the record rather than from whichever file is newest, because what is
@@ -1212,7 +1243,7 @@ vocabulary_names() {
 # record does: what the rest of it claims is not worth reading once the shape is
 # wrong, and its concept is left out of the accounting rather than reported twice.
 read_registry() {
-	local surface concepts kinds files
+	local surface concepts kinds files filers file
 
 	# Joined onto one line: the awk below takes them as a variable, and a
 	# variable assignment carrying a newline is not something every awk reads.
@@ -1230,9 +1261,28 @@ read_registry() {
 	fi
 	if [ -z "$files" ]; then
 		echo "  registry/concepts: holds no file, so no published concept is accounted for"
-		printf '0 of %s published concepts accounted for, 0 rules\n' \
+		printf '0 of %s published concepts accounted for, 0 rules, 0 filers\n' \
 			"$(printf '%s\n' "$concepts" | awk '{ print NF }')"
 		return 0
+	fi
+
+	# The per-filer half, read in the same pass. A file with no lines in it is
+	# named here rather than by the reader below: awk never visits one, so a
+	# filer file that says nothing — and so states no cik, and names no filer —
+	# would be the one file nothing read. A concept file needs no such line,
+	# because an empty one leaves its concept accounted for neither way.
+	filers=""
+	if [ -d registry/filers ]; then
+		filers="$(find registry/filers -type f | sort)"
+		for file in $filers; do
+			if [ ! -s "$file" ]; then
+				echo "  $file: holds nothing, so it states no cik and names no filer"
+			fi
+		done
+		if [ -n "$filers" ]; then
+			files="$files
+$filers"
+		fi
 	fi
 
 	awk -v concept_list="$concepts" -v kind_list="$kinds" '
@@ -1303,43 +1353,52 @@ read_registry() {
 			}
 			pending = 0
 
+			if (half == "filer" && !has_concept) {
+				say(subject ": includes a rule for no concept, so nothing says what it reaches")
+				return
+			}
+
 			if (!has_form) {
-				say(concept ": has an entry with no form, so nothing says what it is")
+				say(subject ": has an entry with no form, so nothing says what it is")
 				return
 			}
 			if (nops == 0) {
-				say(concept ": has a " form " entry with no operands")
+				say(subject ": has a " form " entry with no operands")
 				return
 			}
 
 			shaped = 1
 			if (form == "tag") {
 				if (nops != 1 || op_kind[1] != "element") {
-					say(concept ": has a tag entry that is not one element")
+					say(subject ": has a tag entry that is not one element")
 					shaped = 0
 				}
 			} else if (form == "sum") {
 				if (nops < 2) {
-					say(concept ": has a sum entry of fewer than two elements")
+					say(subject ": has a sum entry of fewer than two elements")
 					shaped = 0
 				}
 				for (i = 1; i <= nops; i++) {
 					if (op_kind[i] != "element") {
-						say(concept ": has a sum entry whose operands are not all elements")
+						say(subject ": has a sum entry whose operands are not all elements")
 						shaped = 0
 						break
 					}
 				}
 			} else if (form == "difference") {
 				if (nops != 2 || op_kind[1] != "concept" || op_kind[2] != "element") {
-					say(concept ": has a difference entry that is not one concept less one element")
+					say(subject ": has a difference entry that is not one concept less one element")
 					shaped = 0
 				}
 			} else if (form == "assert") {
-				say(concept ": states an assertion, which belongs to a filer file and never to the general mapping")
+				if (half == "filer") {
+					say(subject ": includes an entry of the assert form, and a value asserted for a filer is its own table")
+				} else {
+					say(subject ": states an assertion, which belongs to a filer file and never to the general mapping")
+				}
 				shaped = 0
 			} else {
-				say(concept ": has an entry whose form is " form ", and the four are tag, sum, difference and assert")
+				say(subject ": has an entry whose form is " form ", and the four are tag, sum, difference and assert")
 				shaped = 0
 			}
 			if (!shaped) {
@@ -1347,19 +1406,43 @@ read_registry() {
 			}
 
 			id = rule_id()
+			if (half == "filer") {
+				if ((filer SUBSEP id) in excluded) {
+					say(subject ": both includes and excludes the rule " id)
+				}
+				included[filer SUBSEP id] = 1
+				if (form == "difference") {
+					nfd[filer]++
+					fd_from[filer SUBSEP nfd[filer]] = concept
+					fd_to[filer SUBSEP nfd[filer]] = op_concept[1]
+				}
+				return
+			}
+
 			if (id in rendered) {
-				say(concept ": renders one id for two rules, " id)
+				say(subject ": renders one id for two rules, " id)
 			}
 			rendered[id] = 1
 			nrules++
 
 			if (form == "difference") {
 				edge[concept] = edge[concept] " " op_concept[1]
+				ndiff++
+				diff_id[ndiff] = id
+				diff_from[ndiff] = concept
+				diff_to[ndiff] = op_concept[1]
 			}
 		}
 
-		function finish_file(   how) {
-			if (concept == "") {
+		function finish_file(   how, was) {
+			was = half
+			if (was == "filer") {
+				finish_filer_file()
+				half = ""
+				return
+			}
+			half = ""
+			if (was != "concept" || concept == "") {
 				return
 			}
 			if (broken) {
@@ -1369,7 +1452,7 @@ read_registry() {
 			}
 			finish_entry()
 			if (in_operands) {
-				say(concept ": leaves an operand list open")
+				say(subject ": leaves an operand list open")
 				accounted[concept] = "broken"
 				concept = ""
 				return
@@ -1381,10 +1464,10 @@ read_registry() {
 			}
 			if (has_unreachable) {
 				if (!has_reason) {
-					say(concept ": is declared unreachable and states no reason for it")
+					say(subject ": is declared unreachable and states no reason for it")
 					how = "broken"
 				} else if (how == "mapped") {
-					say(concept ": is both mapped and declared unreachable")
+					say(subject ": is both mapped and declared unreachable")
 					how = "broken"
 				} else {
 					how = "unreachable"
@@ -1413,8 +1496,19 @@ read_registry() {
 			has_operands = 0
 			has_unreachable = 0
 			has_reason = 0
+			has_concept = 0
 			form = ""
 			concept = ""
+			subject = FILENAME
+
+			# Which half a file is in is which directory it is in, and the two
+			# are read by different rules from here down.
+			if (FILENAME ~ /^registry\/filers\//) {
+				half = "filer"
+				begin_filer_file()
+				return
+			}
+			half = "concept"
 
 			if (FILENAME !~ /^registry\/concepts\/[^\/]+\.toml$/) {
 				say(FILENAME ": is not a concept file, and this directory holds one per concept and nothing else")
@@ -1426,6 +1520,7 @@ read_registry() {
 			stem = base
 			sub(/\.toml$/, "", stem)
 			concept = stem
+			subject = concept
 			if (!(stem in published_concept)) {
 				say(FILENAME ": names " stem ", which the published vocabulary does not publish")
 				broken = 1
@@ -1442,7 +1537,7 @@ read_registry() {
 			sub(/\]$/, "", body)
 			body = trim(body)
 			if (body == "") {
-				say(concept ": has an entry scoped to no kind, which no filer can match")
+				say(subject ": has an entry scoped to no kind, which no filer can match")
 				return
 			}
 
@@ -1462,7 +1557,7 @@ read_registry() {
 					}
 				}
 				if (!(name in published_kind)) {
-					say(concept ": scopes an entry to " name ", which the published vocabulary does not publish")
+					say(subject ": scopes an entry to " name ", which the published vocabulary does not publish")
 				}
 				nkinds++
 				entry_kind[nkinds] = name
@@ -1523,19 +1618,386 @@ read_registry() {
 				op_kind[nops] = "concept"
 				op_concept[nops] = named
 				if (!(named in published_concept)) {
-					say(concept ": has an operand naming " named ", which the published vocabulary does not publish")
+					say(subject ": has an operand naming " named ", which the published vocabulary does not publish")
 				}
 			} else {
 				fault("writes an operand that is neither an element nor a concept")
 			}
 		}
 
+		# The fields an entry carries, in the general half and in the include a
+		# filer writes alike, because an include is an entry with its concept
+		# written out beside it. One reading of them, so the two cannot drift. A
+		# field this does not know is not a fault here: each caller names what it
+		# was reading in its own words.
+		function entry_field(key, written) {
+			if (key == "form") {
+				if (has_form) {
+					fault("states form twice in one entry")
+				} else if (written !~ /^"[a-z_]+"$/) {
+					fault("states a form that is not a bare name")
+				} else {
+					form = written
+					sub(/^"/, "", form)
+					sub(/"$/, "", form)
+					has_form = 1
+				}
+				return 1
+			}
+
+			if (key == "kinds") {
+				if (has_kinds) {
+					fault("states kinds twice in one entry")
+					return 1
+				}
+				has_kinds = 1
+				parse_kinds(written)
+				return 1
+			}
+
+			if (key == "operands") {
+				if (has_operands) {
+					fault("states operands twice in one entry")
+				} else if (written != "[") {
+					fault("opens an operand list on a line that carries more than the bracket")
+				} else {
+					has_operands = 1
+					in_operands = 1
+				}
+				return 1
+			}
+
+			return 0
+		}
+
+		# The CIK the fetch boundary keys its retrieval by. Read as a length and
+		# a run of digits rather than as the interval an ERE would say it in,
+		# because not every awk this runs under reads one.
+		function is_cik(s) {
+			return (length(s) == 10 && s ~ /^[0-9]+$/)
+		}
+
+		# An accession, in the shape the document publishes it. The shape is the
+		# whole of what is checkable about a citation here.
+		function is_accession(s) {
+			return (s ~ /^[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9][0-9][0-9][0-9][0-9]$/)
+		}
+
+		# A date as the characters the boundary publishes, which is what lets two
+		# of them be compared as they are written.
+		function is_date(s,   month, day) {
+			if (s !~ /^[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]$/) {
+				return 0
+			}
+			month = substr(s, 6, 2) + 0
+			day = substr(s, 9, 2) + 0
+			return (month >= 1 && month <= 12 && day >= 1 && day <= 31)
+		}
+
+		# An inline table on one line — the shape an operand is written in,
+		# without the list around it. Its keys land under a generation of their
+		# own, so one call cannot read what the call before it left and nothing
+		# has to be deleted between them. Returns how many keys it read, and -1
+		# for a value that is not one of these at all.
+		function parse_inline(value,   body, count, i, part, key, held, nkeys) {
+			inline_gen++
+			if (value !~ /^\{.*\}$/) {
+				return -1
+			}
+			body = value
+			sub(/^\{/, "", body)
+			sub(/\}$/, "", body)
+
+			nkeys = 0
+			count = split(body, part, ",")
+			for (i = 1; i <= count; i++) {
+				held = trim(part[i])
+				if (held !~ /^[a-z]+ = "[^"]*"$/) {
+					return -1
+				}
+				key = held
+				sub(/ = .*$/, "", key)
+				sub(/^[a-z]+ = "/, "", held)
+				sub(/"$/, "", held)
+				if (inline_has(key)) {
+					return -1
+				}
+				inline_value[inline_gen SUBSEP key] = held
+				nkeys++
+			}
+			return nkeys
+		}
+
+		function inline_has(key) {
+			return ((inline_gen SUBSEP key) in inline_value)
+		}
+
+		function inline_at(key) {
+			return inline_value[inline_gen SUBSEP key]
+		}
+
+		# A period is one of the two shapes the fetch boundary publishes — the
+		# date an instant is stated at, or the two a duration runs between — and
+		# there is no third. None of them is every period: the case an assertion
+		# is written for most often is a true zero, and a filer with no borrowings
+		# this year may borrow next year, so an unbounded one is a machine for
+		# producing exactly the number that looks right and is not.
+		function parse_period(value,   nkeys) {
+			has_period = 1
+			period_ok = 0
+
+			nkeys = parse_inline(value)
+			if (nkeys < 1) {
+				say(subject ": states a period that is not a table of the dates it covers")
+				return
+			}
+			if (nkeys == 1 && inline_has("instant")) {
+				period_start = inline_at("instant")
+				period_end = period_start
+			} else if (nkeys == 2 && inline_has("start") && inline_has("end")) {
+				period_start = inline_at("start")
+				period_end = inline_at("end")
+			} else {
+				say(subject ": states a period that is neither an instant nor a duration, and an assertion covers the period it names and never every period")
+				return
+			}
+			if (!is_date(period_start) || !is_date(period_end)) {
+				say(subject ": states a period whose dates are not dates")
+				return
+			}
+			if (period_start > period_end) {
+				say(subject ": states a period that ends before it starts")
+				return
+			}
+			period_ok = 1
+		}
+
+		# Where an asserted value was read from. Nothing checks that the citation
+		# is true. What the required field buys is that an assertion with no
+		# stated ground cannot be written at all.
+		function parse_source(value,   nkeys) {
+			has_source = 1
+
+			nkeys = parse_inline(value)
+			if (nkeys != 2 || !inline_has("accession") || !inline_has("line")) {
+				say(subject ": cites a source that is not an accession and the line it is read from")
+				return
+			}
+			if (!is_accession(inline_at("accession"))) {
+				say(subject ": cites " inline_at("accession") ", which is not an accession")
+			}
+			if (inline_at("line") !~ /^[1-9][0-9]*$/) {
+				say(subject ": cites a line that is not one")
+			}
+		}
+
+		# A filer file is about one filer and says so twice: by its name, which
+		# is the CIK, and by the cik it states back. The pair is the one
+		# duplication in this half, and what it catches is the file copied for a
+		# second filer and edited nowhere else.
+		function begin_filer_file(   base, stem) {
+			ftable = ""
+			filer = ""
+			cik = ""
+			has_cik = 0
+			has_kind = 0
+			nassertions = 0
+
+			if (FILENAME !~ /^registry\/filers\/[^\/]+\.toml$/) {
+				say(FILENAME ": is not a filer file, and this directory holds one per filer and nothing else")
+				broken = 1
+				return
+			}
+			base = FILENAME
+			sub(/^.*\//, "", base)
+			stem = base
+			sub(/\.toml$/, "", stem)
+			if (!is_cik(stem)) {
+				say(FILENAME ": is not named for a CIK, which is ten digits left-padded with zeros and never a ticker")
+				broken = 1
+				return
+			}
+			filer = stem
+			nfilers++
+		}
+
+		function finish_filer_file() {
+			if (broken) {
+				return
+			}
+			finish_filer_item()
+			if (in_operands) {
+				say(subject ": leaves an operand list open")
+				return
+			}
+			nwalk++
+			walk_filer[nwalk] = filer
+			walk_subject[nwalk] = subject
+			if (!has_cik) {
+				say(subject ": states no cik, so nothing in it says which filer it is about")
+			} else if (cik != filer) {
+				say(subject ": states the cik " cik ", which is not the filer its name binds it to")
+			}
+		}
+
+		# An include, an exclude and an assertion each end where the next table
+		# begins, or where the file does.
+		function finish_filer_item() {
+			if (ftable == "include") {
+				finish_entry()
+			} else if (ftable == "exclude") {
+				finish_exclude()
+			} else if (ftable == "assert") {
+				finish_assertion()
+			}
+			ftable = ""
+		}
+
+		# The two fields a filer file carries about the filer itself. A ticker is
+		# not one of them.
+		function filer_field(key, written,   held) {
+			if (key == "cik") {
+				if (has_cik) {
+					fault("states its cik twice")
+					return
+				}
+				if (written !~ /^"[0-9]*"$/) {
+					fault("states a cik that is not digits")
+					return
+				}
+				held = written
+				sub(/^"/, "", held)
+				sub(/"$/, "", held)
+				cik = held
+				has_cik = 1
+				if (!is_cik(held)) {
+					fault("states a cik that is not ten digits, left-padded with zeros")
+				}
+				return
+			}
+
+			if (key == "kind") {
+				if (has_kind) {
+					fault("assigns the filer a second kind")
+					return
+				}
+				if (written !~ /^"[a-z_]+"$/) {
+					fault("assigns a kind that is not a bare name")
+					return
+				}
+				held = written
+				sub(/^"/, "", held)
+				sub(/"$/, "", held)
+				has_kind = 1
+				if (!(held in published_kind)) {
+					say(subject ": assigns the kind " held ", which the published vocabulary does not publish")
+				}
+				return
+			}
+
+			fault("writes the field " key ", which a filer file does not have")
+		}
+
+		# The concept an override is about. The general half takes it from the
+		# name of the file; here the file is about a filer, so each override
+		# writes it out.
+		function name_concept(what, written,   held) {
+			if (has_concept) {
+				fault("names the concept of one override twice")
+				return
+			}
+			if (written !~ /^"[a-z_]+"$/) {
+				fault("names a concept that is not a bare name")
+				return
+			}
+			held = written
+			sub(/^"/, "", held)
+			sub(/"$/, "", held)
+			concept = held
+			has_concept = 1
+			if (!(held in published_concept)) {
+				say(subject ": " what " " held ", which the published vocabulary does not publish")
+			}
+		}
+
+		# An exclude names a general rule by the id that half renders, and this
+		# reads only as much of it as says which concept and which kinds it is
+		# about. Whether a rule of that id is in the general half is not asked
+		# here: an exclude that names nothing removes nothing.
+		function finish_exclude(   id, count, part, named, i) {
+			if (!has_id) {
+				say(subject ": excludes no rule, so nothing says which one is removed")
+				return
+			}
+
+			id = exclude_id
+			count = split(id, part, "[|]")
+			if (count != 4 || part[1] == "" || part[2] == "" || part[3] == "" || part[4] == "") {
+				say(subject ": excludes " id ", which is not the shape a rule id renders in")
+				return
+			}
+			if (!(part[1] in published_concept)) {
+				say(subject ": excludes a rule for " part[1] ", which the published vocabulary does not publish")
+			}
+			if (part[2] != "*") {
+				count = split(part[2], named, ",")
+				for (i = 1; i <= count; i++) {
+					if (!(named[i] in published_kind)) {
+						say(subject ": excludes a rule scoped to " named[i] ", which the published vocabulary does not publish")
+					}
+				}
+			}
+
+			if ((filer SUBSEP id) in included) {
+				say(subject ": both includes and excludes the rule " id)
+			}
+			excluded[filer SUBSEP id] = 1
+		}
+
+		# Two assertions for one concept whose periods overlap are ambiguous
+		# override data, and this refuses them rather than choosing between them.
+		function finish_assertion(   i, stated) {
+			stated = 1
+			if (!has_concept) {
+				say(subject ": states an assertion for no concept")
+				stated = 0
+			}
+			if (!has_period) {
+				say(subject ": states an assertion over no period, and an assertion covers the period it names and never every period")
+				stated = 0
+			}
+			if (!has_value) {
+				say(subject ": states an assertion with no value")
+				stated = 0
+			}
+			if (!has_source) {
+				say(subject ": states an assertion citing no source, which is the one field it cannot be written without")
+				stated = 0
+			}
+			if (!stated || !period_ok) {
+				return
+			}
+
+			for (i = 1; i <= nassertions; i++) {
+				if (as_concept[i] == concept && as_start[i] <= period_end && period_start <= as_end[i]) {
+					say(subject ": states two assertions for " concept " whose periods overlap")
+					return
+				}
+			}
+			nassertions++
+			as_concept[nassertions] = concept
+			as_start[nassertions] = period_start
+			as_end[nassertions] = period_end
+		}
+
 		# The edges the difference form draws, walked for a cycle. A concept
 		# resolved from a concept resolved from itself has no first step, so the
-		# set of these edges has to stay acyclic.
-		function visit(node,   i, count, part, target) {
+		# set of these edges has to stay acyclic. The graph is a parameter
+		# because the same walk runs over the general half and again over
+		# the edges each filer is left with.
+		function visit(node, graph,   i, count, part, target) {
 			state[node] = 1
-			count = split(edge[node], part, " ")
+			count = split(graph[node], part, " ")
 			for (i = 1; i <= count; i++) {
 				target = part[i]
 				if (state[target] == 1) {
@@ -1545,7 +2007,7 @@ read_registry() {
 					continue
 				}
 				if (state[target] == 0) {
-					visit(target)
+					visit(target, graph)
 				}
 			}
 			state[node] = 2
@@ -1563,13 +2025,14 @@ read_registry() {
 			}
 			concept = ""
 			cycle = ""
+			half = ""
 		}
 
 		FNR == 1 { begin_file() }
 
 		broken { next }
 
-		{
+		half == "concept" {
 			line = trim($0)
 			if (line == "" || line ~ /^#/) {
 				next
@@ -1642,43 +2105,137 @@ read_registry() {
 				next
 			}
 
-			if (key == "form") {
-				if (has_form) {
-					fault("states form twice in one entry")
-				} else if (value !~ /^"[a-z_]+"$/) {
-					fault("states a form that is not a bare name")
-				} else {
-					form = value
-					sub(/^"/, "", form)
-					sub(/"$/, "", form)
-					has_form = 1
-				}
-				next
-			}
-
-			if (key == "kinds") {
-				if (has_kinds) {
-					fault("states kinds twice in one entry")
-					next
-				}
-				has_kinds = 1
-				parse_kinds(value)
-				next
-			}
-
-			if (key == "operands") {
-				if (has_operands) {
-					fault("states operands twice in one entry")
-				} else if (value != "[") {
-					fault("opens an operand list on a line that carries more than the bracket")
-				} else {
-					has_operands = 1
-					in_operands = 1
-				}
+			if (entry_field(key, value)) {
 				next
 			}
 
 			fault("writes the field " key ", which an entry does not have")
+		}
+
+		# The per-filer half: the same reader over a different grammar. Two
+		# fields about the filer itself, then the three tables that edit the
+		# eligible set for it.
+		half == "filer" {
+			line = trim($0)
+			if (line == "" || line ~ /^#/) {
+				next
+			}
+
+			if (in_operands) {
+				if (line == "]") {
+					in_operands = 0
+					next
+				}
+				parse_operand(line)
+				next
+			}
+
+			if (line == "[[include]]" || line == "[[exclude]]" || line == "[[assert]]") {
+				finish_filer_item()
+				ftable = line
+				sub(/^\[\[/, "", ftable)
+				sub(/\]\]$/, "", ftable)
+				pending = (ftable == "include")
+				concept = ""
+				form = ""
+				exclude_id = ""
+				nops = 0
+				nkinds = 0
+				has_concept = 0
+				has_form = 0
+				has_kinds = 0
+				has_operands = 0
+				has_id = 0
+				has_period = 0
+				has_value = 0
+				has_source = 0
+				period_ok = 0
+				next
+			}
+
+			if (line ~ /^\[/) {
+				fault("names a table this format does not have")
+				next
+			}
+
+			if (line !~ /^[a-z_]+ = /) {
+				fault("is neither a comment, a table, nor a field")
+				next
+			}
+
+			key = line
+			sub(/ = .*$/, "", key)
+			value = line
+			sub(/^[a-z_]+ = /, "", value)
+
+			if (ftable == "") {
+				filer_field(key, value)
+				next
+			}
+
+			if (ftable == "include") {
+				if (key == "concept") {
+					name_concept("includes a rule for", value)
+					next
+				}
+				if (entry_field(key, value)) {
+					next
+				}
+				fault("writes the field " key ", which an include does not have")
+				next
+			}
+
+			if (ftable == "exclude") {
+				if (key != "id") {
+					fault("writes the field " key ", which an exclude does not have")
+				} else if (has_id) {
+					fault("excludes two rules in one table")
+				} else if (value !~ /^"[^"]+"$/) {
+					fault("excludes a rule id that is not a string with something in it")
+				} else {
+					exclude_id = value
+					sub(/^"/, "", exclude_id)
+					sub(/"$/, "", exclude_id)
+					has_id = 1
+				}
+				next
+			}
+
+			if (key == "concept") {
+				name_concept("asserts a value for", value)
+				next
+			}
+
+			if (key == "period") {
+				if (has_period) {
+					fault("states the period of one assertion twice")
+				} else {
+					parse_period(value)
+				}
+				next
+			}
+
+			if (key == "value") {
+				if (has_value) {
+					fault("states the value of one assertion twice")
+				} else if (value !~ /^"-?[0-9]+(\.[0-9]+)?"$/) {
+					fault("states a value that is not the decimal literal a filing publishes")
+				} else {
+					has_value = 1
+				}
+				next
+			}
+
+			if (key == "source") {
+				if (has_source) {
+					fault("cites the source of one assertion twice")
+				} else {
+					parse_source(value)
+				}
+				next
+			}
+
+			fault("writes the field " key ", which an assertion does not have")
 		}
 
 		END {
@@ -1686,11 +2243,44 @@ read_registry() {
 
 			for (from in edge) {
 				if (state[from] == 0) {
-					visit(from)
+					visit(from, edge)
 				}
 			}
 			if (cycle != "") {
 				say("the difference form draws a cycle in the concept edges, from " cycle)
+			}
+
+			# The same walk per filer, over the general edges less the rules
+			# its file excludes plus the difference rules it includes. A filer
+			# whose file touches no difference edge has the general set for its
+			# own, and that was walked above.
+			for (f = 1; f <= nwalk; f++) {
+				held = walk_filer[f]
+				split("", graph)
+				touched = (nfd[held] > 0)
+				for (i = 1; i <= ndiff; i++) {
+					if ((held SUBSEP diff_id[i]) in excluded) {
+						touched = 1
+						continue
+					}
+					graph[diff_from[i]] = graph[diff_from[i]] " " diff_to[i]
+				}
+				if (!touched) {
+					continue
+				}
+				for (i = 1; i <= nfd[held]; i++) {
+					graph[fd_from[held SUBSEP i]] = graph[fd_from[held SUBSEP i]] " " fd_to[held SUBSEP i]
+				}
+				split("", state)
+				cycle = ""
+				for (from in graph) {
+					if (state[from] == 0) {
+						visit(from, graph)
+					}
+				}
+				if (cycle != "") {
+					say(walk_subject[f] ": draws a cycle in the concept edges of its own eligible set, from " cycle)
+				}
 			}
 
 			covered = 0
@@ -1703,7 +2293,7 @@ read_registry() {
 				}
 			}
 
-			printf "%d of %d published concepts accounted for, %d rules\n", covered, nconcepts, nrules
+			printf "%d of %d published concepts accounted for, %d rules, %d filers\n", covered, nconcepts, nrules, nfilers
 		}
 	' $files
 }
@@ -2260,9 +2850,11 @@ check_contract_cases() {
 # was added to it, and a proof that changes is not pinning anything.
 #
 # This is the shape the rule allows — three concepts, two kinds, every form the
-# general half has, and one concept accounted for by declaring itself out of
-# reach. The copy carrying it must stay green, because a gate that refused every
-# registry it saw would catch each violation below just as well.
+# general half has, one concept accounted for by declaring itself out of reach,
+# and one filer carrying every override there is: a rule included, a rule
+# excluded, and two assertions for one concept whose periods do not overlap. The
+# copy carrying it must stay green, because a gate that refused every registry it
+# saw would catch each violation below just as well.
 #
 # The digest in the record is not read here. Which version is published is this
 # gate's business; whether its bytes still match is the contracts gate.
@@ -2338,6 +2930,37 @@ EOF
 [unreachable]
 reason = "nothing the meaning of this fixture concept admits is attested for it"
 EOF
+
+	dir="$root/registry/filers"
+	mkdir -p "$dir" || return 1
+
+	cat >"$dir/0000000042.toml" <<'EOF'
+cik = "0000000042"
+kind = "alpha"
+
+[[include]]
+concept = "first"
+form = "tag"
+kinds = ["beta"]
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstElementAsThisFilerTagsIt" },
+]
+
+[[exclude]]
+id = "second|*|tag|element:us-gaap:SecondElement"
+
+[[assert]]
+concept = "second"
+period = { instant = "2024-12-31" }
+value = "0"
+source = { accession = "0000000042-25-000001", line = "118" }
+
+[[assert]]
+concept = "second"
+period = { start = "2023-01-01", end = "2023-12-31" }
+value = "12500000"
+source = { accession = "0000000042-24-000001", line = "96" }
+EOF
 }
 
 # One case apiece for every refusal, each the fixture above differing in one way,
@@ -2367,14 +2990,45 @@ registry_cases() {
 	accounted-both-ways         caught
 	unreachable-without-reason  caught
 	not-a-concept-file          caught
+
+	# The per-filer half.
+	filer-does-not-parse                caught
+	filer-undeclared-field              caught
+	filer-file-not-named-for-a-cik      caught
+	not-a-filer-file                    caught
+	filer-file-holding-nothing          caught
+	filer-without-a-cik                 caught
+	filer-cik-that-is-not-its-name      caught
+	filer-of-an-unpublished-kind        caught
+	include-without-a-concept           caught
+	include-of-an-unpublished-concept   caught
+	include-of-an-unpublished-kind      caught
+	include-of-the-assert-form          caught
+	exclude-naming-no-rule              caught
+	exclude-of-an-id-that-is-not-one    caught
+	exclude-of-an-unpublished-concept   caught
+	exclude-of-an-unpublished-kind      caught
+	rule-included-and-excluded          caught
+	assertions-whose-periods-overlap    caught
+	assertion-without-a-period          caught
+	assertion-over-every-period         caught
+	assertion-over-what-is-not-a-date   caught
+	assertion-without-a-value           caught
+	assertion-without-a-source          caught
+	assertion-citing-no-accession       caught
+	assertion-of-an-unpublished-concept caught
+	include-closing-a-cycle             caught
+	include-reversing-an-excluded-edge  clean
 	EOF
 }
 
 plant_registry_case() {
-	local dir
+	local dir filers held
 
 	registry_fixture "$1" || return 1
 	dir="$1/registry/concepts"
+	filers="$1/registry/filers"
+	held="$filers/0000000042.toml"
 
 	case "$2" in
 	mapped) ;;
@@ -2527,6 +3181,199 @@ EOF
 		;;
 	unreachable-without-reason) printf '[unreachable]\n' >"$dir/third.toml" ;;
 	not-a-concept-file) printf 'a file in the concept directory that is not one\n' >"$dir/notes.md" ;;
+	filer-does-not-parse) printf 'a line that is not a field\n' >>"$held" ;;
+	filer-undeclared-field) printf 'cik = "0000000043"\nticker = "ACME"\n' >"$filers/0000000043.toml" ;;
+	filer-file-not-named-for-a-cik) printf 'cik = "0000000042"\n' >"$filers/apple.toml" ;;
+	not-a-filer-file) printf 'a file in the filer directory that is not one\n' >"$filers/notes.md" ;;
+	filer-file-holding-nothing) printf '' >"$filers/0000000043.toml" ;;
+	filer-without-a-cik) printf 'kind = "alpha"\n' >"$filers/0000000043.toml" ;;
+	filer-cik-that-is-not-its-name) cp "$held" "$filers/0000000043.toml" ;;
+	filer-of-an-unpublished-kind) printf 'cik = "0000000043"\nkind = "gamma"\n' >"$filers/0000000043.toml" ;;
+	include-without-a-concept)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstOtherElement" },
+]
+EOF
+		;;
+	include-of-an-unpublished-concept)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "fourth"
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "FourthElement" },
+]
+EOF
+		;;
+	include-of-an-unpublished-kind)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "first"
+form = "tag"
+kinds = ["gamma"]
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstOtherElement" },
+]
+EOF
+		;;
+	include-of-the-assert-form)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "first"
+form = "assert"
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstOtherElement" },
+]
+EOF
+		;;
+	exclude-naming-no-rule)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+EOF
+		;;
+	exclude-of-an-id-that-is-not-one)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "second"
+EOF
+		;;
+	exclude-of-an-unpublished-concept)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "fourth|*|tag|element:us-gaap:FourthElement"
+EOF
+		;;
+	exclude-of-an-unpublished-kind)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "second|gamma|tag|element:us-gaap:SecondElement"
+EOF
+		;;
+	rule-included-and-excluded)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "first|beta|tag|element:us-gaap:FirstElementAsThisFilerTagsIt"
+EOF
+		;;
+	assertions-whose-periods-overlap)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "second"
+period = { instant = "2023-06-30" }
+value = "0"
+source = { accession = "0000000042-24-000001", line = "97" }
+EOF
+		;;
+	assertion-without-a-period)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+value = "0"
+source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	assertion-over-every-period)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+period = { every = "yes" }
+value = "0"
+source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	assertion-over-what-is-not-a-date)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+period = { instant = "2024-13-01" }
+value = "0"
+source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	assertion-without-a-value)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+period = { instant = "2024-12-31" }
+source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	assertion-without-a-source)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+period = { instant = "2024-12-31" }
+value = "0"
+EOF
+		;;
+	assertion-citing-no-accession)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "first"
+period = { instant = "2024-12-31" }
+value = "0"
+source = { accession = "the third quarter filing", line = "119" }
+EOF
+		;;
+	assertion-of-an-unpublished-concept)
+		cat >>"$held" <<'EOF'
+
+[[assert]]
+concept = "fourth"
+period = { instant = "2024-12-31" }
+value = "0"
+source = { accession = "0000000042-25-000001", line = "119" }
+EOF
+		;;
+	include-closing-a-cycle)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "first"
+form = "difference"
+operands = [
+  { concept = "second" },
+  { taxonomy = "us-gaap", tag = "FirstCost" },
+]
+EOF
+		;;
+	# The general half draws second to first. This filer removes that edge and
+	# draws the reverse, so its own set is acyclic: the walk composes rather
+	# than unions, and a general edge the file excludes is gone for it.
+	include-reversing-an-excluded-edge)
+		cat >>"$held" <<'EOF'
+
+[[exclude]]
+id = "second|*|difference|concept:first+element:us-gaap:SecondCost"
+
+[[include]]
+concept = "first"
+form = "difference"
+operands = [
+  { concept = "second" },
+  { taxonomy = "us-gaap", tag = "FirstCost" },
+]
+EOF
+		;;
 	*)
 		echo "$prog: no registry case named $2" >&2
 		return 1
