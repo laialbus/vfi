@@ -103,91 +103,14 @@ shapes! {
 #[cfg(test)]
 mod states_what_is_published {
     use super::{Fact, Filer, Period};
+    use crate::published::Contract;
 
     /// The file this module states, relative to the repository root, named
     /// here and nowhere else in this module.
     const PATH: &str = "contracts/fetch-normalize/v1.toml";
 
-    /// The bytes the contracts gate freezes, read from the crate's own
-    /// directory rather than the working one, so what the check reads does not
-    /// depend on where the runner was standing.
-    fn published() -> String {
-        let path = format!("{}/../../{PATH}", env!("CARGO_MANIFEST_DIR"));
-        std::fs::read_to_string(&path)
-            .unwrap_or_else(|why| panic!("{PATH} could not be read: {why}"))
-    }
-
-    /// Every occurrence of the array-of-tables `table`, each as the key/value
-    /// pairs it states, in the order the file states them.
-    ///
-    /// Enough TOML to read a frozen file of a known shape, and no more: full
-    /// lines, a `#` only at the start of one, and one value per key. Anything
-    /// it does not understand inside a table it is reading stops the test,
-    /// because a reader that skipped a line it could not parse would agree with
-    /// a type that had dropped the same field.
-    fn occurrences<'a>(published: &'a str, table: &str) -> Vec<Vec<(&'a str, &'a str)>> {
-        let header = format!("[[{table}]]");
-        let mut found: Vec<Vec<(&str, &str)>> = Vec::new();
-        let mut inside = false;
-
-        for line in published.lines() {
-            let line = line.trim();
-            if line.is_empty() || line.starts_with('#') {
-                continue;
-            }
-            if line.starts_with('[') {
-                inside = line == header;
-                if inside {
-                    found.push(Vec::new());
-                }
-                continue;
-            }
-            if !inside {
-                continue;
-            }
-            let Some((key, value)) = line.split_once('=') else {
-                panic!("{PATH} states `{line}` under [[{table}]], which is not a key and a value");
-            };
-            found
-                .last_mut()
-                .expect("a table was entered before its keys were read")
-                .push((key.trim(), value.trim()));
-        }
-
-        assert!(
-            !found.is_empty(),
-            "{PATH} states no [[{table}]], so this reading of it is unusable"
-        );
-        found
-    }
-
-    fn value_of<'a>(pairs: &[(&'a str, &'a str)], key: &str, table: &str) -> &'a str {
-        let mut stated = pairs.iter().filter(|(name, _)| *name == key);
-        let value = stated
-            .next()
-            .unwrap_or_else(|| panic!("an entry under [[{table}]] in {PATH} states no `{key}`"))
-            .1;
-        assert!(
-            stated.next().is_none(),
-            "an entry under [[{table}]] in {PATH} states `{key}` more than once"
-        );
-        value
-    }
-
-    fn unquoted(value: &str) -> &str {
-        value
-            .strip_prefix('"')
-            .and_then(|inner| inner.strip_suffix('"'))
-            .unwrap_or_else(|| panic!("{PATH} states `{value}` where a quoted string was expected"))
-    }
-
-    /// The `name` of every entry under `table`, in the order the file states
-    /// them.
-    fn names_under<'a>(published: &'a str, table: &str) -> Vec<&'a str> {
-        occurrences(published, table)
-            .iter()
-            .map(|pairs| unquoted(value_of(pairs, "name", table)))
-            .collect()
+    fn published() -> Contract {
+        Contract::at(PATH)
     }
 
     #[test]
@@ -195,7 +118,7 @@ mod states_what_is_published {
         let published = published();
         assert_eq!(
             Filer::FIELDS,
-            names_under(&published, "filer.field").as_slice(),
+            published.names_under("filer.field").as_slice(),
             "the fields `Filer` declares are not the [[filer.field]] names {PATH} states"
         );
     }
@@ -205,7 +128,7 @@ mod states_what_is_published {
         let published = published();
         assert_eq!(
             Fact::FIELDS,
-            names_under(&published, "fact.field").as_slice(),
+            published.names_under("fact.field").as_slice(),
             "the fields `Fact` declares are not the [[fact.field]] names {PATH} states"
         );
     }
@@ -226,11 +149,15 @@ mod states_what_is_published {
             .map(|(shape, dates)| (shape.to_ascii_lowercase(), *dates))
             .collect();
 
-        let stated: Vec<(String, usize)> = occurrences(&published(), "period.shape")
+        let published = published();
+        let stated: Vec<(String, usize)> = published
+            .occurrences("period.shape")
             .iter()
             .map(|pairs| {
-                let name = unquoted(value_of(pairs, "name", "period.shape")).to_owned();
-                let dates = value_of(pairs, "dates", "period.shape");
+                let name = published
+                    .unquoted(published.value_of(pairs, "name", "[[period.shape]]"))
+                    .to_owned();
+                let dates = published.value_of(pairs, "dates", "[[period.shape]]");
                 let dates = dates.parse().unwrap_or_else(|_| {
                     panic!("{PATH} states `dates = {dates}`, which is no count")
                 });
