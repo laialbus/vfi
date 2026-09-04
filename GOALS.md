@@ -84,8 +84,9 @@ catching its mistakes.
 ## M3 — Data arrives, and only from sources we trust
 
 The engine retrieves filings from official government sources. Primary sources
-only: SEC EDGAR for filings, and one user-keyed provider for market prices,
-because filings contain none.
+only: SEC EDGAR for filings. Market prices, which filings do not contain, come
+from one user-keyed provider and are connected in M5, the first milestone that
+consumes one.
 
 **Done when:**
 - Given a ticker, the engine retrieves that company's filing history from EDGAR.
@@ -135,6 +136,12 @@ Value and dividend analysis, computed as a proof from the data and the user's
 settings.
 
 **Done when:**
+- Market prices arrive through the price provider interface from one
+  user-keyed source. The key reaches the engine only as a parameter, and
+  without one every price-dependent metric is absent with a reason.
+- The first provider implementation works within a free-tier key's published
+  limits: screening the corpus needs no price call, and valuing a shortlist
+  fits inside the tier's daily allowance.
 - Value metrics are computed: profitability, returns on capital, valuation
   multiples, liquidity, leverage, financial health and bankruptcy scoring, the
   established screens, and discounted cash flow with margin of safety.
