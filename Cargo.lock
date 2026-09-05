@@ -380,6 +380,9 @@ version = "0.1.0"
 [[package]]
 name = "vfi-normalize"
 version = "0.1.0"
+dependencies = [
+ "vfi-contracts",
+]
 
 [[package]]
 name = "vfi-store"
