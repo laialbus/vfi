@@ -134,11 +134,11 @@ this ruleset never asks the registry about a tag, which the registry record
 forbids in as many words: "It is never asked about a tag."
 
 This is a statement of which set, not of how to compute it. Read against the
-fixture, at the starting content `docs/adr/tag-concept-registry.md` publishes
-for a registry that does not exist yet, the facts under elements the mapping names
-fall at 32 of the 50 periods — 19 durations and 13 instants — and the 18 they
-miss are exactly the strays: three lease terms, two calendar tax years, three
-lease instants, and all ten cover dates. Resolution can only narrow that set further,
+fixture and against `registry/concepts/` as it stands — 28 files naming 74
+elements — the facts under elements the mapping names fall at 32 of the 50
+periods, 19 durations and 13 instants, and the 18 they miss are exactly the
+strays: three lease terms, two calendar tax years, three lease instants, and all
+ten cover dates. Resolution can only narrow that set further,
 never widen it, because every rule beyond the tag makes a candidate harder to
 find.
 
