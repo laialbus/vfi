@@ -142,6 +142,9 @@ settings.
 - The first provider implementation works within a free-tier key's published
   limits: screening the corpus needs no price call, and valuing a shortlist
   fits inside the tier's daily allowance.
+- Analyze's own source cannot name the filesystem, the environment, the
+  clock, a process, or a randomized hasher. This is checked, not intended,
+  and it is in place before the first metric is written.
 - Value metrics are computed: profitability, returns on capital, valuation
   multiples, liquidity, leverage, financial health and bankruptcy scoring, the
   established screens, and discounted cash flow with margin of safety.
