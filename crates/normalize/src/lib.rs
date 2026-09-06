@@ -1,4 +1,11 @@
 //! Normalize stage: resolves filing tags to canonical facts.
+//!
+//! The mapping from tags to concepts is data, not code, and [`registry`] is the
+//! one way to it. Nothing resolves through it yet: it is the door the rule that
+//! chooses among several candidates in one filing, and the ruleset that
+//! reconciles amendments, restatements and periods, will knock on.
+
+pub mod registry;
 
 /// Resolves one filing's facts into the canonical facts the later stages read,
 /// appending them to `out`.

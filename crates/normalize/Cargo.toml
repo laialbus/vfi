@@ -5,6 +5,11 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
+# The types the boundaries this stage sits between are written in: the concepts
+# and filer kinds the registry is read against, and the period an assertion
+# covers. Not a stage and not a neighbour — the crate depends on nothing, so
+# naming it teaches this stage nothing about the one on either side.
+vfi-contracts = { path = "../contracts" }
 
 # The golden fixture harness. `test = false` keeps it out of what `cargo test`
 # selects on its own; scripts/gates.sh runs it by name, as its own gate. Why it
