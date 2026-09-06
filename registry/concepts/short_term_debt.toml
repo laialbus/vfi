@@ -1,45 +1,56 @@
 # AccountsPayableCurrent, AccruedLiabilitiesCurrent, Deposits and
 # OperatingLeaseLiabilityCurrent are not this concept: none is a borrowing in
 # the leverage sense.
+#
+# DebtCurrent is the total the meaning names. Each element below it is one
+# heading of borrowing, so each is the concept only for a filer that borrows no
+# other way.
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "DebtCurrent" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "LongTermDebtCurrent" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "ShortTermBorrowings" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "OtherShortTermBorrowings" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "CommercialPaper" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "NotesPayableCurrent" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "FinanceLeaseLiabilityCurrent" },
 ]
@@ -47,6 +58,7 @@ operands = [
 # For the filer presenting the components and no total.
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "LongTermDebtCurrent" },
   { taxonomy = "us-gaap", tag = "ShortTermBorrowings" },

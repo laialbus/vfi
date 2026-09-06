@@ -1123,6 +1123,18 @@ gate_contracts() {
 # registry accounts for it, and a copy of the list in this file is the one thing
 # that promise cannot survive.
 #
+# Every entry also states how it reads its concept — `exact` where no filer in
+# its scope makes the element differ from the published meaning, `stand_in`
+# where one does — and may state what period it answers, which is the period
+# asked for unless it says otherwise. Both sets are closed by
+# docs/adr/candidate-choice.md, and nothing here reads either field for what it
+# means: the procedure that ranks a stand-in behind an exact reading is that
+# record's and is not written yet. What is checked is that every entry carries a
+# reading, that neither field leaves its set, and that only a concept the
+# vocabulary measures as a balance answers the filing it was reported in — that
+# last read off the published surface, like the concepts and the kinds, rather
+# than restated beside it.
+#
 # What this gate does not do is freeze the registry's bytes. A contract is frozen
 # because the stage on the other side compiled against it; the registry is meant
 # to change whenever a filer uses a tag not yet listed, and its version is the
@@ -1228,6 +1240,44 @@ vocabulary_names() {
 	' "$1"
 }
 
+# The concepts that surface measures at an instant, which is what says where an
+# entry may answer the period of the filing it was reported in. Read out of the
+# published bytes for the reason the names above are: a list of balances here
+# would be a second copy of a reading the vocabulary already publishes, and the
+# copy is the one that drifts.
+#
+# A concept entry ends where the next table begins, so the per-kind reading
+# revenue publishes closes its own entry rather than being read as one.
+vocabulary_balances() {
+	awk '
+		function flush() {
+			if (name != "" && measure == "balance") {
+				print name
+			}
+			name = ""
+			measure = ""
+		}
+		/^\[\[concept\]\]/ { flush(); in_concept = 1; next }
+		/^\[/ { flush(); in_concept = 0; next }
+		!in_concept { next }
+		/^name = "/ {
+			value = $0
+			sub(/^name = "/, "", value)
+			sub(/".*$/, "", value)
+			name = value
+			next
+		}
+		/^measure = "/ {
+			value = $0
+			sub(/^measure = "/, "", value)
+			sub(/".*$/, "", value)
+			measure = value
+			next
+		}
+		END { flush() }
+	' "$1"
+}
+
 # The whole registry, read once: a line per problem, and the tally on the last
 # line. A return of 1 means the reading could not be made at all, which is not
 # the same answer as a registry that failed it.
@@ -1243,13 +1293,14 @@ vocabulary_names() {
 # record does: what the rest of it claims is not worth reading once the shape is
 # wrong, and its concept is left out of the accounting rather than reported twice.
 read_registry() {
-	local surface concepts kinds files filers file
+	local surface concepts kinds balances files filers file
 
 	# Joined onto one line: the awk below takes them as a variable, and a
 	# variable assignment carrying a newline is not something every awk reads.
 	surface="$(vocabulary_surface)" || return 1
 	concepts="$(vocabulary_names "$surface" concept | tr '\n' ' ')" || return 1
 	kinds="$(vocabulary_names "$surface" kind | tr '\n' ' ')" || return 1
+	balances="$(vocabulary_balances "$surface" | tr '\n' ' ')" || return 1
 	if [ -z "$concepts" ] || [ -z "$kinds" ]; then
 		echo "$prog: no concepts or no kinds to read out of $surface" >&2
 		return 1
@@ -1285,7 +1336,7 @@ $filers"
 		fi
 	fi
 
-	awk -v concept_list="$concepts" -v kind_list="$kinds" '
+	awk -v concept_list="$concepts" -v kind_list="$kinds" -v balance_list="$balances" '
 		function trim(s) {
 			sub(/^[ \t]+/, "", s)
 			sub(/[ \t]+$/, "", s)
@@ -1405,6 +1456,24 @@ $filers"
 				return
 			}
 
+			# An entry with no reading is an entry a contest between two of them
+			# cannot be settled from, so it is refused rather than read as
+			# either one.
+			if (!has_reading) {
+				say(subject ": has an entry with no reading, so nothing says whether it reads the concept or stands in for it")
+				return
+			}
+			# The cover-page shape: a count stamped with the date of the
+			# filing rather than with a period end answers the period of the
+			# filing it was reported in. Nothing measured over a period is read
+			# that way — a duration is the period asked for or it is not that
+			# period at all.
+			if (answers == "filing_reported_in" && (concept in published_concept) &&
+				!(concept in measured_as_a_balance)) {
+				say(subject ": has an entry answering the filing it was reported in, and the published vocabulary does not measure " concept " as a balance")
+				return
+			}
+
 			id = rule_id()
 			if (half == "filer") {
 				if ((filer SUBSEP id) in excluded) {
@@ -1494,10 +1563,14 @@ $filers"
 			has_form = 0
 			has_kinds = 0
 			has_operands = 0
+			has_reading = 0
+			has_answers = 0
 			has_unreachable = 0
 			has_reason = 0
 			has_concept = 0
 			form = ""
+			reading = ""
+			answers = ""
 			concept = ""
 			subject = FILENAME
 
@@ -1663,6 +1736,48 @@ $filers"
 				} else {
 					has_operands = 1
 					in_operands = 1
+				}
+				return 1
+			}
+
+			# The two fields docs/adr/candidate-choice.md adds, each held to
+			# its own closed set and read for nothing else here. What a reading
+			# means for a contest between two entries is settled in that record,
+			# and the procedure that reads either field is not written yet.
+			if (key == "reading") {
+				if (has_reading) {
+					fault("states reading twice in one entry")
+					return 1
+				}
+				has_reading = 1
+				if (written !~ /^"[a-z_]+"$/) {
+					fault("states a reading that is not a bare name")
+					return 1
+				}
+				reading = written
+				sub(/^"/, "", reading)
+				sub(/"$/, "", reading)
+				if (reading != "exact" && reading != "stand_in") {
+					say(subject ": has an entry whose reading is " reading ", and the two are exact and stand_in")
+				}
+				return 1
+			}
+
+			if (key == "answers") {
+				if (has_answers) {
+					fault("states answers twice in one entry")
+					return 1
+				}
+				has_answers = 1
+				if (written !~ /^"[a-z_]+"$/) {
+					fault("states what an entry answers as something that is not a bare name")
+					return 1
+				}
+				answers = written
+				sub(/^"/, "", answers)
+				sub(/"$/, "", answers)
+				if (answers != "period_asked_for" && answers != "filing_reported_in") {
+					say(subject ": has an entry answering " answers ", and the two are period_asked_for and filing_reported_in")
 				}
 				return 1
 			}
@@ -2023,6 +2138,10 @@ $filers"
 			for (i = 1; i <= count; i++) {
 				published_kind[name[i]] = 1
 			}
+			count = split(balance_list, name, " ")
+			for (i = 1; i <= count; i++) {
+				measured_as_a_balance[name[i]] = 1
+			}
 			concept = ""
 			cycle = ""
 			half = ""
@@ -2057,7 +2176,11 @@ $filers"
 				has_form = 0
 				has_kinds = 0
 				has_operands = 0
+				has_reading = 0
+				has_answers = 0
 				form = ""
+				reading = ""
+				answers = ""
 				next
 			}
 
@@ -2138,6 +2261,8 @@ $filers"
 				pending = (ftable == "include")
 				concept = ""
 				form = ""
+				reading = ""
+				answers = ""
 				exclude_id = ""
 				nops = 0
 				nkinds = 0
@@ -2145,6 +2270,8 @@ $filers"
 				has_form = 0
 				has_kinds = 0
 				has_operands = 0
+				has_reading = 0
+				has_answers = 0
 				has_id = 0
 				has_period = 0
 				has_value = 0
@@ -2850,11 +2977,13 @@ check_contract_cases() {
 # was added to it, and a proof that changes is not pinning anything.
 #
 # This is the shape the rule allows — three concepts, two kinds, every form the
-# general half has, one concept accounted for by declaring itself out of reach,
-# and one filer carrying every override there is: a rule included, a rule
-# excluded, and two assertions for one concept whose periods do not overlap. The
-# copy carrying it must stay green, because a gate that refused every registry it
-# saw would catch each violation below just as well.
+# general half has, both readings, an entry answering the filing it was reported
+# in on the one concept the fixture vocabulary measures as a balance, one concept
+# accounted for by declaring itself out of reach, and one filer carrying every
+# override there is: a rule included, a rule excluded, and two assertions for one
+# concept whose periods do not overlap. The copy carrying it must stay green,
+# because a gate that refused every registry it saw would catch each violation
+# below just as well.
 #
 # The digest in the record is not read here. Which version is published is this
 # gate's business; whether its bytes still match is the contracts gate.
@@ -2878,6 +3007,7 @@ name = "beta"
 
 [[concept]]
 name = "first"
+measure = "flow"
 applies_to = ["alpha", "beta"]
 
 [concept.reading]
@@ -2885,10 +3015,12 @@ alpha = "a per-kind reading, here so this fixture has a sub-table to pass over"
 
 [[concept]]
 name = "second"
+measure = "balance"
 applies_to = ["alpha"]
 
 [[concept]]
 name = "third"
+measure = "flow"
 applies_to = ["alpha"]
 EOF
 
@@ -2899,12 +3031,14 @@ EOF
 [[entry]]
 form = "tag"
 kinds = ["alpha"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstElement" },
 ]
 
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstPart" },
   { taxonomy = "dei", tag = "SecondPart" },
@@ -2914,12 +3048,15 @@ EOF
 	cat >"$dir/second.toml" <<'EOF'
 [[entry]]
 form = "tag"
+reading = "exact"
+answers = "filing_reported_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondElement" },
 ]
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "first" },
   { taxonomy = "us-gaap", tag = "SecondCost" },
@@ -2942,6 +3079,7 @@ kind = "alpha"
 concept = "first"
 form = "tag"
 kinds = ["beta"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstElementAsThisFilerTagsIt" },
 ]
@@ -2984,6 +3122,10 @@ registry_cases() {
 	unpublished-concept-file    caught
 	unpublished-kind            caught
 	scoped-to-no-kind           caught
+	entry-without-a-reading     caught
+	reading-outside-its-set     caught
+	answers-outside-its-set     caught
+	answers-on-a-flow           caught
 	one-id-for-two-rules        caught
 	concept-edges-cycle         caught
 	accounted-neither-way       caught
@@ -3004,6 +3146,7 @@ registry_cases() {
 	include-of-an-unpublished-concept   caught
 	include-of-an-unpublished-kind      caught
 	include-of-the-assert-form          caught
+	include-without-a-reading           caught
 	exclude-naming-no-rule              caught
 	exclude-of-an-id-that-is-not-one    caught
 	exclude-of-an-unpublished-concept   caught
@@ -3038,18 +3181,20 @@ plant_registry_case() {
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" }
 ]
 EOF
 		;;
 	field-with-no-table) printf 'form = "tag"\n' >"$dir/first.toml" ;;
-	undeclared-field) printf 'reading = "exact"\n' >>"$dir/second.toml" ;;
+	undeclared-field) printf 'prefer = "yes"\n' >>"$dir/second.toml" ;;
 	unknown-form)
 		cat >>"$dir/second.toml" <<'EOF'
 
 [[entry]]
 form = "ratio"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondElement" },
 ]
@@ -3060,6 +3205,7 @@ EOF
 
 [[entry]]
 form = "assert"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondElement" },
 ]
@@ -3070,6 +3216,7 @@ EOF
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" },
   { taxonomy = "us-gaap", tag = "SecondOtherPart" },
@@ -3081,6 +3228,7 @@ EOF
 
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" },
 ]
@@ -3091,6 +3239,7 @@ EOF
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondElement" },
   { taxonomy = "us-gaap", tag = "SecondCost" },
@@ -3101,6 +3250,7 @@ EOF
 		cat >>"$dir/second.toml" <<'EOF'
 
 [[entry]]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" },
 ]
@@ -3111,6 +3261,7 @@ EOF
 
 [[entry]]
 form = "tag"
+reading = "exact"
 EOF
 		;;
 	unpublished-concept-named)
@@ -3118,6 +3269,7 @@ EOF
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "fourth" },
   { taxonomy = "us-gaap", tag = "SecondCost" },
@@ -3131,6 +3283,7 @@ EOF
 [[entry]]
 form = "tag"
 kinds = ["gamma"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" },
 ]
@@ -3142,8 +3295,56 @@ EOF
 [[entry]]
 form = "tag"
 kinds = []
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	entry-without-a-reading)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	reading-outside-its-set)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+reading = "preferred"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	answers-outside-its-set)
+		cat >>"$dir/second.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+reading = "exact"
+answers = "whichever_filing_carries_it"
+operands = [
+  { taxonomy = "us-gaap", tag = "SecondPart" },
+]
+EOF
+		;;
+	# first is measured over a period, so nothing under it answers the period of
+	# the filing it was reported in.
+	answers-on-a-flow)
+		cat >>"$dir/first.toml" <<'EOF'
+
+[[entry]]
+form = "tag"
+reading = "exact"
+answers = "filing_reported_in"
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstOtherElement" },
 ]
 EOF
 		;;
@@ -3152,6 +3353,7 @@ EOF
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SecondElement" },
 ]
@@ -3162,6 +3364,7 @@ EOF
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "second" },
   { taxonomy = "us-gaap", tag = "FirstCost" },
@@ -3174,6 +3377,7 @@ EOF
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "ThirdElement" },
 ]
@@ -3194,6 +3398,7 @@ EOF
 
 [[include]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstOtherElement" },
 ]
@@ -3205,6 +3410,7 @@ EOF
 [[include]]
 concept = "fourth"
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "FourthElement" },
 ]
@@ -3217,6 +3423,7 @@ EOF
 concept = "first"
 form = "tag"
 kinds = ["gamma"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstOtherElement" },
 ]
@@ -3228,6 +3435,18 @@ EOF
 [[include]]
 concept = "first"
 form = "assert"
+reading = "exact"
+operands = [
+  { taxonomy = "us-gaap", tag = "FirstOtherElement" },
+]
+EOF
+		;;
+	include-without-a-reading)
+		cat >>"$held" <<'EOF'
+
+[[include]]
+concept = "first"
+form = "tag"
 operands = [
   { taxonomy = "us-gaap", tag = "FirstOtherElement" },
 ]
@@ -3350,6 +3569,7 @@ EOF
 [[include]]
 concept = "first"
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "second" },
   { taxonomy = "us-gaap", tag = "FirstCost" },
@@ -3368,6 +3588,7 @@ id = "second|*|difference|concept:first+element:us-gaap:SecondCost"
 [[include]]
 concept = "first"
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "second" },
   { taxonomy = "us-gaap", tag = "FirstCost" },

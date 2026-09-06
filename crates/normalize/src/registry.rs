@@ -11,9 +11,13 @@
 //! reach this concept for this filer, and what is each called. [`Registry::answer`]
 //! reports which rules are eligible, never which one wins. Entries for a concept
 //! are a set whose order in the file means nothing, and choosing between two that
-//! both match facts in one filing is a separate record that does not exist yet —
-//! so the answer comes back in the order the rule ids sort in, which is the one
-//! order that carries no information about how the files were written. Nothing
+//! both match facts in one filing is `docs/adr/candidate-choice.md`, whose
+//! procedure is not written yet — so the answer comes back in the order the rule
+//! ids sort in, which is the one order that carries no information about how the
+//! files were written. Each rule carries the two fields that record adds — how
+//! the entry reads its concept, and which period its facts answer — out to
+//! whoever will run the procedure, and neither is read here: a rule is never
+//! dropped, ranked or preferred for either. Nothing
 //! here reads `form`, `filed` or `accession` to prefer one filing over another
 //! either; reconciling amendments, restatements and periods is its own ruleset,
 //! and a preference invented here would be that ruleset written where nobody
@@ -93,15 +97,50 @@ pub enum Outcome<'r> {
     Eligible(Vec<&'r Rule>),
 }
 
-/// One rule the mapping states: what it reaches the concept through, and what it
-/// is called.
+/// One rule the mapping states: what it reaches the concept through, what it is
+/// called, how it reads the concept, and which period its facts answer.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Rule {
     id: Box<str>,
     concept: Concept,
     kinds: Box<[Kind]>,
     form: Form,
+    reading: Reading,
+    answers: Answers,
     operands: Box<[Operand]>,
+}
+
+/// Whether an entry reads its concept or stands in for it.
+///
+/// A claim about one entry against one published meaning, answerable with the
+/// rest of the registry unread — which is what lets two runs add entries at once
+/// without making it inconsistent, and what an order over the entries could not
+/// have been. Nothing here acts on it: dropping a stand-in behind an exact
+/// reading is the candidate-choice procedure, which is not written yet, so this
+/// travels out with the rule and is interpreted nowhere in this module.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Reading {
+    /// No filer in the entry's kind scope makes this element, or this
+    /// composition, differ from the concept as the vocabulary defines it.
+    Exact,
+    /// One does, and the entry is the concept only for a filer that lacks
+    /// whatever makes it differ — a discontinued operation to separate, a
+    /// subtotal to present, a component to tag.
+    StandIn,
+}
+
+/// Which period an entry's facts answer.
+///
+/// The period asked for, unless the entry says otherwise. The exception is the
+/// cover-page share count, which is stamped with the date of the filing rather
+/// than with a period end: its fact in the filing that answers a period answers
+/// that period, and it is one fact because the five-field key makes it one. The
+/// vocabulary admits that reading only for a concept it measures as a balance.
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
+pub enum Answers {
+    #[default]
+    PeriodAskedFor,
+    FilingReportedIn,
 }
 
 /// How a rule reaches its concept.
@@ -321,15 +360,29 @@ impl Registry {
 
 impl Rule {
     /// What this rule is called: the canonical rendering of exactly the fields
-    /// that make it that rule, derived from them rather than written beside
-    /// them, so it cannot be mistyped, cannot be copied onto a second rule, and
-    /// cannot drift from what it names.
+    /// that make it that rule — its concept, its kind scope, its form and its
+    /// operands — derived from them rather than written beside them, so it
+    /// cannot be mistyped, cannot be copied onto a second rule, and cannot drift
+    /// from what it names. The reading and the period answered say how the rule
+    /// is read rather than which rule it is, so neither is in here; two entries
+    /// alike but for one of them render one id and are refused.
     pub fn id(&self) -> &str {
         &self.id
     }
 
     pub fn form(&self) -> Form {
         self.form
+    }
+
+    /// How this entry reads its concept, carried out with the rule and read
+    /// here not at all.
+    pub fn reading(&self) -> Reading {
+        self.reading
+    }
+
+    /// Which period this entry's facts answer, on the same terms.
+    pub fn answers(&self) -> Answers {
+        self.answers
     }
 
     pub fn operands(&self) -> &[Operand] {
@@ -340,6 +393,8 @@ impl Rule {
         concept: Concept,
         kinds: Vec<Kind>,
         form: Form,
+        reading: Reading,
+        answers: Answers,
         operands: Vec<Operand>,
         words: &Vocabulary,
     ) -> Rule {
@@ -377,6 +432,8 @@ impl Rule {
             concept,
             kinds: kinds.into(),
             form,
+            reading,
+            answers,
             operands: operands.into(),
         }
     }

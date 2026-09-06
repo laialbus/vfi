@@ -1,11 +1,14 @@
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "IncomeTaxExpenseBenefit" },
 ]
 
+# The rebuild for the filer presenting the two charges and no total.
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "CurrentIncomeTaxExpenseBenefit" },
   { taxonomy = "us-gaap", tag = "DeferredIncomeTaxExpenseBenefit" },

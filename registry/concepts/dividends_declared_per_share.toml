@@ -3,9 +3,12 @@
 #
 # The sum form — regular and special together, where a filer reports the special
 # under a distinct element — carries no element at v1 because none is attested.
+# The entry below stands in for exactly that filer, and is the concept for one
+# that declares its dividends under this element alone.
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "CommonStockDividendsPerShareDeclared" },
 ]

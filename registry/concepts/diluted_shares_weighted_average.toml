@@ -3,6 +3,7 @@
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "WeightedAverageNumberOfDilutedSharesOutstanding" },
 ]

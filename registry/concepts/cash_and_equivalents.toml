@@ -2,10 +2,13 @@
 # a filer with restricted cash, so the wide elements —
 # CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalents and its variants
 # — are not here. The narrow element can produce an absence; the wide one can
-# produce a wrong number.
+# produce a wrong number. It stands in rather than reads the concept exactly for
+# that same filer: the balance its cash flow statement reconciles to is wider
+# than this element.
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "CashAndCashEquivalentsAtCarryingValue" },
 ]

@@ -1,11 +1,15 @@
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "PreferredStockDividendsAndOtherAdjustments" },
 ]
 
+# The dividends alone, without the accretion and redemption adjustments the
+# meaning takes with them.
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PreferredStockDividendsIncomeStatementImpact" },
 ]

@@ -1,27 +1,34 @@
 # InterestIncomeExpenseNet is not this concept. A net figure that cannot be
 # decomposed is Unknown rather than taken as gross, so it is never eligible
 # here — it is eligible only as one operand of a bank's revenue.
+#
+# The three elements below the first are each the cost of borrowing under one
+# heading, so each is the concept only for a filer that borrows no other way.
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "InterestExpense" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "InterestExpenseDebt" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "InterestAndDebtExpense" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "InterestExpenseBorrowings" },
 ]

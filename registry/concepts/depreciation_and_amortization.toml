@@ -1,23 +1,33 @@
+# Depletion is not this concept and neither is accretion, so the two elements
+# carrying them stand in for it: each is the concept only for a filer with
+# nothing of that kind to charge. The sum rebuilds a total the second element
+# already names, and it is short wherever a filer amortises an intangible it
+# tags under neither operand.
+
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "DepreciationDepletionAndAmortization" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "DepreciationAndAmortization" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "DepreciationAmortizationAndAccretionNet" },
 ]
 
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "Depreciation" },
   { taxonomy = "us-gaap", tag = "AmortizationOfIntangibleAssets" },

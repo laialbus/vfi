@@ -13,7 +13,7 @@ use std::path::{Path, PathBuf};
 
 use vfi_contracts::canonical_concepts::{Concept, Kind};
 use vfi_contracts::fetch_normalize::Period;
-use vfi_normalize::registry::{Outcome, Registry};
+use vfi_normalize::registry::{Answers, Outcome, Reading, Registry};
 
 const APPLE: &str = "0000320193";
 
@@ -124,6 +124,50 @@ fn a_rule_carries_the_id_its_own_fields_render() {
     );
 }
 
+/// Both fields the entry states come back with the rule, and neither is read on
+/// the way out: the stand-in arrives beside the exact reading rather than behind
+/// it, in id order, because ranking them is the candidate-choice procedure and
+/// that is not written yet.
+///
+/// `shares_outstanding` is where the pair is visible in the committed registry:
+/// the cover-page count is stamped with the date of the filing, so it stands in
+/// for a count at the period end and answers the period of the filing it was
+/// reported in.
+#[test]
+fn a_rule_carries_the_reading_and_the_period_its_entry_states() {
+    let registry = read(&committed());
+
+    let answer = registry.answer(
+        APPLE,
+        Some(Kind::Operating),
+        Concept::SharesOutstanding,
+        &instant("2024-09-28"),
+    );
+    let Outcome::Eligible(rules) = &answer.outcome else {
+        panic!("this concept is reached by entries, not by an assertion");
+    };
+    let stated: Vec<(&str, Reading, Answers)> = rules
+        .iter()
+        .map(|rule| (rule.id(), rule.reading(), rule.answers()))
+        .collect();
+
+    assert_eq!(
+        stated,
+        [
+            (
+                "shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding",
+                Reading::StandIn,
+                Answers::FilingReportedIn,
+            ),
+            (
+                "shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding",
+                Reading::Exact,
+                Answers::PeriodAskedFor,
+            ),
+        ]
+    );
+}
+
 /// The scope is a set, so it renders sorted rather than in the order written,
 /// and a rule that reaches a concept for two kinds has one id either way.
 #[test]
@@ -200,6 +244,7 @@ id = \"long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent\"
 [[include]]
 concept = \"long_term_debt\"
 form = \"tag\"
+reading = \"stand_in\"
 operands = [
   { taxonomy = \"us-gaap\", tag = \"LongTermDebtNoncurrentCustom\" },
 ]
@@ -376,7 +421,7 @@ fn a_registry_the_gate_would_refuse_does_not_load() {
         write(
             root,
             "concepts/inventory.toml",
-            "[[entry]]\nform = \"average\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
+            "[[entry]]\nform = \"average\"\nreading = \"exact\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
         );
     });
     assert!(held.contains("whose form is average"), "{held}");
@@ -385,13 +430,13 @@ fn a_registry_the_gate_would_refuse_does_not_load() {
         write(
             root,
             "concepts/inventory.toml",
-            "[[entry]]\nform = \"tag\"\nprefer = \"yes\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
+            "[[entry]]\nform = \"tag\"\nreading = \"exact\"\nprefer = \"yes\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
         );
     });
     assert!(held.contains("writes the field prefer"), "{held}");
 
     let held = refused("one-id-for-two-rules", |root| {
-        let entry = "[[entry]]\nform = \"tag\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n";
+        let entry = "[[entry]]\nform = \"tag\"\nreading = \"exact\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n";
         write(
             root,
             "concepts/inventory.toml",
@@ -399,6 +444,75 @@ fn a_registry_the_gate_would_refuse_does_not_load() {
         );
     });
     assert!(held.contains("renders one id for two rules"), "{held}");
+
+    let held = refused("an-entry-with-no-reading", |root| {
+        write(
+            root,
+            "concepts/inventory.toml",
+            "[[entry]]\nform = \"tag\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
+        );
+    });
+    assert!(held.contains("has an entry with no reading"), "{held}");
+
+    let held = refused("a-reading-outside-its-set", |root| {
+        write(
+            root,
+            "concepts/inventory.toml",
+            "[[entry]]\nform = \"tag\"\nreading = \"preferred\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
+        );
+    });
+    assert!(
+        held.contains("whose reading is preferred, and the two are exact and stand_in"),
+        "{held}"
+    );
+
+    let held = refused("a-period-answered-outside-its-set", |root| {
+        write(
+            root,
+            "concepts/inventory.toml",
+            "[[entry]]\nform = \"tag\"\nreading = \"exact\"\nanswers = \"whichever_filing_carries_it\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"InventoryNet\" },\n]\n",
+        );
+    });
+    assert!(
+        held.contains("answering whichever_filing_carries_it"),
+        "{held}"
+    );
+
+    // revenue is measured over a period, so nothing under it answers the period
+    // of the filing it was reported in.
+    let held = refused("a-flow-answering-the-filing-it-was-reported-in", |root| {
+        write(
+            root,
+            "concepts/revenue.toml",
+            "[[entry]]\nform = \"tag\"\nkinds = [\"operating\"]\nreading = \"exact\"\nanswers = \"filing_reported_in\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"Revenues\" },\n]\n",
+        );
+    });
+    assert!(
+        held.contains("does not measure revenue as a balance"),
+        "{held}"
+    );
+
+    // An include is an entry with its concept written out beside it, held to the
+    // same two fields by the same reading of them.
+    let held = refused("an-include-with-no-reading", |root| {
+        write(
+            root,
+            &format!("filers/{APPLE}.toml"),
+            &format!(
+                "\
+cik = \"{APPLE}\"
+
+[[include]]
+concept = \"inventory\"
+form = \"tag\"
+operands = [
+  {{ taxonomy = \"us-gaap\", tag = \"InventoryNetAsThisFilerTagsIt\" }},
+]
+"
+            ),
+        );
+    });
+    assert!(held.contains("has an entry with no reading"), "{held}");
 
     let held = refused("a-concept-accounted-for-neither-way", |root| {
         erase(root, "concepts/inventory.toml");
@@ -412,7 +526,7 @@ fn a_registry_the_gate_would_refuse_does_not_load() {
         write(
             root,
             "concepts/cost_of_revenue.toml",
-            "[[entry]]\nform = \"tag\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"CostOfRevenue\" },\n]\n",
+            "[[entry]]\nform = \"tag\"\nreading = \"exact\"\noperands = [\n  { taxonomy = \"us-gaap\", tag = \"CostOfRevenue\" },\n]\n",
         );
     });
     assert!(
@@ -433,7 +547,7 @@ fn a_registry_the_gate_would_refuse_does_not_load() {
         write(
             root,
             "concepts/revenue.toml",
-            "[[entry]]\nform = \"difference\"\noperands = [\n  { concept = \"gross_profit\" },\n  { taxonomy = \"us-gaap\", tag = \"CostOfRevenue\" },\n]\n",
+            "[[entry]]\nform = \"difference\"\nreading = \"stand_in\"\noperands = [\n  { concept = \"gross_profit\" },\n  { taxonomy = \"us-gaap\", tag = \"CostOfRevenue\" },\n]\n",
         );
     });
     assert!(
@@ -488,6 +602,7 @@ cik = \"{APPLE}\"
 [[include]]
 concept = \"inventory\"
 form = \"tag\"
+reading = \"exact\"
 operands = [
   {{ taxonomy = \"us-gaap\", tag = \"InventoryNet\" }},
 ]

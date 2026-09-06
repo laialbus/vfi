@@ -3,12 +3,14 @@
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsOfDividends" },
 ]
 
 [[entry]]
 form = "sum"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsOfDividendsCommonStock" },
   { taxonomy = "us-gaap", tag = "PaymentsOfDividendsPreferredStockAndPreferenceStock" },

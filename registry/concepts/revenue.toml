@@ -1,10 +1,15 @@
 # Every entry is scoped. The vocabulary publishes a reading of this concept per
 # kind, so an unscoped entry would read one kind's statement under another's
 # meaning, and a filer whose kind is not established resolves it Unknown.
+#
+# The presented total reads the concept; an element naming one stream of it, and
+# a sum rebuilding it from components, stand in — each is the concept only for a
+# filer with no revenue outside what it names.
 
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "RevenueFromContractWithCustomerExcludingAssessedTax" },
 ]
@@ -12,6 +17,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "RevenueFromContractWithCustomerIncludingAssessedTax" },
 ]
@@ -19,6 +25,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "Revenues" },
 ]
@@ -26,6 +33,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "SalesRevenueNet" },
 ]
@@ -33,6 +41,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SalesRevenueGoodsNet" },
 ]
@@ -40,6 +49,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["operating"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "SalesRevenueServicesNet" },
 ]
@@ -47,6 +57,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["bank"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "RevenuesNetOfInterestExpense" },
 ]
@@ -57,6 +68,7 @@ operands = [
 [[entry]]
 form = "sum"
 kinds = ["bank"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "InterestIncomeExpenseNet" },
   { taxonomy = "us-gaap", tag = "NoninterestIncome" },
@@ -65,6 +77,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["insurer"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "Revenues" },
 ]
@@ -72,6 +85,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["reit"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "Revenues" },
 ]
@@ -79,6 +93,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["reit"]
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "RealEstateRevenueNet" },
 ]
@@ -89,6 +104,7 @@ operands = [
 [[entry]]
 form = "tag"
 kinds = ["investment_company"]
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "GrossInvestmentIncomeOperating" },
 ]
