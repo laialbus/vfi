@@ -1,9 +1,9 @@
 # A filer's periods are the ones its own facts date, every filing that reports a period answers it, and a value is the one the latest filing states
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-04, by `M4-14`
-- **Decided:** —
+- **Decided:** 2026-09-05, by the decider
 - **Touches:** one field the fetch → normalize contract does not carry, proposed
   here as `v2` and not written. A contract version is above a worker, which is
   why this is a proposal and not a commit. Nothing else published changes: the
@@ -566,9 +566,43 @@ What nothing checks, said plainly.
 
 ## Decision review
 
-By the decider, not the proposer.
-
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach: it proposes one field on the
+  fetch → normalize boundary, the tier's own example, and puts the ruleset in
+  code inside `vfi-normalize` under the anchor's own sentence keeping that
+  ruleset separate from the mapping. No anchor is edited, no gate weakened, no
+  protected-path entry or milestone scope moved. Flagged for later human
+  review, as the tier requires.
+- **Checked:** the four anchors it names — the unsourced-value ban, normalization-
+  is-data read with the sentence beside it, one source of truth, and the
+  provenance invariant — applied, none edited. Against the accepted records:
+  candidate-choice's seam is quoted accurately, its own Consequences already
+  name the v2 field this record proposes, and nothing inside one filing is
+  reopened; the registry record's "never asked about a tag" and the
+  vocabulary's carriage for a `Value` are as published; the fetch record's
+  placement of the parse and its rejection of the filing history are as
+  quoted. Every fixture claim re-derived from the raw companyfacts and
+  submissions documents: 1,643 facts at 50 periods; the ten cover dates equal
+  to `filed`; the quarter carried full by two filings and by two facts in four
+  others; the EPS correction with net income and diluted shares unchanged; no
+  period-end count at 2023-12-31 and five filings answering that instant, the
+  latest filed 2025-08-20; `reportDate` equal to the period end on all nine
+  shared filings; and the 32-period set with its 18 strays, which holds once
+  the cover-page entry is held out. The seven alternatives are argued
+  honestly, and three fall to the fixture rather than to taste.
+- **Verdict and why:** Accepted. Three rules with no filer, tag, concept or
+  number in them settle exactly what the accepted record handed on, and every
+  strictness is priced in a recoverable absence rather than a plausible
+  number: a thin later filing displaces nothing, a tie on `filed` is
+  `Unknown`, and the cover-page count is never a candidate until the boundary
+  can say which period a filing reports. The fiscal-year change costing no
+  clause is the argument for dates over labels, made as the case that would
+  break every other reading. The v2 field is proposed where the record's own
+  fixture shows the v1 reading handing `shares_outstanding` a count nineteen
+  months late, and it is a decision and a version bump rather than a
+  workaround.
+- **What would have changed it:** a day count or a window on what makes a
+  period the filer's, a preference among forms standing in for a date, a
+  filing's period read off `fy`, `fp` or `frame` or picked from inside one
+  filing by its shape, or a later filing's silence read as a withdrawal —
+  each an unsourced pick or a smuggled piece of candidate choice. Or a fixture
+  claim that did not re-derive, the 32-period set above all.
