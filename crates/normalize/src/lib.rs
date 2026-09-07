@@ -1,10 +1,16 @@
 //! Normalize stage: resolves filing tags to canonical facts.
 //!
-//! The mapping from tags to concepts is data, not code, and [`registry`] is the
-//! one way to it. Nothing resolves through it yet: it is the door the rule that
+//! Two modules, in the order the vocabulary fixes between them.
+//! [`applicability`] is asked first, of the published clauses alone, and a
+//! concept the filer's kind excludes stops there. [`registry`] is the one way
+//! to the tag mapping, which is data rather than code, and a concept reaches it
+//! only having got past the question above.
+//!
+//! Nothing resolves through either yet: they are the doors the rule that
 //! chooses among several candidates in one filing, and the ruleset that
 //! reconciles amendments, restatements and periods, will knock on.
 
+pub mod applicability;
 pub mod registry;
 
 /// Resolves one filing's facts into the canonical facts the later stages read,
