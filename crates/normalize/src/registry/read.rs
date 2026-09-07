@@ -18,11 +18,13 @@
 //! worth reading once the shape is wrong, and reporting every line after the
 //! first mistake buries the mistake.
 
-use vfi_contracts::canonical_concepts::{Concept, Kind};
+use vfi_contracts::canonical_concepts::{Concept, Kind, Measure};
 use vfi_contracts::fetch_normalize::Period;
 
 use super::tree::File;
-use super::{Assertion, Form, Operand, Overrides, Problems, Rule, Source, Vocabulary};
+use super::{
+    Answers, Assertion, Form, Operand, Overrides, Problems, Reading, Rule, Source, Vocabulary,
+};
 
 /// One concept's file: the rules it states, and whether it declares the concept
 /// out of the mapping's reach instead.
@@ -38,14 +40,14 @@ pub(super) fn concept_file(
     problems: &mut Problems,
 ) -> Mapping {
     let named = words.spelling_of(concept).to_owned();
-    let mut reading = Reading::new(&file.path, named, words, problems);
+    let mut reader = Reader::new(&file.path, named, words, problems);
     let mut mapping = Mapping {
         rules: Vec::new(),
         unreachable: false,
     };
 
     let Some(text) = file.text() else {
-        reading.say("is not text, and the registry is written in TOML");
+        reader.say("is not text, and the registry is written in TOML");
         return mapping;
     };
 
@@ -54,33 +56,33 @@ pub(super) fn concept_file(
     let mut section = Section::None;
 
     for line in text.lines() {
-        reading.line += 1;
+        reader.line += 1;
         let line = line.trim();
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
 
-        if reading.in_operands {
-            reading.operand_line(line);
-            if reading.broken {
+        if reader.in_operands {
+            reader.operand_line(line);
+            if reader.broken {
                 return mapping;
             }
             continue;
         }
 
         if line == "[[entry]]" {
-            reading.take_entry(concept, &mut mapping.rules);
-            reading.entry = Entry::default();
-            reading.pending = true;
+            reader.take_entry(concept, &mut mapping.rules);
+            reader.entry = Entry::default();
+            reader.pending = true;
             section = Section::Entry;
             entries += 1;
             continue;
         }
 
         if line == "[unreachable]" {
-            reading.take_entry(concept, &mut mapping.rules);
+            reader.take_entry(concept, &mut mapping.rules);
             if mapping.unreachable {
-                reading.fault("declares the concept unreachable twice");
+                reader.fault("declares the concept unreachable twice");
                 return mapping;
             }
             mapping.unreachable = true;
@@ -89,59 +91,59 @@ pub(super) fn concept_file(
         }
 
         if line.starts_with('[') {
-            reading.fault("names a table this format does not have");
+            reader.fault("names a table this format does not have");
             return mapping;
         }
 
         let Some((key, value)) = field(line) else {
-            reading.fault("is neither a comment, a table, nor a field");
+            reader.fault("is neither a comment, a table, nor a field");
             return mapping;
         };
 
         match section {
             Section::None => {
-                reading.fault("writes a field with no table above it");
+                reader.fault("writes a field with no table above it");
                 return mapping;
             }
             Section::Unreachable => {
                 if key != "reason" {
-                    reading.fault(&format!(
+                    reader.fault(&format!(
                         "writes the field {key}, which an unreachable declaration does not have"
                     ));
                 } else if reason {
-                    reading.fault("states its reason twice");
+                    reader.fault("states its reason twice");
                 } else if quoted(value).is_none_or(str::is_empty) {
-                    reading.fault("states a reason that is not a string with something in it");
+                    reader.fault("states a reason that is not a string with something in it");
                 } else {
                     reason = true;
                 }
             }
             Section::Entry => {
-                if !reading.entry_field(key, value) {
-                    reading.fault(&format!(
+                if !reader.entry_field(key, value) {
+                    reader.fault(&format!(
                         "writes the field {key}, which an entry does not have"
                     ));
                 }
             }
         }
 
-        if reading.broken {
+        if reader.broken {
             return mapping;
         }
     }
 
-    reading.take_entry(concept, &mut mapping.rules);
-    if reading.in_operands {
-        reading.say("leaves an operand list open");
+    reader.take_entry(concept, &mut mapping.rules);
+    if reader.in_operands {
+        reader.say("leaves an operand list open");
         return mapping;
     }
 
     if mapping.unreachable {
         if !reason {
-            reading.say("is declared unreachable and states no reason for it");
+            reader.say("is declared unreachable and states no reason for it");
         }
         if entries > 0 {
-            reading.say("is both mapped and declared unreachable");
+            reader.say("is both mapped and declared unreachable");
         }
     }
 
@@ -155,7 +157,7 @@ pub(super) fn filer_file(
     problems: &mut Problems,
 ) -> Overrides {
     let named = file.path.clone();
-    let mut reading = Reading::new(&file.path, named, words, problems);
+    let mut reader = Reader::new(&file.path, named, words, problems);
     let mut overrides = Overrides {
         cik: cik.into(),
         kind: None,
@@ -168,43 +170,43 @@ pub(super) fn filer_file(
     let mut table = Table::None;
 
     let Some(text) = file.text() else {
-        reading.say("is not text, and the registry is written in TOML");
+        reader.say("is not text, and the registry is written in TOML");
         return overrides;
     };
 
     for line in text.lines() {
-        reading.line += 1;
+        reader.line += 1;
         let line = line.trim();
         if line.is_empty() || line.starts_with('#') {
             continue;
         }
 
-        if reading.in_operands {
-            reading.operand_line(line);
-            if reading.broken {
+        if reader.in_operands {
+            reader.operand_line(line);
+            if reader.broken {
                 return overrides;
             }
             continue;
         }
 
         if line == "[[include]]" || line == "[[exclude]]" || line == "[[assert]]" {
-            reading.take_table(table, &mut overrides);
+            reader.take_table(table, &mut overrides);
             table = match line {
                 "[[include]]" => Table::Include,
                 "[[exclude]]" => Table::Exclude,
                 _ => Table::Assert,
             };
-            reading.pending = table == Table::Include;
+            reader.pending = table == Table::Include;
             continue;
         }
 
         if line.starts_with('[') {
-            reading.fault("names a table this format does not have");
+            reader.fault("names a table this format does not have");
             return overrides;
         }
 
         let Some((key, value)) = field(line) else {
-            reading.fault("is neither a comment, a table, nor a field");
+            reader.fault("is neither a comment, a table, nor a field");
             return overrides;
         };
 
@@ -212,50 +214,50 @@ pub(super) fn filer_file(
             Table::None => match key {
                 "cik" => {
                     if stated_cik.is_some() {
-                        reading.fault("states its cik twice");
+                        reader.fault("states its cik twice");
                     } else {
                         match quoted(value) {
                             Some(held) if is_cik(held) => stated_cik = Some(held.to_owned()),
-                            Some(_) => reading.fault(
+                            Some(_) => reader.fault(
                                 "states a cik that is not ten digits, left-padded with zeros",
                             ),
-                            None => reading.fault("states a cik that is not a string"),
+                            None => reader.fault("states a cik that is not a string"),
                         }
                     }
                 }
                 "kind" => {
                     if stated_kind {
-                        reading.fault("assigns the filer a second kind");
+                        reader.fault("assigns the filer a second kind");
                     } else {
                         stated_kind = true;
-                        reading.assign_kind(value, &mut overrides);
+                        reader.assign_kind(value, &mut overrides);
                     }
                 }
-                _ => reading.fault(&format!(
+                _ => reader.fault(&format!(
                     "writes the field {key}, which a filer file does not have"
                 )),
             },
             Table::Include => {
                 if key == "concept" {
-                    reading.name_concept("includes a rule for", value);
-                } else if !reading.entry_field(key, value) {
-                    reading.fault(&format!(
+                    reader.name_concept("includes a rule for", value);
+                } else if !reader.entry_field(key, value) {
+                    reader.fault(&format!(
                         "writes the field {key}, which an include does not have"
                     ));
                 }
             }
-            Table::Exclude => reading.exclude_field(key, value),
-            Table::Assert => reading.assert_field(key, value),
+            Table::Exclude => reader.exclude_field(key, value),
+            Table::Assert => reader.assert_field(key, value),
         }
 
-        if reading.broken {
+        if reader.broken {
             return overrides;
         }
     }
 
-    reading.take_table(table, &mut overrides);
-    if reading.in_operands {
-        reading.say("leaves an operand list open");
+    reader.take_table(table, &mut overrides);
+    if reader.in_operands {
+        reader.say("leaves an operand list open");
         return overrides;
     }
 
@@ -263,8 +265,8 @@ pub(super) fn filer_file(
     // the CIK, and by the cik it states back. What the pair catches is the file
     // copied for a second filer and edited nowhere else.
     match stated_cik {
-        None => reading.say("states no cik, so nothing in it says which filer it is about"),
-        Some(held) if held != cik => reading.say(&format!(
+        None => reader.say("states no cik, so nothing in it says which filer it is about"),
+        Some(held) if held != cik => reader.say(&format!(
             "states the cik {held}, which is not the filer its name binds it to"
         )),
         Some(_) => {}
@@ -289,13 +291,18 @@ enum Table {
 }
 
 /// The entry being read, in either half: an include is an entry with its concept
-/// written out beside it, so one reading serves both and the two cannot drift.
+/// written out beside it, so one reader serves both — the same fields, held to
+/// the same closed sets — and the two cannot drift apart on them.
 #[derive(Default)]
 struct Entry {
     form: Option<String>,
     form_stated: bool,
     kinds: Vec<Kind>,
     kinds_stated: bool,
+    reading: Option<Reading>,
+    reading_stated: bool,
+    answers: Option<Answers>,
+    answers_stated: bool,
     operands: Vec<Operand>,
     operands_stated: bool,
     concept: Option<Concept>,
@@ -320,7 +327,7 @@ struct Asserting {
     source_stated: bool,
 }
 
-struct Reading<'a> {
+struct Reader<'a> {
     path: &'a str,
     subject: String,
     line: usize,
@@ -334,14 +341,14 @@ struct Reading<'a> {
     problems: &'a mut Problems,
 }
 
-impl<'a> Reading<'a> {
+impl<'a> Reader<'a> {
     fn new(
         path: &'a str,
         subject: String,
         words: &'a Vocabulary,
         problems: &'a mut Problems,
     ) -> Self {
-        Reading {
+        Reader {
             path,
             subject,
             line: 0,
@@ -421,6 +428,46 @@ impl<'a> Reading<'a> {
                 } else {
                     self.entry.operands_stated = true;
                     self.in_operands = true;
+                }
+                true
+            }
+            // The two fields docs/adr/candidate-choice.md adds, each held to
+            // its own closed set and read for nothing else here.
+            "reading" => {
+                if self.entry.reading_stated {
+                    self.fault("states reading twice in one entry");
+                } else {
+                    self.entry.reading_stated = true;
+                    match quoted(value).filter(|held| is_bare_name(held)) {
+                        None => self.fault("states a reading that is not a bare name"),
+                        Some("exact") => self.entry.reading = Some(Reading::Exact),
+                        Some("stand_in") => self.entry.reading = Some(Reading::StandIn),
+                        Some(held) => self.say(&format!(
+                            "has an entry whose reading is {held}, and the two are exact and stand_in"
+                        )),
+                    }
+                }
+                true
+            }
+            "answers" => {
+                if self.entry.answers_stated {
+                    self.fault("states answers twice in one entry");
+                } else {
+                    self.entry.answers_stated = true;
+                    match quoted(value).filter(|held| is_bare_name(held)) {
+                        None => self.fault(
+                            "states what an entry answers as something that is not a bare name",
+                        ),
+                        Some("period_asked_for") => {
+                            self.entry.answers = Some(Answers::PeriodAskedFor);
+                        }
+                        Some("filing_reported_in") => {
+                            self.entry.answers = Some(Answers::FilingReportedIn);
+                        }
+                        Some(held) => self.say(&format!(
+                            "has an entry answering {held}, and the two are period_asked_for and filing_reported_in"
+                        )),
+                    }
                 }
                 true
             }
@@ -696,10 +743,38 @@ impl<'a> Reading<'a> {
         let Some(form) = shaped else {
             return;
         };
+
+        // An entry with no reading is one a contest between two of them cannot
+        // be settled from, so it is refused rather than read as either one.
+        let Some(reading) = entry.reading else {
+            if !entry.reading_stated {
+                self.say(
+                    "has an entry with no reading, so nothing says whether it reads the concept or stands in for it",
+                );
+            }
+            return;
+        };
+
+        // The cover-page shape: a count stamped with the date of the filing
+        // rather than with a period end answers the period of the filing it was
+        // reported in. Nothing measured over a period is read that way — a
+        // duration is the period asked for or it is not that period at all.
+        let answers = entry.answers.unwrap_or_default();
+        if answers == Answers::FilingReportedIn && concept.definition().measure != Measure::Balance
+        {
+            let named = self.words.spelling_of(concept).to_owned();
+            self.say(&format!(
+                "has an entry answering the filing it was reported in, and the published vocabulary does not measure {named} as a balance"
+            ));
+            return;
+        }
+
         into.push(Rule::stated(
             concept,
             entry.kinds,
             form,
+            reading,
+            answers,
             entry.operands,
             self.words,
         ));

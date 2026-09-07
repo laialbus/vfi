@@ -1,23 +1,31 @@
+# The first element is the portfolio the meaning names. The three below it each
+# name one class of it, so each is the concept only for a filer holding nothing
+# else short-term.
+
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "ShortTermInvestments" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "MarketableSecuritiesCurrent" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "AvailableForSaleSecuritiesDebtSecuritiesCurrent" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "OtherShortTermInvestments" },
 ]

@@ -1,11 +1,20 @@
+# The cover-page count is stamped with the filing's own date and never with a
+# period end, so it answers the period of the filing it was reported in — the
+# one entry in the registry that answers anything but the period asked for. It
+# stands in for the concept accordingly: a count at the cover date is the count
+# at the period end only for a filer that issued nothing in between.
+
 [[entry]]
 form = "tag"
+reading = "stand_in"
+answers = "filing_reported_in"
 operands = [
   { taxonomy = "dei", tag = "EntityCommonStockSharesOutstanding" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "CommonStockSharesOutstanding" },
 ]

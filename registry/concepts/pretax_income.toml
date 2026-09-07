@@ -1,11 +1,15 @@
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest" },
 ]
 
+# Before the equity method results as well, so it is short of the profit before
+# tax for a filer carrying any.
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments" },
 ]

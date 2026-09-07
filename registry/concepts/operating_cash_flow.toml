@@ -1,11 +1,15 @@
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "NetCashProvidedByUsedInOperatingActivities" },
 ]
 
+# The subtotal the meaning asks for, less what a filer with discontinued
+# operations presents beside it.
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "NetCashProvidedByUsedInOperatingActivitiesContinuingOperations" },
 ]

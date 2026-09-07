@@ -1,35 +1,45 @@
+# The concept covers property, plant and equipment and capitalised software, so
+# every single payments element omits what the filer capitalised elsewhere and
+# only the sum of the two reads the concept whole.
+
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsToAcquirePropertyPlantAndEquipment" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsToAcquireProductiveAssets" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsForCapitalImprovements" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsToAcquireOtherPropertyPlantAndEquipment" },
 ]
 
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsToDevelopSoftware" },
 ]
 
 [[entry]]
 form = "sum"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsToAcquirePropertyPlantAndEquipment" },
   { taxonomy = "us-gaap", tag = "PaymentsToDevelopSoftware" },

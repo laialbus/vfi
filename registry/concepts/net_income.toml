@@ -3,6 +3,7 @@
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "IncomeLossFromContinuingOperations" },
 ]
@@ -10,6 +11,7 @@ operands = [
 # The same figure for a filer presenting no discontinued operations to separate.
 [[entry]]
 form = "tag"
+reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "NetIncomeLoss" },
 ]

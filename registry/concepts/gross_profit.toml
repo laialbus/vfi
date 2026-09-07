@@ -1,14 +1,18 @@
 # cost_of_revenue is not a concept — the vocabulary left it out — so it appears
-# here as an operand of the difference and nowhere else.
+# here as an operand of the difference and nowhere else. Each difference stands
+# in on the meaning's own condition: it is the concept where a filer presents a
+# cost of revenue rather than a gross profit.
 
 [[entry]]
 form = "tag"
+reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "GrossProfit" },
 ]
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "revenue" },
   { taxonomy = "us-gaap", tag = "CostOfRevenue" },
@@ -16,6 +20,7 @@ operands = [
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "revenue" },
   { taxonomy = "us-gaap", tag = "CostOfGoodsAndServicesSold" },
@@ -23,6 +28,7 @@ operands = [
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "revenue" },
   { taxonomy = "us-gaap", tag = "CostOfGoodsSold" },
@@ -30,6 +36,7 @@ operands = [
 
 [[entry]]
 form = "difference"
+reading = "stand_in"
 operands = [
   { concept = "revenue" },
   { taxonomy = "us-gaap", tag = "CostOfServices" },
