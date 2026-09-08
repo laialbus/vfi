@@ -60,6 +60,21 @@
 //! that amended a filing, one that changed its fiscal year, one whose history
 //! is decades rather than years.
 //!
+//! `a-filer-that-changed-its-fiscal-year` takes the middle one, because it is
+//! the case `docs/adr/period-alignment.md` says no filer in the repository has
+//! yet. It is CIK 0001859199, which moved its year end from 30 April to
+//! 31 December, and the change is in the filer's own dates rather than in
+//! anything labelling them: the years either side stand at their own length,
+//! 2022-05-01 to 2023-04-30 and 2024-01-01 to 2024-12-31, with a 245-day
+//! transition period of 2023-05-01 to 2023-12-31 between them, reported on a
+//! 10-KT. Its quarters run on two calendars that never coincide — May to July
+//! and August to October before the change, January to March and April to June
+//! and July to September after it. Nothing reads any of that here. What a
+//! fiscal-year change does to a period is the alignment ruleset's, and this is
+//! the recording the fixture that pins it will be written against. A third
+//! facts case earns its place the way this one did, on what is left: an
+//! amendment, or a history of decades.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
