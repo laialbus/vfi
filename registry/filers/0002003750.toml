@@ -1,0 +1,30 @@
+# MAITONG SUNSHINE CULTURAL DEVELOPMENT CO., LIMITED, the filer
+# fixtures/fetch/every-fact-a-filer-reported is recorded from. The kind below is
+# read off that filer's own facts against the clause the published vocabulary
+# states for each kind, and the facts named here are the ones that settle it.
+#
+# The operating clause asks for two things and this filer reports both. A
+# classified balance sheet, current against non-current: at 2023-09-30
+# Liabilities 82,407 is LiabilitiesCurrent 76,485 and
+# OperatingLeaseLiabilityNoncurrent 5,922, and at 2024-09-30 Assets 752,334 is
+# AssetsCurrent 743,372 and the 8,962 of PropertyPlantAndEquipmentNet with
+# OperatingLeaseRightOfUseAsset. An income statement running revenue to cost of
+# revenue to operating expenses to operating income: over 2023-10-01 to
+# 2024-09-30, Revenues 804,887 less CostOfRevenue 439,260 is GrossProfit
+# 365,627, less SellingGeneralAndAdministrativeExpense 388,580 is
+# OperatingIncomeLoss -22,953, with NonoperatingIncomeExpense beneath it.
+#
+# Each of the other four is refused by a fact rather than by silence. Bank: the
+# filer reports no interest income under any element and no deposits, and
+# InterestExpense 767 is what it pays to borrow rather than a spread it earns;
+# the balance sheet above is classified, which is the one the clause says a bank
+# does not present. Insurer: no premiums, claims or reserves, and the clause
+# reads an insurer as presenting no cost of revenue, which this filer presents.
+# REIT: no real estate. PropertyPlantAndEquipmentNet is 2,803 at 2024-09-30, and
+# AreaOfLand 144 sqm is the premises it leases — OperatingLeaseRightOfUseAsset,
+# OperatingLeasePayments, PrepaidRent — not property it earns rent on.
+# Investment company: nothing carried at fair value, no statement of assets and
+# liabilities, and no net investment income.
+
+cik = "0002003750"
+kind = "operating"
