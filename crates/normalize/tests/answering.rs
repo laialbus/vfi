@@ -1,43 +1,26 @@
 //! Which of one filing's facts answer the period asked for, over the facts one
 //! filer actually reported.
 //!
-//! Every fact here comes out of `fixtures/fetch/every-fact-a-filer-reported`,
-//! read from what the fetch harness pins rather than written to suit a case.
-//! Facts composed for a case would have the shape the case wanted, and the
-//! cases that matter — a filing carrying three durations of one element, two of
-//! them the same number; a cover-dated share count that never falls at a period
-//! end; one element reported in two currencies — are all ones nobody would
-//! think to write down.
-//!
-//! The rules come from the registry the same way: the committed one where it
-//! has an entry for the case, and a copy of it with one entry added where it
-//! does not. The mapping never puts a duration element under a balance concept
-//! or an area under a currency one, and the refusals still have to be
-//! checkable, so those cases are planted — each as a copy of the committed
-//! registry plus the one entry the case is about, so a case that answers
-//! nothing answers nothing for its own reason.
+//! Every fact and every rule here comes out of the fixture and the registry the
+//! module beside this reads them from. The mapping never puts a duration element
+//! under a balance concept or an area under a currency one, and the refusals
+//! still have to be checkable, so those cases are planted — each as a copy of
+//! the committed registry plus the one entry the case is about, so a case that
+//! answers nothing answers nothing for its own reason.
+
+mod fixture;
 
 use std::collections::BTreeSet;
-use std::fs;
-use std::path::{Path, PathBuf};
 
 use vfi_contracts::canonical_concepts::Concept;
 use vfi_contracts::fetch_normalize::{Fact, Period};
 use vfi_normalize::answering::{self, Answer};
 use vfi_normalize::registry::{Operand, Outcome, Registry, Rule};
 
-/// The fixture case, and the filer it recorded.
-const CASE: &str = "every-fact-a-filer-reported";
-const FILER: &str = "0002003750";
-
-/// The 10-K filed 2024-11-25: the filing that carries three durations of
-/// `NetIncomeLoss` at once, a cover-page count three months after its year end,
-/// and one element in two currencies.
-const ANNUAL: &str = "0001213900-24-101777";
-
-/// The 10-Q filed 2024-08-13, which reports a quarter and the year to date that
-/// contains it, under the same elements.
-const QUARTERLY: &str = "0001213900-24-067900";
+use fixture::{
+    ANNUAL, FILER, QUARTERLY, adding, committed, duration, filing, instant, planted, read,
+    reported, rewritten,
+};
 
 const NET_INCOME: &str = "net_income|*|tag|element:us-gaap:NetIncomeLoss";
 const GROSS_PROFIT: &str = "gross_profit|*|tag|element:us-gaap:GrossProfit";
@@ -54,57 +37,6 @@ const DILUTED_SHARES: &str = "diluted_shares_weighted_average|*|tag|\
     element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding";
 const DILUTED_EPS: &str =
     "earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted";
-
-fn committed() -> PathBuf {
-    Path::new(env!("CARGO_MANIFEST_DIR")).join("../../registry")
-}
-
-/// A copy of the committed registry, to be added to by the case that asked for
-/// it. Named per case, because cargo runs these at the same time.
-fn planted(case: &str) -> PathBuf {
-    let at = Path::new(env!("CARGO_TARGET_TMPDIR")).join(case);
-    let _ = fs::remove_dir_all(&at);
-    copy(&committed(), &at);
-    at
-}
-
-fn copy(from: &Path, to: &Path) {
-    fs::create_dir_all(to).expect("the scratch copy can be created");
-    for entry in fs::read_dir(from).expect("the registry can be read") {
-        let entry = entry.expect("an entry of the registry can be read");
-        let held = entry.path();
-        let there = to.join(entry.file_name());
-        if held.is_dir() {
-            copy(&held, &there);
-        } else {
-            fs::copy(&held, &there).expect("a file of the registry can be copied");
-        }
-    }
-}
-
-/// One entry added to a concept's file, leaving everything already in it
-/// alone.
-fn adding(root: &Path, concept: &str, entry: &str) {
-    let path = root.join("concepts").join(format!("{concept}.toml"));
-    let mut text = fs::read_to_string(&path).expect("the concept's file can be read");
-    text.push_str(entry);
-    fs::write(&path, text).expect("the concept's file can be written");
-}
-
-fn rewritten(root: &Path, concept: &str, from: &str, to: &str) {
-    let path = root.join("concepts").join(format!("{concept}.toml"));
-    let text = fs::read_to_string(&path).expect("the concept's file can be read");
-    assert!(
-        text.contains(from),
-        "{}: does not state `{from}`, so the case changed nothing",
-        path.display()
-    );
-    fs::write(&path, text.replace(from, to)).expect("the concept's file can be written");
-}
-
-fn read(root: &Path) -> Registry {
-    Registry::read_from(root).unwrap_or_else(|why| panic!("{why}"))
-}
 
 /// The rule this case is about, out of the rules the registry says are eligible
 /// for the concept.
@@ -128,104 +60,6 @@ fn rule<'r>(registry: &'r Registry, concept: Concept, id: &str) -> &'r Rule {
             let held: Vec<&str> = eligible.iter().map(|rule| rule.id()).collect();
             panic!("no rule {id} is eligible for {concept:?}; these are: {held:?}")
         })
-}
-
-fn instant(at: &str) -> Period {
-    Period::Instant { at: at.into() }
-}
-
-fn duration(start: &str, end: &str) -> Period {
-    Period::Duration {
-        start: start.into(),
-        end: end.into(),
-    }
-}
-
-/// Every fact the fixture records, read out of what the fetch harness pins.
-///
-/// The count that file states is compared against the facts read out of it, so
-/// a rendering this reader stopped understanding fails here rather than
-/// quietly leaving a case with fewer facts than the fixture holds.
-fn reported() -> Vec<Fact> {
-    let path = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("../../fixtures/fetch")
-        .join(CASE)
-        .join("expected");
-    let text = fs::read_to_string(&path)
-        .unwrap_or_else(|e| panic!("{}: cannot be read ({e})", path.display()));
-
-    let mut stated = None;
-    let mut facts = Vec::new();
-    for line in text.lines() {
-        if let Some(count) = line.strip_prefix("facts ") {
-            stated = Some(
-                count
-                    .parse::<usize>()
-                    .unwrap_or_else(|_| panic!("{}: states `facts {count}`", path.display())),
-            );
-        } else if let Some(fact) = line.strip_prefix("    ") {
-            facts.push(read_fact(fact, &path));
-        }
-    }
-
-    assert_eq!(
-        Some(facts.len()),
-        stated,
-        "{}: states one count of facts and renders another",
-        path.display()
-    );
-    facts
-}
-
-fn read_fact(line: &str, path: &Path) -> Fact {
-    let word: Vec<&str> = line.split_whitespace().collect();
-    let stated = |at: usize| -> &str {
-        word.get(at)
-            .unwrap_or_else(|| panic!("{}: cannot be read as a fact: {line}", path.display()))
-    };
-
-    let (period, rest) = match stated(3) {
-        "at" => (instant(stated(4)), 5),
-        "from" => (duration(stated(4), stated(6)), 7),
-        held => panic!("{}: states a period as `{held}`: {line}", path.display()),
-    };
-    assert_eq!(
-        [stated(rest), stated(rest + 2), stated(rest + 5)],
-        ["value", "in", "filed"],
-        "{}: cannot be read as a fact: {line}",
-        path.display()
-    );
-    assert_eq!(
-        word.len(),
-        rest + 7,
-        "{}: cannot be read as a fact: {line}",
-        path.display()
-    );
-
-    Fact {
-        taxonomy: stated(0).into(),
-        tag: stated(1).into(),
-        unit: stated(2).into(),
-        period,
-        value: stated(rest + 1).into(),
-        accession: stated(rest + 3).into(),
-        form: stated(rest + 4).into(),
-        filed: stated(rest + 6).into(),
-    }
-}
-
-/// The facts of one filing, which are the facts carrying its accession.
-fn filing(facts: &[Fact], accession: &str) -> Vec<Fact> {
-    let held: Vec<Fact> = facts
-        .iter()
-        .filter(|fact| &*fact.accession == accession)
-        .cloned()
-        .collect();
-    assert!(
-        !held.is_empty(),
-        "the fixture records no filing {accession}"
-    );
-    held
 }
 
 /// One fact as a case reads it back: the element, the unit it crossed in, the
