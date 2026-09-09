@@ -1,15 +1,19 @@
 //! Normalize stage: resolves filing tags to canonical facts.
 //!
-//! Two modules, in the order the vocabulary fixes between them.
+//! Three modules, in the order the records fix between them.
 //! [`applicability`] is asked first, of the published clauses alone, and a
 //! concept the filer's kind excludes stops there. [`registry`] is the one way
 //! to the tag mapping, which is data rather than code, and a concept reaches it
-//! only having got past the question above.
+//! only having got past the question above. [`answering`] takes one rule the
+//! registry handed back and the facts of one filing, and says which of them
+//! answer the period asked for — which is the first thing the procedure that
+//! chooses among candidates asks of each rule.
 //!
-//! Nothing resolves through either yet: they are the doors the rule that
+//! Nothing resolves through any of them yet: they are the doors the rule that
 //! chooses among several candidates in one filing, and the ruleset that
 //! reconciles amendments, restatements and periods, will knock on.
 
+pub mod answering;
 pub mod applicability;
 pub mod registry;
 
