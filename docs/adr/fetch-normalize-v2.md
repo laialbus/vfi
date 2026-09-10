@@ -1,9 +1,9 @@
 # A filer's key crosses in one spelling, ten digits left-padded, and v2 carries it beside the period a filing reports
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-10, by `M4-24`
-- **Decided:** —
+- **Decided:** 2026-09-10, by the decider
 - **Touches:** `contracts/fetch-normalize/`, at v2 — one field respelled and one
   field added, proposed here and written nowhere. Structural because a contract
   field is the tier's own example, and within reach because that is all it is:
@@ -350,9 +350,52 @@ there is nothing to check it against.
 
 ## Decision review
 
-By the decider, not the proposer.
-
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach: it respells one field and adds
+  one on the fetch → normalize boundary, the tier's own example, proposed here
+  and written nowhere. No anchor is edited, no gate weakened, no protected-path
+  entry or milestone scope moved; the write to the contract directory is the
+  publishing task's, under its own `owns` grant and the human-approved label.
+  Flagged for later human review, as the tier requires.
+- **Checked:** anchor 3 and the one-source-of-truth invariant, applied: the key
+  on the boundary becomes the string the registry binds, so there is one
+  representation and nothing to reconcile. Anchor 2, in the first alternative's
+  refusal to have normalize read a fetch document's spelling. Against the
+  accepted records: the fetch record's "nothing is parsed" is about values and
+  dates, and its own URL already pads the key by `Cik`'s `Display`; the
+  alignment record's `report_period_end` is carried with its meaning intact and
+  one clause added — empty where the retrieved history does not name the
+  filing — which is a second way into the state that record already reads as
+  the condition not being met; the registry record's ten-digit key is the one
+  that crosses. Repository claims re-derived: `CompanyFacts.cik` typed as a
+  string; `about()` comparing on the number and naming both keys in
+  `Unreadable`; `is_cik` and `binary_search_by` in the registry;
+  `states_what_is_published` comparing names and never meanings;
+  `company_facts` called from fetch's tests and nowhere else;
+  `Verdict::Unjudged` as the history step's verdict for a document that does
+  not read. Fixture claims re-derived: both facts fixtures and all five
+  submissions documents spell the key padded and the overflow page carries
+  none; 41 rows with 20 empty `reportDate`; on the nine shared periodic filings
+  `reportDate` is both the end of a duration the filing reports and an instant
+  it states; the tenth filing, `0001213900-26-088707` with 193 facts, is absent
+  from the history; the 10-Q filed 2025-05-14 is the one whose latest date is a
+  lease term. Six alternatives, each rejection naming a mechanism.
+- **Verdict and why:** Accepted. One key, read off the document: a lookup is a
+  comparison, a mis-keyed filer has nowhere to hide, and `about()` stays a
+  check rather than a tautology because the field it guards is not sourced
+  from what it compares against. A document about another filer crosses as
+  nothing in either spelling. Both fields move on one version, which is what
+  the open escalation was read as needing. The record is plain about what no
+  fixture can hold — that `reportDate` is the period a filing is about — and
+  hands the publishing task four mechanical checks in place of a claim. Two
+  wordings are loose and neither is a defect: the two Form 3 rows carry a
+  `reportDate`, so among the twenty empty rows "the ownership filings" is the
+  Schedule 13D alone, a sentence inherited from the accepted record; and the
+  cover instant sits at `filed` on all ten filings but is the latest date on
+  nine.
+- **What would have changed it:** the key taken from the request, which would
+  have made the field unfalsifiable by the check that justifies it; padding
+  under v1 with the frozen surface left saying "as the document states it";
+  two versions for two fields; a malformed key truncated or padded wider
+  instead of refused; or a repository or fixture claim that did not re-derive —
+  the padded spelling of the five submissions documents and the tenth filing
+  above all.
