@@ -1,0 +1,104 @@
+# reAlpha Tech Corp., the filer
+# fixtures/fetch/a-filer-that-changed-its-fiscal-year is recorded from. The kind
+# below is read off that filer's own facts against the clause the published
+# vocabulary states for each kind, and the facts named here are the ones that
+# settle it.
+#
+# This filer's facts stand on two calendars — years ending 30 April through
+# 2023-04-30, a transition period 2023-05-01 to 2023-12-31, then years ending
+# 31 December — and a kind holds for every period it holds for. So each side of
+# that change is read on its own below, and the two read the same. A side that
+# argued another kind would not be one kind, and nothing would be asserted.
+#
+# The operating clause asks for two things and this filer reports both, before
+# the change and after it.
+#
+# A classified balance sheet, current against non-current. Before: at
+# 2022-04-30 Assets 6,886,666 is AssetsCurrent 2,356,058 with
+# PropertyPlantAndEquipmentNet 3,816,149, CapitalizedContractCostNetNoncurrent
+# 599,459 and AssetsHeldInTrustNoncurrent 115,000 beneath it, and at 2023-04-30
+# Liabilities 7,927,246 is LiabilitiesCurrent 7,680,246 and LongTermNotesPayable
+# 247,000 — a split by term, to the dollar both times. After: at 2024-12-31
+# Assets 11,994,458 is AssetsCurrent 4,043,098 with PropertyPlantAndEquipmentNet
+# 102,638, Goodwill 4,211,166, IntangibleAssetsNetExcludingGoodwill 3,285,406,
+# EquityMethodInvestments 215,000, CapitalizedContractCostNetNoncurrent 105,900
+# and OtherAssetsNoncurrent 31,250, and Liabilities 10,426,986 states
+# LiabilitiesCurrent 4,145,437 with LongTermNotesPayable 4,909,376 and
+# OtherLiabilitiesNoncurrent 1,086,000 under it.
+#
+# An income statement running revenue to cost of revenue to operating expenses
+# to operating income. Before, over 2021-05-01 to 2022-04-30: Revenues 305,377
+# less CostOfRevenue 167,193 is GrossProfit 138,184, less OperatingExpenses
+# 4,967,126 is OperatingIncomeLoss -4,828,942. The same run closes over
+# 2022-05-01 to 2023-04-30 — 419,412 less 293,204 is 126,208, less 5,074,587 is
+# -4,948,379 — and over the transition period: 121,690 less 94,665 is 27,025,
+# less 6,365,647 is -6,338,622. After, over 2024: 948,420 less 302,084 is
+# 646,336, less 7,548,950 is -6,902,614, with NonoperatingIncomeExpense -834,360
+# beneath it; and over 2025: 4,518,498 less 2,067,060 is 2,451,438, less
+# 18,458,396 is -16,006,958.
+#
+# Each of the other four kinds is refused by a fact of this filer's rather than
+# by a silence, on both sides of the change.
+#
+# Bank. The clause reads one as funded by deposits and presenting an
+# unclassified balance sheet ordered by liquidity. This filer presents the
+# classified one above throughout and funds itself by borrowing at a stated
+# term — NotesPayableCurrent 6,000,000 and SecuredDebtCurrent 2,229,162 at
+# 2022-04-30, LongTermNotesPayable 4,909,376 at 2024-12-31 — with no deposit
+# liability under any element: the one fact named for one,
+# DepositLiabilitiesAccruedInterest 402,432 at 2025-12-31, is accrued interest
+# standing beside no deposit principal. Interest is not what it earns either.
+# InvestmentIncomeInterest is 147 over the year to 2022-04-30 and 557 over the
+# transition period, against revenue of 305,377 and 121,690, while its own
+# interest is a cost below operating income — InterestExpense 177,273 before,
+# InterestExpenseNonoperating 333,759 over 2024. Nor are fees: FeeIncome
+# 1,000,000 over the transition period is more than eight times that period's
+# whole Revenues of 121,690, so it is not inside the top line the cost of
+# revenue is taken from. Its two FDIC-named elements state nothing but 250,000,
+# the insured limit on cash it holds at a bank rather than a premium a
+# depository pays: CashFDICInsuredAmount at five instants from 2024-12-31, and
+# FederalDepositInsuranceCorporationPremiumExpense over three periods, the same
+# figure every time.
+#
+# Insurer. The clause reads an insurer as presenting no cost of revenue, which
+# this filer presents on each side — 167,193 before, 302,084 after — and an
+# unclassified balance sheet, which it does not. It reports no premium earned,
+# no claim and no reserve — the FDIC 250,000 above is a limit on cash of its
+# own, not a premium anyone paid it.
+#
+# REIT. Before the change property is most of what this filer holds —
+# PropertyPlantAndEquipmentNet 3,816,149 of Assets 6,886,666 at 2022-04-30, sold
+# at gains of 34,853, 22,817 and 85,077 under GainLossOnSaleOfProperties — so
+# the refusal is on the presentation, not on the size of the line. The clause
+# reads a REIT's balance sheet as unclassified and led by real estate and its
+# income statement as running revenues to property operating expenses and
+# depreciation; this filer subtotals both current sections at that same instant
+# and subtracts a cost of revenue to a GrossProfit, and it carries the property
+# as plant — PropertyPlantAndEquipmentOther 2,033,456 less
+# PropertyPlantAndEquipmentOtherAccumulatedDepreciation 15,760 — reporting no
+# real-estate element at all. After the change that property is 102,638 of
+# Assets 11,994,458 while Revenues run 305,377 to 948,420 to 4,518,498, so the
+# income is not rent on property it owns.
+#
+# Investment company. The clause reads one as presenting a statement of assets
+# and liabilities rather than a classified balance sheet, its portfolio carried
+# at fair value, and a statement of operations running investment income to net
+# investment income. This filer presents the classified balance sheet above on
+# both sides; AssetsNet appears only as 347,000, at 2023-10-31 and 2023-12-31,
+# beside Assets of 27,424,869 at the later instant, so it is not a net-assets
+# presentation. Its one
+# investment is the 115,000 held at 2022-04-30 and 2023-04-30 as
+# AssetsHeldInTrustNoncurrent and at 2023-12-31 as EquityMethodInvestments,
+# 215,000 by 2024-12-31, carried on the equity method and reported as
+# IncomeLossFromEquityMethodInvestments — 20,663 to 2024-09-30, -13,354 over
+# 2025. Fair value reaches only its own liabilities:
+# DerivativeFairValueOfDerivativeLiability 4,745,634 at 2025-06-30,
+# FairValueAdjustmentOfWarrants -604,123 over 2025. Its two percent-of-net-
+# assets elements state nothing but 0.25, which is no position in a portfolio:
+# a quarter of the 24,705,735 of StockholdersEquity at 2023-12-31 is 6,176,434,
+# against the 115,000 it holds. And it consolidates what it buys into Goodwill —
+# 5,135,894 at 2023-04-30, 4,211,166 at 2024-12-31 — rather than carrying it at
+# fair value.
+
+cik = "0001859199"
+kind = "operating"
