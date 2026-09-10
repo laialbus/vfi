@@ -74,6 +74,7 @@ mod figure;
 use vfi_contracts::canonical_concepts::{Attempt, Concept, Declined, Kind, Resolution, Silence};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
+use crate::answering::Admits;
 use crate::registry::{Assertion, Form, Operand, Outcome, Reading, Registry, Rule, Version};
 use crate::{answering, applicability};
 use figure::Figure;
@@ -193,7 +194,8 @@ struct Asked<'a, 'r, 'f> {
     kind: Option<Kind>,
     concept: Concept,
     period: &'a Period,
-    filing: &'f [Fact],
+    filing: &'a [&'f Fact],
+    admits: Admits,
     /// Whether this concept is being settled in the course of answering a
     /// conditional silence reading's condition.
     ///
@@ -208,13 +210,13 @@ struct Asked<'a, 'r, 'f> {
 }
 
 /// What `concept` settles to for this filer over `period`, out of `filing`'s
-/// facts.
+/// facts, with that filing asked under `admits`.
 ///
-/// `filing` is the facts of one filing. Which filings answer a period, and what
-/// a restatement or an amendment does to one already settled, belong to the
-/// alignment ruleset: a composition drawn across two filings is a number no
-/// filing states, and nothing reaching this far could tell one from a number
-/// that is stated.
+/// `filing` is the facts of one filing. Which filings answer a period, which
+/// entries each of them is asked with, and what a restatement or an amendment
+/// does to one already settled, belong to the alignment ruleset: a composition
+/// drawn across two filings is a number no filing states, and nothing reaching
+/// this far could tell one from a number that is stated.
 ///
 /// The kind arrives as an argument rather than being read from the registry
 /// here, as it does at every other door in this crate: the engine holds no
@@ -225,7 +227,8 @@ pub fn settle<'r, 'f>(
     kind: Option<Kind>,
     concept: Concept,
     period: &Period,
-    filing: &'f [Fact],
+    filing: &[&'f Fact],
+    admits: Admits,
 ) -> Settled<'r, 'f> {
     asked(Asked {
         registry,
@@ -234,6 +237,7 @@ pub fn settle<'r, 'f>(
         concept,
         period,
         filing,
+        admits,
         conditioned: false,
     })
 }
@@ -382,7 +386,13 @@ fn candidacy<'r, 'f>(
         },
     };
 
-    let answered = answering::ask(question.concept, rule, question.period, question.filing);
+    let answered = answering::ask(
+        question.concept,
+        rule,
+        question.period,
+        question.filing,
+        question.admits,
+    );
     let mut read: Vec<Vec<(&'f Fact, Figure)>> = vec![Vec::new()];
 
     for operand in answered.operands() {
