@@ -187,11 +187,10 @@ fn read_fact(line: &str, path: &Path) -> Fact {
 }
 
 /// The facts of one filing, which are the facts carrying its accession.
-pub fn filing(facts: &[Fact], accession: &str) -> Vec<Fact> {
-    let held: Vec<Fact> = facts
+pub fn filing<'f>(facts: &'f [Fact], accession: &str) -> Vec<&'f Fact> {
+    let held: Vec<&Fact> = facts
         .iter()
         .filter(|fact| &*fact.accession == accession)
-        .cloned()
         .collect();
     assert!(
         !held.is_empty(),

@@ -22,7 +22,8 @@
 mod fixture;
 
 use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution, Silence};
-use vfi_contracts::fetch_normalize::Fact;
+use vfi_contracts::fetch_normalize::{Fact, Period};
+use vfi_normalize::answering::Admits;
 use vfi_normalize::registry::Registry;
 use vfi_normalize::settling::{self, Settled};
 
@@ -48,6 +49,30 @@ const NET_INCOME: &str = "net_income|*|tag|element:us-gaap:NetIncomeLoss";
 const CONTINUING: &str = "net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations";
 const PROPERTY_PAYMENTS: &str =
     "capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment";
+
+/// Every case here is asked about one filing it names, which is the caller
+/// saying that this filing's own period of report ends on the period asked for
+/// — the condition `docs/adr/period-alignment.md` sets for admitting the entry
+/// that answers the period of the filing it was reported in. Which filings a
+/// filer's facts admit it for is `vfi_normalize::filings`, and is pinned there.
+fn settle<'r, 'f>(
+    registry: &'r Registry,
+    filer: &str,
+    kind: Option<Kind>,
+    concept: Concept,
+    period: &Period,
+    filing: &[&'f Fact],
+) -> Settled<'r, 'f> {
+    settling::settle(
+        registry,
+        filer,
+        kind,
+        concept,
+        period,
+        filing,
+        Admits::EveryEntry,
+    )
+}
 
 /// What a settlement came to, as a case reads it back: the state, and for a
 /// value the amount together with the rule that set it.
@@ -100,7 +125,7 @@ fn the_tagged_gross_profit_wins_the_contest_its_difference_also_answers() {
     let filing = filing(&facts, ANNUAL);
     let registry = read(&committed());
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -127,7 +152,7 @@ fn the_difference_answers_the_same_number_the_tag_does() {
     overriding(&root, &format!("\n[[exclude]]\nid = \"{GROSS_PROFIT}\"\n"));
     let registry = read(&root);
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -156,7 +181,7 @@ fn the_period_end_share_count_wins_the_contest_the_cover_date_count_also_answers
     let filing = filing(&facts, ANNUAL);
     let registry = read(&committed());
 
-    let at_period_end = settling::settle(
+    let at_period_end = settle(
         &registry,
         FILER,
         KIND,
@@ -169,7 +194,7 @@ fn the_period_end_share_count_wins_the_contest_the_cover_date_count_also_answers
         by(&registry, "60000000", PERIOD_END_COUNT)
     );
 
-    let at_cover_date = settling::settle(
+    let at_cover_date = settle(
         &registry,
         FILER,
         KIND,
@@ -207,7 +232,7 @@ fn two_survivors_that_agree_are_still_unknown() {
     let available =
         "net_income|*|tag|element:us-gaap:NetIncomeLossAvailableToCommonStockholdersBasic";
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -251,16 +276,16 @@ fn facts_that_collide_on_the_five_fields_that_identify_one_produce_no_value() {
 
     let at = filing
         .iter()
-        .position(|fact: &Fact| {
+        .position(|fact: &&Fact| {
             &*fact.tag == "NetIncomeLoss" && fact.period == duration(YEAR.0, YEAR.1)
         })
         .expect("the 10-K states a net income over the year it reports");
     let mut collides = filing[at].clone();
     collides.value = "-30811".into();
-    filing.push(collides);
+    filing.push(&collides);
 
     let registry = read(&committed());
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -321,7 +346,7 @@ fn one_entry_answering_in_two_currencies_settles_to_neither() {
     }
     let registry = read(&root);
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -366,7 +391,7 @@ fn a_composition_missing_an_operand_is_not_a_candidate() {
     let filing = filing(&facts, ANNUAL);
     let registry = read(&committed());
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -408,7 +433,7 @@ fn a_component_is_dropped_behind_the_composition_that_contains_it() {
     );
     let registry = read(&root);
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -450,7 +475,7 @@ fn an_assertion_is_the_value_and_no_rule_is_looked_up_beneath_it() {
     );
     let registry = read(&root);
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         KIND,
@@ -481,7 +506,7 @@ fn a_concept_the_kind_excludes_is_answered_before_anything_is_looked_up() {
     let filing = filing(&facts, ANNUAL);
     let registry = read(&committed());
 
-    let settled = settling::settle(
+    let settled = settle(
         &registry,
         FILER,
         Some(Kind::Bank),
@@ -515,11 +540,11 @@ fn a_concept_the_kind_excludes_is_answered_before_anything_is_looked_up() {
 #[test]
 fn every_concept_takes_the_silence_reading_the_published_vocabulary_gives_it() {
     let registry = read(&committed());
-    let nothing: Vec<Fact> = Vec::new();
+    let nothing: Vec<&Fact> = Vec::new();
 
     for concept in Concept::ALL {
         let read = concept.definition();
-        let settled = settling::settle(
+        let settled = settle(
             &registry,
             FILER,
             KIND,
@@ -563,7 +588,7 @@ fn a_conditional_zero_is_refused_where_the_concept_it_names_resolves() {
     );
     let registry = read(&root);
 
-    let paid = settling::settle(
+    let paid = settle(
         &registry,
         FILER,
         KIND,
@@ -580,7 +605,7 @@ fn a_conditional_zero_is_refused_where_the_concept_it_names_resolves() {
         )
     );
 
-    let declared = settling::settle(
+    let declared = settle(
         &registry,
         FILER,
         KIND,

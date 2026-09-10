@@ -42,6 +42,12 @@
 //! than a window is the boundary's five-field identity, so no search and no
 //! nearest match is written here.
 //!
+//! Whether such an entry is admitted at all is the caller's, and arrives as
+//! [`Admits`]. The condition the alignment ruleset sets for admitting one is a
+//! statement about the filing rather than about a fact, so it cannot be asked
+//! here: this module is handed one filing's facts and could not say which
+//! period that filing reports even if the boundary said.
+//!
 //! The period asked for is compared whole, in the shape the boundary publishes
 //! it: a balance is answered at the instant it is asked at, and a duration
 //! period is not read at its end for one. The record's sentence — "a balance's
@@ -80,6 +86,26 @@ const PER: char = '/';
 /// of it kept in this repository would be a second source of truth for
 /// something published elsewhere.
 const CURRENCY_CODE: usize = 3;
+
+/// Which of the registry's entries a filing is asked with.
+///
+/// `docs/adr/period-alignment.md` sets one condition for admitting an entry
+/// that answers the period of the filing it was reported in: "a filing answers
+/// a period through an entry that answers the period of the filing it was
+/// reported in only when that filing's own period of report ends on the period
+/// asked for." Which period a filing reports is not a question about facts and
+/// dates, so it is settled above this module and arrives already answered.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Admits {
+    /// Every entry the registry handed back, the one that answers the period of
+    /// the filing it was reported in included — which is to say that this
+    /// filing's own period of report ends on the period asked for.
+    EveryEntry,
+    /// Only an entry that answers the period asked for. The other is not
+    /// dropped, ranked or discounted: no fact of this filing answers through
+    /// it, which is the silence a filing that never tagged the element has.
+    OnlyThePeriodAskedFor,
+}
 
 /// What one filing's facts answer for one rule at one period.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -136,7 +162,8 @@ impl<'r, 'f> Answering<'r, 'f> {
 }
 
 /// Which of `filing`'s facts answer `period` for `rule`, with `concept` read as
-/// the vocabulary defines it.
+/// the vocabulary defines it and the filing asked with the entries `admits`
+/// names.
 ///
 /// `filing` is the facts of one filing. Which filings answer a period, and
 /// which of a filer's facts are one filing's, belong to the alignment ruleset:
@@ -150,7 +177,8 @@ pub fn ask<'r, 'f>(
     concept: Concept,
     rule: &'r Rule,
     period: &Period,
-    filing: &'f [Fact],
+    filing: &[&'f Fact],
+    admits: Admits,
 ) -> Answer<'r, 'f> {
     let read = concept.definition();
     let mut operands = Vec::with_capacity(rule.operands().len());
@@ -165,9 +193,9 @@ pub fn ask<'r, 'f>(
             if fact.taxonomy == *taxonomy
                 && fact.tag == *tag
                 && counts_in(&fact.unit, read.unit)
-                && falls_at(&fact.period, read.measure, rule.answers(), period)
+                && falls_at(&fact.period, read.measure, rule.answers(), admits, period)
             {
-                facts.push(fact);
+                facts.push(*fact);
             }
         }
 
@@ -178,23 +206,31 @@ pub fn ask<'r, 'f>(
 }
 
 /// Whether a fact stated for `stated` answers `asked`, for a concept the
-/// vocabulary measures as `measure`, under an entry that answers `answers`.
+/// vocabulary measures as `measure`, under an entry that answers `answers` in a
+/// filing asked with `admits`.
 ///
 /// The dates are the characters the boundary published, compared as they are
 /// written. Nothing here parses one: a parse is a reading, and two dates read
 /// into a calendar could be compared by a distance, which is the thing this
 /// must not have.
-fn falls_at(stated: &Period, measure: Measure, answers: Answers, asked: &Period) -> bool {
+fn falls_at(
+    stated: &Period,
+    measure: Measure,
+    answers: Answers,
+    admits: Admits,
+    asked: &Period,
+) -> bool {
     match (measure, stated) {
         (Measure::Flow, Period::Duration { .. }) => stated == asked,
-        (Measure::Balance, Period::Instant { .. }) => match answers {
-            Answers::PeriodAskedFor => stated == asked,
+        (Measure::Balance, Period::Instant { .. }) => match (answers, admits) {
+            (Answers::PeriodAskedFor, _) => stated == asked,
             // The cover-page shape: the entry declares that its fact answers the
             // period of the filing it was reported in, so the fact's own date is
             // not what is being asked about. The registry admits this only for a
             // concept the vocabulary measures as a balance, which is why it is
             // read inside this arm and nowhere else.
-            Answers::FilingReportedIn => true,
+            (Answers::FilingReportedIn, Admits::EveryEntry) => true,
+            (Answers::FilingReportedIn, Admits::OnlyThePeriodAskedFor) => false,
         },
         // Neither shape is built from the other, so a fact of the wrong shape is
         // no answer however its dates fall.

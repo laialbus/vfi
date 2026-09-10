@@ -14,7 +14,7 @@ use std::collections::BTreeSet;
 
 use vfi_contracts::canonical_concepts::Concept;
 use vfi_contracts::fetch_normalize::{Fact, Period};
-use vfi_normalize::answering::{self, Answer};
+use vfi_normalize::answering::{self, Admits, Answer};
 use vfi_normalize::registry::{Operand, Outcome, Registry, Rule};
 
 use fixture::{
@@ -37,6 +37,20 @@ const DILUTED_SHARES: &str = "diluted_shares_weighted_average|*|tag|\
     element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding";
 const DILUTED_EPS: &str =
     "earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted";
+
+/// Every case here is asked about one filing it names, which is the caller
+/// saying that this filing's own period of report ends on the period asked for
+/// — the condition `docs/adr/period-alignment.md` sets for admitting the entry
+/// that answers the period of the filing it was reported in. Which filings a
+/// filer's facts admit it for is `vfi_normalize::filings`, and is pinned there.
+fn ask<'r, 'f>(
+    concept: Concept,
+    rule: &'r Rule,
+    period: &Period,
+    filing: &[&'f Fact],
+) -> Answer<'r, 'f> {
+    answering::ask(concept, rule, period, filing, Admits::EveryEntry)
+}
 
 /// The rule this case is about, out of the rules the registry says are eligible
 /// for the concept.
@@ -119,7 +133,7 @@ fn each_of_three_durations_under_one_element_answers_only_its_own_period() {
             "us-gaap:NetIncomeLoss USD from 2023-09-07 to 2023-09-30 = -40502",
         ),
     ] {
-        let answer = answering::ask(Concept::NetIncome, rule, &period, &filing);
+        let answer = ask(Concept::NetIncome, rule, &period, &filing);
         assert_eq!(
             answered(&answer),
             vec![vec![expected.to_owned()]],
@@ -149,7 +163,7 @@ fn no_period_but_the_one_a_fact_states_is_answered_by_it() {
         duration("2023-10-01", "2024-06-30"),
         duration("2024-10-01", "2024-12-31"),
     ] {
-        let answer = answering::ask(Concept::NetIncome, rule, &period, &filing);
+        let answer = ask(Concept::NetIncome, rule, &period, &filing);
         assert_eq!(
             answered(&answer),
             vec![Vec::<String>::new()],
@@ -176,14 +190,14 @@ fn neither_measure_is_answered_by_the_other_shape() {
     let balance = rule(&registry, Concept::ShareholdersEquity, EQUITY);
 
     assert_eq!(
-        answered(&answering::ask(Concept::NetIncome, flow, &year, &filing)),
+        answered(&ask(Concept::NetIncome, flow, &year, &filing)),
         vec![vec![
             "us-gaap:NetIncomeLoss USD from 2023-10-01 to 2024-09-30 = -30810".to_owned()
         ]],
         "the flow is not answered at the duration the filing states it over"
     );
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::ShareholdersEquity,
             balance,
             &year_end,
@@ -196,22 +210,12 @@ fn neither_measure_is_answered_by_the_other_shape() {
     );
 
     assert_eq!(
-        answered(&answering::ask(
-            Concept::NetIncome,
-            flow,
-            &year_end,
-            &filing
-        )),
+        answered(&ask(Concept::NetIncome, flow, &year_end, &filing)),
         vec![Vec::<String>::new()],
         "a flow was answered at an instant"
     );
     assert_eq!(
-        answered(&answering::ask(
-            Concept::ShareholdersEquity,
-            balance,
-            &year,
-            &filing
-        )),
+        answered(&ask(Concept::ShareholdersEquity, balance, &year, &filing)),
         vec![Vec::<String>::new()],
         "a balance was answered over a duration"
     );
@@ -256,12 +260,7 @@ fn a_duration_is_not_read_at_its_end_and_two_instants_are_not_read_as_a_flow() {
     );
     for period in [year.clone(), year_end.clone()] {
         assert_eq!(
-            answered(&answering::ask(
-                Concept::TotalAssets,
-                as_balance,
-                &period,
-                &filing
-            )),
+            answered(&ask(Concept::TotalAssets, as_balance, &period, &filing)),
             vec![Vec::<String>::new()],
             "a duration answered a balance at {period:?}"
         );
@@ -274,12 +273,7 @@ fn a_duration_is_not_read_at_its_end_and_two_instants_are_not_read_as_a_flow() {
     );
     for period in [year, year_end, year_start] {
         assert_eq!(
-            answered(&answering::ask(
-                Concept::InterestExpense,
-                as_flow,
-                &period,
-                &filing
-            )),
+            answered(&ask(Concept::InterestExpense, as_flow, &period, &filing)),
             vec![Vec::<String>::new()],
             "an instant answered a flow at {period:?}"
         );
@@ -309,19 +303,14 @@ fn the_entry_that_answers_its_filing_takes_a_fact_no_period_end_would() {
         instant("2024-11-25"),
     ] {
         assert_eq!(
-            answered(&answering::ask(
-                Concept::SharesOutstanding,
-                borrowed,
-                &period,
-                &filing
-            )),
+            answered(&ask(Concept::SharesOutstanding, borrowed, &period, &filing)),
             vec![vec![cover.to_owned()]],
             "the cover-dated count did not answer {period:?}"
         );
     }
 
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::SharesOutstanding,
             own,
             &instant("2024-09-30"),
@@ -344,7 +333,7 @@ fn the_entry_that_answers_its_filing_takes_a_fact_no_period_end_would() {
     let default = rule(&registry, Concept::SharesOutstanding, COVER_COUNT);
 
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::SharesOutstanding,
             default,
             &instant("2024-09-30"),
@@ -354,7 +343,7 @@ fn the_entry_that_answers_its_filing_takes_a_fact_no_period_end_would() {
         "the cover-dated count answered a period end under the default reading"
     );
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::SharesOutstanding,
             default,
             &instant("2024-11-25"),
@@ -379,7 +368,7 @@ fn an_operand_nothing_answers_is_named_rather_than_read_as_zero() {
     let registry = read(&committed());
     let rule = rule(&registry, Concept::CapitalExpenditure, CAPITAL_EXPENDITURE);
 
-    let answer = answering::ask(
+    let answer = ask(
         Concept::CapitalExpenditure,
         rule,
         &duration("2023-10-01", "2024-09-30"),
@@ -436,12 +425,7 @@ fn no_composition_mixes_a_quarter_with_a_year_to_date() {
 
     let quarter = duration("2024-04-01", "2024-06-30");
     assert_eq!(
-        answered(&answering::ask(
-            Concept::PretaxIncome,
-            rule,
-            &quarter,
-            &filing
-        )),
+        answered(&ask(Concept::PretaxIncome, rule, &quarter, &filing)),
         vec![
             vec!["us-gaap:Revenues USD from 2024-04-01 to 2024-06-30 = 260916".to_owned()],
             vec!["us-gaap:CostOfRevenue USD from 2024-04-01 to 2024-06-30 = 90569".to_owned()],
@@ -450,12 +434,7 @@ fn no_composition_mixes_a_quarter_with_a_year_to_date() {
 
     let to_date = duration("2023-10-01", "2024-06-30");
     assert_eq!(
-        answered(&answering::ask(
-            Concept::PretaxIncome,
-            rule,
-            &to_date,
-            &filing
-        )),
+        answered(&ask(Concept::PretaxIncome, rule, &to_date, &filing)),
         vec![
             vec!["us-gaap:Revenues USD from 2023-10-01 to 2024-06-30 = 525872".to_owned()],
             vec!["us-gaap:CostOfRevenue USD from 2023-10-01 to 2024-06-30 = 252319".to_owned()],
@@ -464,12 +443,7 @@ fn no_composition_mixes_a_quarter_with_a_year_to_date() {
 
     let neither = duration("2023-10-01", "2023-12-31");
     assert_eq!(
-        answered(&answering::ask(
-            Concept::PretaxIncome,
-            rule,
-            &neither,
-            &filing
-        )),
+        answered(&ask(Concept::PretaxIncome, rule, &neither, &filing)),
         vec![Vec::<String>::new(), Vec::<String>::new()],
         "a quarter the filing reports net income over, and neither of these elements at"
     );
@@ -491,7 +465,7 @@ fn a_difference_answers_for_its_element_and_leaves_its_concept_operand_alone() {
     let year = duration("2023-10-01", "2024-09-30");
 
     let difference = rule(&registry, Concept::GrossProfit, GROSS_PROFIT_LESS_COST);
-    let answer = answering::ask(Concept::GrossProfit, difference, &year, &filing);
+    let answer = ask(Concept::GrossProfit, difference, &year, &filing);
 
     assert_eq!(
         answer.operands().len(),
@@ -512,12 +486,7 @@ fn a_difference_answers_for_its_element_and_leaves_its_concept_operand_alone() {
 
     let tagged = rule(&registry, Concept::GrossProfit, GROSS_PROFIT);
     assert_eq!(
-        answered(&answering::ask(
-            Concept::GrossProfit,
-            tagged,
-            &year,
-            &filing
-        )),
+        answered(&ask(Concept::GrossProfit, tagged, &year, &filing)),
         vec![vec![
             "us-gaap:GrossProfit USD from 2023-10-01 to 2024-09-30 = 365627".to_owned()
         ]],
@@ -559,7 +528,7 @@ fn a_fact_answers_only_in_the_unit_the_concept_is_measured_in() {
         "total_assets|*|tag|element:us-gaap:AreaOfLand",
     );
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::TotalAssets,
             area,
             &instant("2023-09-01"),
@@ -575,7 +544,7 @@ fn a_fact_answers_only_in_the_unit_the_concept_is_measured_in() {
         "diluted_shares_weighted_average|*|tag|element:us-gaap:EarningsPerShareDiluted",
     );
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::DilutedSharesWeightedAverage,
             per_share,
             &year,
@@ -591,7 +560,7 @@ fn a_fact_answers_only_in_the_unit_the_concept_is_measured_in() {
         DILUTED_SHARES,
     );
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::DilutedSharesWeightedAverage,
             count,
             &year,
@@ -607,12 +576,7 @@ fn a_fact_answers_only_in_the_unit_the_concept_is_measured_in() {
     let registry = read(&committed());
     let eps = rule(&registry, Concept::EarningsPerShareDiluted, DILUTED_EPS);
     assert_eq!(
-        answered(&answering::ask(
-            Concept::EarningsPerShareDiluted,
-            eps,
-            &year,
-            &filing
-        )),
+        answered(&ask(Concept::EarningsPerShareDiluted, eps, &year, &filing)),
         vec![vec![
             "us-gaap:EarningsPerShareDiluted USD/shares from 2023-10-01 to 2024-09-30 = -0.0006"
                 .to_owned()
@@ -646,7 +610,7 @@ fn two_currencies_under_one_entry_are_both_named() {
     );
 
     assert_eq!(
-        answered(&answering::ask(
+        answered(&ask(
             Concept::InterestExpense,
             rule,
             &duration("2023-10-01", "2024-09-30"),
@@ -699,13 +663,13 @@ fn every_fact_answers_at_its_own_period_and_at_no_other() {
 
         for (start, end) in &durations {
             let period = duration(start, end);
-            let answer = answering::ask(Concept::NetIncome, flow, &period, &filing);
+            let answer = ask(Concept::NetIncome, flow, &period, &filing);
             answers += held(&answer, &period, accession, &mut silences);
         }
 
         for at in &instants {
             let period = instant(at);
-            let answer = answering::ask(Concept::ShareholdersEquity, balance, &period, &filing);
+            let answer = ask(Concept::ShareholdersEquity, balance, &period, &filing);
             answers += held(&answer, &period, accession, &mut silences);
         }
     }
