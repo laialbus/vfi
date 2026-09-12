@@ -1,0 +1,190 @@
+# reAlpha Tech Corp., the filer
+# fixtures/fetch/a-filer-that-changed-its-fiscal-year is recorded from. The kind
+# below is read off that filer's own facts against the clause the published
+# vocabulary states for each kind, and the facts named here are the ones that
+# settle it.
+#
+# Its facts stand on two calendars: years ending 30 April through 2023-04-30,
+# the transition period 2023-05-01 to 2023-12-31 that the 10-KT filed 2024-03-12
+# reports, then years ending 31 December. A kind holds for every period it holds
+# for, so each side of the change is read on its own below, and the two read the
+# same. Before the change is the April years and the six months to 2023-10-31
+# that the 10-Q filed 2023-12-18 reports, the one filing here made on that
+# calendar; after it is 2024 on. Later filings restate some figures — the 10-K
+# filed 2025-04-02 gives the year to 2023-04-30 and the transition period other
+# operating expenses — so each figure is as the filing named for it states it.
+#
+# The operating clause asks for two things, and this filer presents both on each
+# side.
+#
+# A classified balance sheet, current against non-current. Each identity named
+# here closes to the dollar. Before: at 2022-04-30 (10-KT) Assets 6,886,666 is
+# AssetsCurrent 2,356,058 with PropertyPlantAndEquipmentNet 3,816,149,
+# CapitalizedContractCostNetNoncurrent 599,459 and AssetsHeldInTrustNoncurrent
+# 115,000, and every liability is current: Liabilities and LiabilitiesCurrent
+# are both 12,204,998. At 2023-04-30 (10-Q filed 2023-12-18) Assets 21,093,379
+# is AssetsCurrent 4,657,738 with CapitalizedContractCostNetNoncurrent
+# 8,998,755, Goodwill 5,135,894, PropertyPlantAndEquipmentNet 2,185,992 and
+# AssetsHeldInTrustNoncurrent 115,000, and Liabilities 7,927,246 is
+# LiabilitiesCurrent 7,680,246 with LongTermNotesPayable 247,000. At the end of
+# the transition period, 2023-12-31 (10-KT), Assets 27,424,869 is AssetsCurrent
+# 7,400,294 with Goodwill 17,337,739, IntangibleAssetsNetExcludingGoodwill
+# 997,962, CapitalizedContractCostNetNoncurrent 839,085, OtherLongTermInvestments
+# 406,250, PropertyPlantAndEquipmentNet 328,539 and AssetsHeldInTrustNoncurrent
+# 115,000, and Liabilities 2,716,084 is LiabilitiesCurrent 2,062,834 with
+# DeferredRevenueNoncurrent 406,250 and LongTermLoansPayable 247,000. After: at
+# 2024-06-30 (10-Q filed 2024-08-14) Liabilities 2,428,806 is LiabilitiesCurrent
+# 1,375,458 with ContractWithCustomerLiabilityNoncurrent 1,000,000 and
+# OtherLiabilitiesNoncurrent 53,348. At 2024-12-31 (10-K filed 2025-04-02) Assets
+# 11,994,458 is AssetsCurrent 4,043,098 with Goodwill 4,211,166,
+# IntangibleAssetsNetExcludingGoodwill 3,285,406, EquityMethodInvestments
+# 215,000, CapitalizedContractCostNetNoncurrent 105,900,
+# PropertyPlantAndEquipmentNet 102,638 and OtherAssetsNoncurrent 31,250. At
+# 2025-12-31 (10-K filed 2026-03-12) Assets 21,717,331 is AssetsCurrent
+# 9,775,381 with Goodwill 7,459,125, IntangibleAssetsNetExcludingGoodwill
+# 4,306,553, EquityMethodInvestments 111,646 and PropertyPlantAndEquipmentNet
+# 64,626. The liabilities side at those two year ends is not offered as an
+# identity: at 2024-12-31 LiabilitiesCurrent 4,145,437, LongTermNotesPayable
+# 4,909,376 and OtherLiabilitiesNoncurrent 1,086,000 come to 10,140,813 against
+# Liabilities 10,426,986. What stands there is the current subtotal itself.
+#
+# An income statement running revenue to cost of revenue to operating expenses
+# to operating income. Before, over 2021-05-01 to 2022-04-30 (10-KT): Revenues
+# 305,377 less CostOfRevenue 167,193 is GrossProfit 138,184, less
+# OperatingExpenses 4,967,126 is OperatingIncomeLoss -4,828,942. Over 2022-05-01
+# to 2023-04-30 (10-KT): 419,412 less 293,204 is 126,208, less 5,074,587 is
+# -4,948,379. Over the six months to 2023-10-31 (10-Q filed 2023-12-18): 101,180
+# less 74,554 is 26,626, less 4,814,434 is -4,787,808. Over the transition
+# period (10-KT): 121,690 less 94,665 is 27,025, less 6,365,647 is -6,338,622.
+# After, over 2024 (10-K filed 2025-04-02): 948,420 less 302,084 is 646,336,
+# less 7,548,950 is -6,902,614. Over 2025 (10-K filed 2026-03-12): 4,518,498
+# less 2,067,060 is 2,451,438, less 18,458,396 is -16,006,958.
+#
+# Each of the other four kinds is refused by a fact of this filer's, on both
+# sides of the change. The balance sheets above refuse all four at once: the
+# bank, insurer and REIT clauses each read an unclassified balance sheet, the
+# investment-company clause a statement of assets and liabilities in place of a
+# classified one, and this filer subtotals both current sections before the
+# change, at its end and after it. What follows, for each kind, are the facts
+# that could suggest it and where each of them stands.
+#
+# Bank. The clause reads a depository or lender earning net interest income and
+# fees. This filer's interest is a net cost, below operating income, on both
+# sides. Over the year to 2022-04-30 (10-KT) OtherNonoperatingIncomeExpense
+# -563,070 is InvestmentIncomeInterest 147 and OtherNonoperatingIncome 34,853
+# less InterestExpense 177,273 and OtherNonoperatingExpense 420,797, against
+# Revenues of 305,377. Over 2024 (10-K filed 2025-04-02)
+# NonoperatingIncomeExpense -834,360 is InterestExpenseNonoperating 333,759 and
+# OtherNonoperatingExpense 500,601. It borrows from banks:
+# ShortTermBankLoansAndNotesPayable 2,281,211 at 2022-04-30, beside
+# NotesPayableCurrent 6,000,000.
+#
+# Four elements are named for deposits or their insurance, and none of them
+# makes this filer a depository. EscrowDeposit is money it has placed, inside
+# its own current assets: at 2025-12-31 (10-K filed 2026-03-12) AssetsCurrent
+# 9,775,381 is CashAndCashEquivalentsAtCarryingValue 7,783,529,
+# AccountsReceivableNetCurrent 68,148, PrepaidExpenseCurrent 961,411,
+# OtherAssetsCurrent 362,293 and EscrowDeposit 600,000, and it is 500,000 at
+# 2026-03-31 and 2026-06-30. CashFDICInsuredAmount is the insured limit on cash
+# it holds: 250,000 at each of five instants from 2024-12-31 to 2025-12-31, while
+# CashAndCashEquivalentsAtCarryingValue goes from 3,123,530 to 587,311 at
+# 2025-06-30 and to 7,783,529. FederalDepositInsuranceCorporationPremiumExpense
+# is that same 250,000 over each of three periods — the six months to
+# 2023-10-31, the eight to 2023-12-31 and the three to 2024-03-31 — so it is no
+# charge that accrues with time. DepositLiabilitiesAccruedInterest is 402,432 at
+# 2025-09-30 and again at 2025-12-31, against Liabilities of 9,195,718 at the
+# later date, in a year the filer raised ProceedsFromIssuanceOfCommonStock
+# 25,566,385. And FeeIncome 1,000,000 over the transition period is inside
+# neither that period's Revenues of 121,690 nor its
+# OtherNonoperatingIncomeExpense, which closes without it below; it equals the
+# DeferredRevenueCurrent 593,750 and DeferredRevenueNoncurrent 406,250 the 10-KT
+# states at 2023-12-31.
+#
+# Insurer. The clause reads premiums and investment income earned against
+# claims and reserves, presented with no cost of revenue. This filer subtracts a
+# cost of revenue in every run above: CostOfRevenue 167,193 and 293,204 over the
+# April years, 74,554 over the six months to 2023-10-31, 94,665 over the
+# transition period, 302,084 over 2024 and 2,067,060 over 2025. The 250,000 of
+# FederalDepositInsuranceCorporationPremiumExpense above is an expense by its
+# own element, not a premium earned.
+#
+# REIT. The clause reads rental income from property the filer owns, an
+# unclassified balance sheet led by real estate at cost less depreciation, and
+# revenues run to property operating expenses and depreciation. Before the
+# change plant and property are most of what this filer holds —
+# PropertyPlantAndEquipmentNet 3,816,149 of Assets 6,886,666 at 2022-04-30 —
+# and it sells property: over the two April years and the transition period
+# (10-KT), ProceedsFromSaleOfPropertyPlantAndEquipment 1,691,644, 1,539,997 and
+# 731,343, at GainLossOnSaleOfProperties 34,853, 22,817 and 85,077. So the
+# refusal is on presentation, not on the size of the line: at that same instant
+# this filer subtotals AssetsCurrent 2,356,058 and LiabilitiesCurrent
+# 12,204,998, and over that year it subtracts CostOfRevenue to a GrossProfit,
+# with MarketingAndAdvertisingExpense 2,569,730 and LaborAndRelatedExpense
+# 1,177,110 against OperatingExpenses of 4,967,126. After the change
+# PropertyPlantAndEquipmentNet is 102,638 of Assets 11,994,458 at 2024-12-31 and
+# 64,626 of 21,717,331 at 2025-12-31, against Goodwill and
+# IntangibleAssetsNetExcludingGoodwill of 7,496,572 and 11,765,678 together,
+# while Revenues run 948,420 and 4,518,498.
+#
+# Investment company. The clause reads a portfolio carried at fair value, a
+# statement of assets and liabilities, and investment income run to net
+# investment income with realised and unrealised results below. This filer
+# holds investments on both sides of the change, and each stands inside the
+# classified presentation above rather than making one of that kind.
+#
+# Before the change and at it. AssetsHeldInTrustNoncurrent, bought under
+# PaymentsToAcquireInvestments 115,000 over the year to 2022-04-30, is that same
+# 115,000 at 2022-04-30, 2023-04-30, 2023-10-31, 2023-12-31 and 2024-03-31, and
+# four filings from 2024-08-14 to 2025-05-13 state the 2023-12-31 balance as
+# EquityMethodInvestments 115,000 instead. OtherLongTermInvestments 406,250 is
+# one of the non-current lines that close Assets at 2023-12-31 above — the 10-K
+# filed 2025-04-02 states that balance as OtherAssetsNoncurrent 406,250 — and is
+# 281,250 at 2024-03-31 (10-Q filed 2024-04-19). The filer gained
+# GainOnSaleOfInvestments 5,503,000 over the transition period (10-KT), which
+# states it as 5,502,774 under GainLossOnDispositionOfAssets1 as well; the 10-Q
+# filed 2023-12-18 states both over the six months to 2023-10-31, and the 10-K
+# filed 2025-04-02 and its amendment state the 5,502,774 over the transition
+# period under GainLossOnSaleOfInvestments. That period's Revenues are 121,690,
+# and the gain sits below operating income. Over the six months to 2023-10-31 (10-Q
+# filed 2023-12-18) NonoperatingIncomeExpense 5,378,086 is that 5,502,774,
+# InvestmentIncomeInterest 321 and OtherNonoperatingIncome 525 less
+# InterestExpense 67,588 and OtherNonoperatingExpense 57,946, and with
+# OperatingIncomeLoss -4,787,808 it makes ProfitLoss 590,278. Over the
+# transition period (10-KT) OtherNonoperatingIncomeExpense 5,291,649 is
+# 5,502,774, OtherNonoperatingIncome 89,860 and InvestmentIncomeInterest 557
+# less OtherNonoperatingExpense 230,866 and InterestExpense 70,676, and with
+# OperatingIncomeLoss -6,338,622 it makes
+# IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+# -1,046,973. AssetsNet 347,000, at 2023-10-31 and 2023-12-31, is not this
+# filer's net assets: its Assets less Liabilities are 13,755,829 and 24,708,785
+# at those instants, the figures
+# StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest states.
+# The percent-of-net-assets elements beside it state 0.25 and nothing else,
+# under RestrictedInvestmentsPercentOfNetAssets at 2023-10-31 and
+# InvestmentOwnedPercentOfNetAssets at 2023-12-31 and 2024-03-31. And what it
+# acquires it consolidates: Goodwill 5,135,894 at 2023-04-30 closes Assets
+# above.
+#
+# After the change. EquityMethodInvestments, 215,000 at 2024-12-31 and 111,646
+# at 2025-12-31, closes Assets above at both, carried on the equity method its
+# element names, with IncomeLossFromEquityMethodInvestments -13,354 over 2025.
+# PaymentsToAcquireInvestments 50,000 over 2024 and
+# ProceedsFromSaleOfEquityMethodInvestments 125,000 over 2025 stand beside
+# PaymentsToAcquireBusinessesNetOfCashAcquired 1,268,630 and 1,023,053 and
+# GoodwillAcquiredDuringPeriod 4,072,728 and 6,050,387 over the same two years.
+# Investments 1,184,210, stated at 2025-06-30 and 2026-03-31, is inside neither
+# sum at 2026-03-31 (10-Q filed 2026-04-28): AssetsCurrent 5,850,565 is
+# CashAndCashEquivalentsAtCarryingValue 4,667,612, AccountsReceivableNetCurrent
+# 91,610, PrepaidExpenseCurrent 353,958, OtherAssetsCurrent 237,385 and
+# EscrowDeposit 500,000, and Assets 17,637,105 is that with Goodwill 7,459,125,
+# IntangibleAssetsNetExcludingGoodwill 4,164,833, PropertyPlantAndEquipmentNet
+# 103,165 and EquityMethodInvestments 59,417. And wherever a filing states
+# FairValueAdjustmentOfWarrants for a period, it states the same amount, whatever
+# the sign, under GainLossOnSaleOfInvestments for that period: 93,000 over the
+# first quarter of 2025, 81,000 over its first half, 148,000 over nine months,
+# 604,123 over the year, 18,350 over the first quarter of 2026 and 40,027 over
+# its first half. What fair value reaches there is the filer's own warrants, not
+# a portfolio.
+
+cik = "0001859199"
+kind = "operating"
