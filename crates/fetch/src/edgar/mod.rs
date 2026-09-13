@@ -483,13 +483,27 @@ pub fn history<T: Transport>(
     edgar: &mut Egress<T>,
     company: &Company,
 ) -> Result<History, Unretrieved> {
-    let source = Source::new(&submissions_url(company.cik()));
+    let (source, filings) = filings(edgar, company.cik())?;
+
+    Ok(History::new(company.clone(), source, filings))
+}
+
+/// Every filing EDGAR publishes for the filer it keys as `cik`, every page of
+/// them, and the request that published the first.
+///
+/// The one way a history is fetched, which [`history`] hands on as a history
+/// and [`company_facts`] reads the report dates out of.
+fn filings<T: Transport>(
+    edgar: &mut Egress<T>,
+    cik: Cik,
+) -> Result<(Source, Vec<Filing>), Unretrieved> {
+    let source = Source::new(&submissions_url(cik));
     let body = get(edgar, &source)?;
 
     let mut filings = Vec::new();
     let overflow: Vec<String> = {
         let submissions: Submissions<'_> = read(&body, &source)?;
-        filed_under(&submissions, company.cik(), &source)?;
+        filed_under(&submissions, cik, &source)?;
 
         collect(&submissions.filings.recent, &source, &mut filings)?;
         submissions
@@ -515,7 +529,7 @@ pub fn history<T: Transport>(
         collect(&page, &carried_by, &mut filings)?;
     }
 
-    Ok(History::new(company.clone(), source, filings))
+    Ok((source, filings))
 }
 
 /// The filing history EDGAR publishes for a ticker.

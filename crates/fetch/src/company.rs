@@ -48,7 +48,7 @@ impl fmt::Display for Ticker {
 pub struct Cik(u64);
 
 /// The width EDGAR pads a CIK to where it writes one padded.
-const PADDED_DIGITS: usize = 10;
+pub(crate) const PADDED_DIGITS: usize = 10;
 
 impl Cik {
     /// Take `key` as the filer EDGAR assigned it to.

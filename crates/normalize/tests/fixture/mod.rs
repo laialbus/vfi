@@ -162,14 +162,21 @@ fn read_fact(line: &str, path: &Path) -> Fact {
         held => panic!("{}: states a period as `{held}`: {line}", path.display()),
     };
     assert_eq!(
-        [stated(rest), stated(rest + 2), stated(rest + 5)],
-        ["value", "in", "filed"],
+        [
+            stated(rest),
+            stated(rest + 2),
+            stated(rest + 5),
+            stated(rest + 7),
+            stated(rest + 8),
+            stated(rest + 9),
+        ],
+        ["value", "in", "filed", "report", "period", "end"],
         "{}: cannot be read as a fact: {line}",
         path.display()
     );
     assert_eq!(
         word.len(),
-        rest + 7,
+        rest + 11,
         "{}: cannot be read as a fact: {line}",
         path.display()
     );
@@ -183,6 +190,12 @@ fn read_fact(line: &str, path: &Path) -> Fact {
         accession: stated(rest + 3).into(),
         form: stated(rest + 4).into(),
         filed: stated(rest + 6).into(),
+        // The harness writes an empty report period end as `none`.
+        report_period_end: match stated(rest + 10) {
+            "none" => "",
+            date => date,
+        }
+        .into(),
     }
 }
 
