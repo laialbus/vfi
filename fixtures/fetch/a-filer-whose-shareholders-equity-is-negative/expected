@@ -1,0 +1,1160 @@
+filer 0002011954
+  retrieved from https://data.sec.gov/api/xbrl/companyfacts/CIK0002011954.json
+facts 1157
+    dei EntityPublicFloat USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccountsPayableCurrent USD at 2023-12-31 value 9487000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccountsPayableCurrent USD at 2024-12-29 value 9800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccountsPayableCurrent USD at 2024-12-29 value 9800000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccountsPayableCurrent USD at 2024-12-29 value 9800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccountsPayableCurrent USD at 2024-12-29 value 9800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccountsPayableCurrent USD at 2025-03-30 value 9401000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccountsPayableCurrent USD at 2025-06-29 value 10223000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccountsPayableCurrent USD at 2025-09-28 value 10780000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccountsReceivableNetCurrent USD at 2023-12-31 value 2276000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccountsReceivableNetCurrent USD at 2024-12-29 value 3130000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccountsReceivableNetCurrent USD at 2024-12-29 value 3130000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccountsReceivableNetCurrent USD at 2024-12-29 value 3130000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccountsReceivableNetCurrent USD at 2024-12-29 value 3130000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccountsReceivableNetCurrent USD at 2025-03-30 value 2051000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccountsReceivableNetCurrent USD at 2025-06-29 value 2142000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccountsReceivableNetCurrent USD at 2025-09-28 value 1951000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2023-12-31 value 2600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2024-12-29 value 3200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2024-12-29 value 3200000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2024-12-29 value 3200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2024-12-29 value 3200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2025-03-30 value 1900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2025-06-29 value 2400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccrualForTaxesOtherThanIncomeTaxesCurrent USD at 2025-09-28 value 2800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccruedAdvertisingCurrent USD at 2023-12-31 value 1500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccruedAdvertisingCurrent USD at 2024-12-29 value 1300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccruedAdvertisingCurrent USD at 2024-12-29 value 1300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccruedAdvertisingCurrent USD at 2025-03-30 value 1000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccruedLiabilitiesCurrent USD at 2023-12-31 value 25677000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccruedLiabilitiesCurrent USD at 2024-12-29 value 23335000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccruedLiabilitiesCurrent USD at 2024-12-29 value 23335000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccruedLiabilitiesCurrent USD at 2024-12-29 value 23335000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccruedLiabilitiesCurrent USD at 2024-12-29 value 23335000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccruedLiabilitiesCurrent USD at 2025-03-30 value 27339000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccruedLiabilitiesCurrent USD at 2025-06-29 value 26409000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccruedLiabilitiesCurrent USD at 2025-09-28 value 27371000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2023-12-31 value 17900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2024-12-29 value 35800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2024-12-29 value 35800000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2024-12-29 value 35800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2024-12-29 value 35800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2025-03-30 value 40700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2025-06-29 value 43500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment USD at 2025-09-28 value 41900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2022-12-26 to 2023-12-31 value 312000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-01-01 to 2024-03-31 value 101000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-01-01 to 2024-06-30 value 202000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-04-01 to 2024-06-30 value 101000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-01-01 to 2024-09-29 value 211000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-07-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-01-01 to 2024-12-29 value 211000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-12-30 to 2025-06-29 value 12552000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2025-03-31 to 2025-06-29 value 12552000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2024-12-30 to 2025-09-28 value 15911000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalSharebasedCompensationRequisiteServicePeriodRecognitionValue USD from 2025-06-30 to 2025-09-28 value 3359000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalWarrantIssued USD from 2024-12-30 to 2025-09-28 value 7631000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToAdditionalPaidInCapitalWarrantIssued USD from 2025-06-30 to 2025-09-28 value 7631000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2022-12-26 to 2023-12-31 value 19885000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-03-31 value 5482000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-06-30 value 13844000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-09-29 value 28541000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-12-29 value 33134000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-03-30 value 6373000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-06-29 value 18335000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdjustmentsToReconcileNetIncomeLossToCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-09-28 value 36921000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdvertisingExpense USD from 2022-12-26 to 2023-12-31 value 16792000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdvertisingExpense USD from 2024-01-01 to 2024-03-31 value 5967000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AdvertisingExpense USD from 2024-01-01 to 2024-06-30 value 10752000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdvertisingExpense USD from 2024-04-01 to 2024-06-30 value 4785000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdvertisingExpense USD from 2024-01-01 to 2024-09-29 value 15080000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdvertisingExpense USD from 2024-07-01 to 2024-09-29 value 4328000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdvertisingExpense USD from 2024-01-01 to 2024-12-29 value 19751000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AdvertisingExpense USD from 2024-12-30 to 2025-03-30 value 5079000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AdvertisingExpense USD from 2024-12-30 to 2025-06-29 value 10135000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdvertisingExpense USD from 2025-03-31 to 2025-06-29 value 5056000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AdvertisingExpense USD from 2024-12-30 to 2025-09-28 value 15477000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AdvertisingExpense USD from 2025-06-30 to 2025-09-28 value 5342000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2022-12-26 to 2023-12-31 value 300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-01-01 to 2024-06-30 value 200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-04-01 to 2024-06-30 value 200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-01-01 to 2024-09-29 value 200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-07-01 to 2024-09-29 value 200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-01-01 to 2024-12-29 value 200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-12-30 to 2025-06-29 value 12600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2025-03-31 to 2025-06-29 value 12600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2024-12-30 to 2025-09-28 value 15900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AllocatedShareBasedCompensationExpense USD from 2025-06-30 to 2025-09-28 value 3400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AllowanceForDoubtfulAccountsReceivableCurrent USD at 2022-12-25 value 1900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AllowanceForDoubtfulAccountsReceivableCurrent USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AllowanceForDoubtfulAccountsReceivableCurrent USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2022-12-26 to 2023-12-31 value 2300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-01-01 to 2024-03-31 value 700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-01-01 to 2024-06-30 value 1500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-04-01 to 2024-06-30 value 700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-01-01 to 2024-09-29 value 2200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-07-01 to 2024-09-29 value 700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-01-01 to 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-12-30 to 2025-03-30 value 700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-12-30 to 2025-06-29 value 1500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2025-03-31 to 2025-06-29 value 700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AmortizationOfIntangibleAssets USD from 2024-12-30 to 2025-09-28 value 2200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AmortizationOfIntangibleAssets USD from 2025-06-30 to 2025-09-28 value 700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Assets USD at 2023-12-31 value 565582000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Assets USD at 2024-12-29 value 542446000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Assets USD at 2024-12-29 value 542446000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Assets USD at 2024-12-29 value 542446000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Assets USD at 2024-12-29 value 542446000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Assets USD at 2025-03-30 value 544223000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Assets USD at 2025-06-29 value 535071000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Assets USD at 2025-09-28 value 516770000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AssetsCurrent USD at 2023-12-31 value 28093000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AssetsCurrent USD at 2024-12-29 value 28805000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap AssetsCurrent USD at 2024-12-29 value 28805000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AssetsCurrent USD at 2024-12-29 value 28805000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AssetsCurrent USD at 2024-12-29 value 28805000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap AssetsCurrent USD at 2025-03-30 value 35562000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap AssetsCurrent USD at 2025-06-29 value 34279000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap AssetsCurrent USD at 2025-09-28 value 28268000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Cash USD at 2023-12-31 value 4491000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Cash USD at 2024-12-29 value 9370000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Cash USD at 2024-12-29 value 9370000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Cash USD at 2024-12-29 value 9370000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Cash USD at 2024-12-29 value 9370000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Cash USD at 2025-03-30 value 7155000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Cash USD at 2025-06-29 value 6064000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Cash USD at 2025-09-28 value 5478000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2022-12-25 value 16970000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2023-12-31 value 24145000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2023-12-31 value 24145000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2023-12-31 value 24145000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2023-12-31 value 24145000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-03-31 value 27194000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-06-30 value 26563000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-09-29 value 29567000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-12-29 value 25888000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-12-29 value 25888000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-12-29 value 25888000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2024-12-29 value 25888000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2025-03-30 value 28290000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2025-06-29 value 21168000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsIncludingDisposalGroupAndDiscontinuedOperations USD at 2025-09-28 value 14259000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2022-12-26 to 2023-12-31 value 7175000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-01-01 to 2024-03-31 value 3049000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-01-01 to 2024-06-30 value 2418000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-01-01 to 2024-09-29 value 5422000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-01-01 to 2024-12-29 value 1743000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-12-30 to 2025-03-30 value 2402000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-12-30 to 2025-06-29 value -4720000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CashCashEquivalentsRestrictedCashAndRestrictedCashEquivalentsPeriodIncreaseDecreaseIncludingExchangeRateEffect USD from 2024-12-30 to 2025-09-28 value -11629000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ClassOfWarrantOrRightNumberOfSecuritiesCalledByWarrantsOrRights shares at 2025-09-28 value 1560782 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ClassOfWarrantOrRightUnissued shares at 2025-01-29 value 2364913 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2023-12-31 value 0.0001 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2025-03-30 value 0.0001 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2025-06-29 value 0.0001 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockParOrStatedValuePerShare USD/shares at 2025-09-28 value 0.0001 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesAuthorized shares at 2023-12-31 value 5000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesAuthorized shares at 2024-12-29 value 102870000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesAuthorized shares at 2024-12-29 value 102870000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesAuthorized shares at 2024-12-29 value 102870000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesAuthorized shares at 2024-12-29 value 102870000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesAuthorized shares at 2025-03-30 value 102870000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesAuthorized shares at 2025-06-29 value 102870000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesAuthorized shares at 2025-09-28 value 102870000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesIssued shares at 2023-12-31 value 5000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesIssued shares at 2024-12-29 value 5000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesIssued shares at 2024-12-29 value 5000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesIssued shares at 2024-12-29 value 5000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesIssued shares at 2024-12-29 value 5000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesIssued shares at 2025-03-30 value 50168271 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesIssued shares at 2025-06-29 value 66725856 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesIssued shares at 2025-09-28 value 66725856 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesOutstanding shares at 2023-12-31 value 5000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesOutstanding shares at 2024-12-29 value 5000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CommonStockSharesOutstanding shares at 2024-12-29 value 5000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesOutstanding shares at 2024-12-29 value 5000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesOutstanding shares at 2024-12-29 value 5000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CommonStockSharesOutstanding shares at 2025-03-30 value 50168271 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CommonStockSharesOutstanding shares at 2025-06-29 value 57325856 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CommonStockSharesOutstanding shares at 2025-09-28 value 57325856 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2023-12-31 value 1118000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2024-12-29 value 3954000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2024-12-29 value 3954000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2024-12-29 value 3954000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2024-12-29 value 3954000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2025-03-30 value 3314000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2025-06-29 value 3112000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ContractWithCustomerLiabilityCurrent USD at 2025-09-28 value 2778000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2023-12-31 value 4365000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2024-12-29 value 4808000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2024-12-29 value 4808000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2024-12-29 value 4808000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2024-12-29 value 4808000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2025-03-30 value 4742000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2025-06-29 value 4492000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ContractWithCustomerLiabilityNoncurrent USD at 2025-09-28 value 4426000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2022-12-26 to 2023-12-31 value 53512000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-03-31 value 22392000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-06-30 value 45341000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-04-01 to 2024-06-30 value 22949000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-09-29 value 66167000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-07-01 to 2024-09-29 value 20826000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-12-29 value 87414000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-03-30 value 21234000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-06-29 value 42778000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2025-03-31 to 2025-06-29 value 21544000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-09-28 value 63126000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization USD from 2025-06-30 to 2025-09-28 value 20348000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostsAndExpenses USD from 2022-12-26 to 2023-12-31 value 217927000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CostsAndExpenses USD from 2024-01-01 to 2024-03-31 value 90727000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CostsAndExpenses USD from 2024-01-01 to 2024-06-30 value 180927000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostsAndExpenses USD from 2024-04-01 to 2024-06-30 value 90200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostsAndExpenses USD from 2024-01-01 to 2024-09-29 value 268585000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostsAndExpenses USD from 2024-07-01 to 2024-09-29 value 87255000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostsAndExpenses USD from 2024-01-01 to 2024-12-29 value 362131000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CostsAndExpenses USD from 2024-12-30 to 2025-03-30 value 88161000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap CostsAndExpenses USD from 2024-12-30 to 2025-06-29 value 187596000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostsAndExpenses USD from 2025-03-31 to 2025-06-29 value 99435000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap CostsAndExpenses USD from 2024-12-30 to 2025-09-28 value 283277000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CostsAndExpenses USD from 2025-06-30 to 2025-09-28 value 95681000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap CurrentFederalTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentFederalTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentForeignTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentForeignTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentIncomeTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentIncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentStateAndLocalTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap CurrentStateAndLocalTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DebtInstrumentFaceAmount USD at 2023-12-31 value 353100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DebtInstrumentFaceAmount USD at 2024-12-29 value 424600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DebtInstrumentFaceAmount USD at 2024-12-29 value 424600000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DebtInstrumentFaceAmount USD at 2024-12-29 value 424600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DebtInstrumentFaceAmount USD at 2024-12-29 value 424600000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DebtInstrumentFaceAmount USD at 2025-03-30 value 421100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DebtInstrumentFaceAmount USD at 2025-06-29 value 420800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DebtInstrumentFaceAmount USD at 2025-09-28 value 416100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DeferredFederalIncomeTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value -200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredFederalIncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value -7700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value -200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value -8400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxLiabilities USD at 2023-12-31 value 30100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxLiabilities USD at 2024-12-29 value 55700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2024-12-29 value 2738000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2024-12-29 value 2738000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2024-12-29 value 2738000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2024-12-29 value 2738000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2025-03-30 value 2935000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2025-06-29 value 951000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DeferredIncomeTaxLiabilitiesNet USD at 2025-09-28 value 445000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-01-01 to 2024-03-31 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-01-01 to 2024-06-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-01-01 to 2024-12-29 value -8248000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-12-30 to 2025-03-30 value 265000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-12-30 to 2025-06-29 value -1855000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DeferredIncomeTaxesAndTaxCredits USD from 2024-12-30 to 2025-09-28 value -2293000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DeferredStateAndLocalIncomeTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredStateAndLocalIncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value -700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetInterestCarryforward USD at 2023-12-31 value 600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetInterestCarryforward USD at 2024-12-29 value 1700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsDeferredIncome USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsDeferredIncome USD at 2024-12-29 value 400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsGross USD at 2023-12-31 value 33700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsGross USD at 2024-12-29 value 73600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsLiabilitiesNet USD at 2023-12-31 value 30100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsLiabilitiesNet USD at 2024-12-29 value 53000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsOperatingLossCarryforwards USD at 2023-12-31 value 3400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsOperatingLossCarryforwards USD at 2024-12-29 value 4700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsOther USD at 2023-12-31 value 300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsOther USD at 2024-12-29 value 400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsPropertyPlantAndEquipment USD at 2023-12-31 value 600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsPropertyPlantAndEquipment USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxCreditCarryforwards USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxCreditCarryforwards USD at 2024-12-29 value 20300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxDeferredExpenseCompensationAndBenefitsShareBasedCompensationCost USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxDeferredExpenseCompensationAndBenefitsShareBasedCompensationCost USD at 2024-12-29 value 100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxDeferredExpenseReservesAndAccrualsReserves USD at 2023-12-31 value 200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsTaxDeferredExpenseReservesAndAccrualsReserves USD at 2024-12-29 value 3200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsValuationAllowance USD at 2023-12-31 value 3600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxAssetsValuationAllowance USD at 2024-12-29 value 20600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilities USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilities USD at 2024-12-29 value 2700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesGoodwillAndIntangibleAssetsIntangibleAssets USD at 2023-12-31 value 2200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesGoodwillAndIntangibleAssetsIntangibleAssets USD at 2024-12-29 value 11200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesLeasingArrangements USD at 2023-12-31 value 27900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesLeasingArrangements USD at 2024-12-29 value 42500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesPropertyPlantAndEquipment USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DeferredTaxLiabilitiesPropertyPlantAndEquipment USD at 2024-12-29 value 2000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Depreciation USD from 2022-12-26 to 2023-12-31 value 10100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Depreciation USD from 2024-01-01 to 2024-03-31 value 4500000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Depreciation USD from 2024-01-01 to 2024-06-30 value 9200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Depreciation USD from 2024-04-01 to 2024-06-30 value 4600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Depreciation USD from 2024-01-01 to 2024-09-29 value 13800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Depreciation USD from 2024-07-01 to 2024-09-29 value 4600000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Depreciation USD from 2024-01-01 to 2024-12-29 value 18600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Depreciation USD from 2024-12-30 to 2025-03-30 value 4900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Depreciation USD from 2024-12-30 to 2025-06-29 value 8200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Depreciation USD from 2025-03-31 to 2025-06-29 value 3100000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Depreciation USD from 2024-12-30 to 2025-09-28 value 10100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Depreciation USD from 2025-06-30 to 2025-09-28 value 2400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationAndAmortization USD from 2022-12-26 to 2023-12-31 value 12377000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DepreciationAndAmortization USD from 2024-01-01 to 2024-03-31 value 5746000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DepreciationAndAmortization USD from 2024-01-01 to 2024-06-30 value 11587000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationAndAmortization USD from 2024-01-01 to 2024-09-29 value 17482000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationAndAmortization USD from 2024-01-01 to 2024-12-29 value 23515000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DepreciationAndAmortization USD from 2024-12-30 to 2025-03-30 value 6094000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DepreciationAndAmortization USD from 2024-12-30 to 2025-06-29 value 10166000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationAndAmortization USD from 2024-12-30 to 2025-09-28 value 13601000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationDepletionAndAmortization USD from 2022-12-26 to 2023-12-31 value 12377000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-03-31 value 5746000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-06-30 value 11587000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-04-01 to 2024-06-30 value 5841000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-09-29 value 17500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-07-01 to 2024-09-29 value 5913000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-01-01 to 2024-12-29 value 23515000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-03-30 value 6094000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-06-29 value 10166000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2025-03-31 to 2025-06-29 value 4072000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap DepreciationDepletionAndAmortization USD from 2024-12-30 to 2025-09-28 value 13758000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap DepreciationDepletionAndAmortization USD from 2025-06-30 to 2025-09-28 value 3592000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareBasic USD/shares from 2024-01-01 to 2024-09-29 value -0.72 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareBasic USD/shares from 2024-07-01 to 2024-09-29 value -0.32 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareBasic USD/shares from 2024-12-30 to 2025-03-30 value -0.26 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EarningsPerShareBasic USD/shares from 2024-12-30 to 2025-06-29 value -0.61 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EarningsPerShareBasic USD/shares from 2025-03-31 to 2025-06-29 value -0.38 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EarningsPerShareBasic USD/shares from 2024-12-30 to 2025-09-28 value -1.08 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareBasic USD/shares from 2025-06-30 to 2025-09-28 value -0.43 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareDiluted USD/shares from 2024-01-01 to 2024-09-29 value -0.72 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareDiluted USD/shares from 2024-07-01 to 2024-09-29 value -0.32 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareDiluted USD/shares from 2024-12-30 to 2025-03-30 value -0.26 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EarningsPerShareDiluted USD/shares from 2024-12-30 to 2025-06-29 value -0.61 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EarningsPerShareDiluted USD/shares from 2025-03-31 to 2025-06-29 value -0.38 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EarningsPerShareDiluted USD/shares from 2024-12-30 to 2025-09-28 value -1.08 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EarningsPerShareDiluted USD/shares from 2025-06-30 to 2025-09-28 value -0.43 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-01-01 to 2024-03-31 value -0.009 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-01-01 to 2024-06-30 value 0.001 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-04-01 to 2024-06-30 value 0.009 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-07-01 to 2024-09-29 value -0.001 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-12-30 to 2025-03-30 value -0.022 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-12-30 to 2025-06-29 value 0.053 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2025-03-31 to 2025-06-29 value 0.093 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2024-12-30 to 2025-09-28 value 0.043 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateContinuingOperations pure from 2025-06-30 to 2025-09-28 value 0.029 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-01-01 to 2024-03-31 value 0.21 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-01-01 to 2024-06-30 value 0.21 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-04-01 to 2024-06-30 value 0.21 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-01-01 to 2024-09-29 value 0.21 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-07-01 to 2024-09-29 value 0.21 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-12-30 to 2025-03-30 value 0.21 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-12-30 to 2025-06-29 value 0.21 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2025-03-31 to 2025-06-29 value 0.21 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2024-12-30 to 2025-09-28 value 0.21 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EffectiveIncomeTaxRateReconciliationAtFederalStatutoryIncomeTaxRate pure from 2025-06-30 to 2025-09-28 value 0.21 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2023-12-31 value 6200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2024-12-29 value 5900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2024-12-29 value 5900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2024-12-29 value 5900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2024-12-29 value 5900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2025-03-30 value 8400000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2025-06-29 value 5500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap EmployeeRelatedLiabilitiesCurrent USD at 2025-09-28 value 6700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap EmployeeServiceShareBasedCompensationNonvestedAwardsTotalCompensationCostNotYetRecognized USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2022-12-26 to 2023-12-31 value 100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-01-01 to 2024-03-31 value 400000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-01-01 to 2024-06-30 value 400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-01-01 to 2024-09-29 value 1100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-01-01 to 2024-12-29 value 100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-12-30 to 2025-03-30 value 400000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-12-30 to 2025-06-29 value 700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseInterestPaymentOnLiability USD from 2024-12-30 to 2025-09-28 value 1100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseLiability USD at 2023-12-31 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseLiability USD at 2024-12-29 value 1700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseLiability USD at 2024-12-29 value 1700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseLiability USD at 2024-12-29 value 1700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseLiability USD at 2024-12-29 value 2000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseLiability USD at 2025-03-30 value 1300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseLiability USD at 2025-06-29 value 1000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseLiability USD at 2025-09-28 value 700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseLiabilityPaymentsDueNextTwelveMonths USD at 2024-12-29 value 1800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-03-30 value 1300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-06-29 value 1000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-09-28 value 700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseLiabilityUndiscountedExcessAmount USD at 2024-12-29 value 100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseLiabilityUndiscountedExcessAmount USD at 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseLiabilityUndiscountedExcessAmount USD at 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseLiabilityUndiscountedExcessAmount USD at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2023-12-31 value 3600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2024-12-29 value 1800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2024-12-29 value 1800000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2024-12-29 value 1800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2024-12-29 value 2200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2025-03-30 value 1300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2025-06-29 value 800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseRightOfUseAsset USD at 2025-09-28 value 300000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinanceLeaseWeightedAverageDiscountRatePercent pure at 2024-12-29 value 0.083 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinanceLeaseWeightedAverageDiscountRatePercent pure at 2025-03-30 value 0.083 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FinanceLeaseWeightedAverageDiscountRatePercent pure at 2025-06-29 value 0.083 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FinanceLeaseWeightedAverageDiscountRatePercent pure at 2025-09-28 value 0.083 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2023-12-31 value 5000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2024-12-29 value 7900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2024-12-29 value 7900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2024-12-29 value 7900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2024-12-29 value 7900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2025-03-30 value 8600000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2025-06-29 value 9400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAccumulatedAmortization USD at 2025-09-28 value 10100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseAfterYearFive USD at 2024-12-29 value 15500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths USD at 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths USD at 2025-03-30 value 2900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths USD at 2025-06-29 value 2900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseNextTwelveMonths USD at 2025-09-28 value 2900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseRemainderOfFiscalYear USD at 2025-03-30 value 2200000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseRemainderOfFiscalYear USD at 2025-06-29 value 1500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseRemainderOfFiscalYear USD at 2025-09-28 value 700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearFive USD at 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearFour USD at 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearFour USD at 2025-03-30 value 2900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearFour USD at 2025-06-29 value 2900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearFour USD at 2025-09-28 value 2900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearThree USD at 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearThree USD at 2025-03-30 value 2900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearThree USD at 2025-06-29 value 2900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearThree USD at 2025-09-28 value 2900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo USD at 2024-12-29 value 2900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo USD at 2025-03-30 value 2900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo USD at 2025-06-29 value 2900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsAmortizationExpenseYearTwo USD at 2025-09-28 value 2900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2023-12-31 value 37900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2024-12-29 value 37900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2024-12-29 value 37900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2024-12-29 value 37900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2024-12-29 value 37900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2025-03-30 value 37900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2025-06-29 value 37900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsGross USD at 2025-09-28 value 37900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2022-12-25 value 26100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2023-12-31 value 32900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2024-12-29 value 30000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2024-12-29 value 30000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2024-12-29 value 30000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2024-12-29 value 30000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2025-03-30 value 29300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2025-06-29 value 28500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap FiniteLivedIntangibleAssetsNet USD at 2025-09-28 value 27800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap FinitelivedIntangibleAssetsAcquired1 USD from 2022-12-26 to 2023-12-31 value 8800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap FinitelivedIntangibleAssetsAcquired1 USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GainsLossesOnExtinguishmentOfDebt USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GainsLossesOnExtinguishmentOfDebt USD from 2024-01-01 to 2024-12-29 value -2353000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2022-12-26 to 2023-12-31 value 19252000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-01-01 to 2024-03-31 value 6992000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-01-01 to 2024-06-30 value 13894000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-04-01 to 2024-06-30 value 6902000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-01-01 to 2024-09-29 value 21160000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-07-01 to 2024-09-29 value 7167000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-01-01 to 2024-12-29 value 33232000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-12-30 to 2025-03-30 value 6814000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-12-30 to 2025-06-29 value 26708000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2025-03-31 to 2025-06-29 value 19894000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap GeneralAndAdministrativeExpense USD from 2024-12-30 to 2025-09-28 value 46033000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap GeneralAndAdministrativeExpense USD from 2025-06-30 to 2025-09-28 value 19502000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Goodwill USD at 2023-12-31 value 117159000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Goodwill USD at 2024-12-29 value 117185000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Goodwill USD at 2024-12-29 value 117185000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Goodwill USD at 2024-12-29 value 117185000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Goodwill USD at 2024-12-29 value 117185000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Goodwill USD at 2025-03-30 value 117184000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Goodwill USD at 2025-06-29 value 117185000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Goodwill USD at 2025-09-28 value 117185000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap GoodwillAcquiredDuringPeriod USD from 2022-12-26 to 2023-12-31 value 12100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillAcquiredDuringPeriod USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillGross USD at 2022-12-25 value 105100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillGross USD at 2023-12-31 value 117200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillGross USD at 2024-12-29 value 117200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillImpairedAccumulatedImpairmentLoss USD at 2022-12-25 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillImpairedAccumulatedImpairmentLoss USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillImpairedAccumulatedImpairmentLoss USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillImpairmentLoss USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap GoodwillImpairmentLoss USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsExcludingGoodwill USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsExcludingGoodwill USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsFinitelived USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsFinitelived USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsIndefinitelivedExcludingGoodwill USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfIntangibleAssetsIndefinitelivedExcludingGoodwill USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ImpairmentOfLongLivedAssetsHeldForUse USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ImpairmentOfLongLivedAssetsHeldForUse USD from 2024-12-30 to 2025-09-28 value 1407000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ImpairmentOfLongLivedAssetsHeldForUse USD from 2025-06-30 to 2025-09-28 value 1400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2022-12-26 to 2023-12-31 value -14070000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-01-01 to 2024-03-31 value -9142000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-01-01 to 2024-06-30 value -19973000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-04-01 to 2024-06-30 value -10831000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-01-01 to 2024-09-29 value -36180000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-07-01 to 2024-09-29 value -16207000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-01-01 to 2024-12-29 value -56572000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-12-30 to 2025-03-30 value -11847000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-12-30 to 2025-06-29 value -34750000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2025-03-31 to 2025-06-29 value -22903000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2024-12-30 to 2025-09-28 value -59969000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest USD from 2025-06-30 to 2025-09-28 value -25219000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeTaxExpenseBenefit USD from 2022-12-26 to 2023-12-31 value -230000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-03-31 value 79000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-06-30 value -20000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-04-01 to 2024-06-30 value -99000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-09-29 value -10000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-07-01 to 2024-09-29 value 10000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-01-01 to 2024-12-29 value -8402000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-12-30 to 2025-03-30 value 265000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-12-30 to 2025-06-29 value -1854000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2025-03-31 to 2025-06-29 value -2119000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeTaxExpenseBenefit USD from 2024-12-30 to 2025-09-28 value -2592000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeTaxExpenseBenefit USD from 2025-06-30 to 2025-09-28 value -738000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncomeTaxReconciliationChangeInDeferredTaxAssetsValuationAllowance USD from 2022-12-26 to 2023-12-31 value 700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationChangeInDeferredTaxAssetsValuationAllowance USD from 2024-01-01 to 2024-12-29 value -1700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate USD from 2022-12-26 to 2023-12-31 value -3000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationIncomeTaxExpenseBenefitAtFederalStatutoryIncomeTaxRate USD from 2024-01-01 to 2024-12-29 value -11900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationOtherAdjustments USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationOtherAdjustments USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationStateAndLocalIncomeTaxes USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationStateAndLocalIncomeTaxes USD from 2024-01-01 to 2024-12-29 value -700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationTaxCredits USD from 2022-12-26 to 2023-12-31 value 300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxReconciliationTaxCredits USD from 2024-01-01 to 2024-12-29 value 1100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxesPaidNet USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxesPaidNet USD from 2024-01-01 to 2024-03-31 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeTaxesPaidNet USD from 2024-01-01 to 2024-06-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncomeTaxesPaidNet USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncomeTaxesPaidNet USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncomeTaxesPaidNet USD from 2024-12-30 to 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2022-12-26 to 2023-12-31 value 171000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-01-01 to 2024-03-31 value -2258000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-01-01 to 2024-06-30 value -2622000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-01-01 to 2024-09-29 value -530000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-01-01 to 2024-12-29 value 313000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-12-30 to 2025-03-30 value -399000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-12-30 to 2025-06-29 value 423000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccountsPayable USD from 2024-12-30 to 2025-09-28 value 980000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2022-12-26 to 2023-12-31 value 246000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-01-01 to 2024-03-31 value -310000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-01-01 to 2024-06-30 value -95000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-01-01 to 2024-09-29 value -489000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-01-01 to 2024-12-29 value 854000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-12-30 to 2025-03-30 value -1079000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-12-30 to 2025-06-29 value -988000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccountsReceivable USD from 2024-12-30 to 2025-09-28 value -1179000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2022-12-26 to 2023-12-31 value 1681000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-01-01 to 2024-03-31 value -1760000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-01-01 to 2024-06-30 value -1675000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-01-01 to 2024-09-29 value 1450000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-01-01 to 2024-12-29 value -2342000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-12-30 to 2025-03-30 value 3934000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-12-30 to 2025-06-29 value -405000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInAccruedLiabilitiesAndOtherOperatingLiabilities USD from 2024-12-30 to 2025-09-28 value 1114000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2022-12-26 to 2023-12-31 value 959000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-01-01 to 2024-03-31 value -157000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-01-01 to 2024-06-30 value -32000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-01-01 to 2024-09-29 value -212000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-01-01 to 2024-12-29 value 756000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-12-30 to 2025-03-30 value -706000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-12-30 to 2025-06-29 value -1158000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInContractWithCustomerLiability USD from 2024-12-30 to 2025-09-28 value -1558000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInDueToAffiliates USD at 2025-06-04 value -31200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInDueToAffiliates USD at 2025-06-04 value -31200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2022-12-26 to 2023-12-31 value -255000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-01-01 to 2024-03-31 value 1122000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-01-01 to 2024-06-30 value 1917000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-01-01 to 2024-09-29 value 2041000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-01-01 to 2024-12-29 value 1300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-12-30 to 2025-03-30 value 5265000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-12-30 to 2025-06-29 value 4181000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherCurrentAssets USD from 2024-12-30 to 2025-09-28 value 3378000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2022-12-26 to 2023-12-31 value -336000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-01-01 to 2024-03-31 value -106000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-01-01 to 2024-06-30 value -81000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-01-01 to 2024-09-29 value -54000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-01-01 to 2024-12-29 value 13000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-12-30 to 2025-03-30 value -143000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-12-30 to 2025-06-29 value -147000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherNoncurrentAssets USD from 2024-12-30 to 2025-09-28 value -193000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-01-01 to 2024-03-31 value 644000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-01-01 to 2024-06-30 value 411000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-01-01 to 2024-09-29 value 297000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-01-01 to 2024-12-29 value -19000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-12-30 to 2025-03-30 value -11000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-12-30 to 2025-06-29 value 557000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IncreaseDecreaseInOtherOperatingLiabilities USD from 2024-12-30 to 2025-09-28 value -525000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IndefiniteLivedIntangibleAssetsExcludingGoodwill USD at 2022-12-25 value 136800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IndefiniteLivedIntangibleAssetsExcludingGoodwill USD at 2023-12-31 value 136800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IndefiniteLivedIntangibleAssetsExcludingGoodwill USD at 2024-12-29 value 136800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IndefinitelivedIntangibleAssetsAcquired USD from 2022-12-26 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IndefinitelivedIntangibleAssetsAcquired USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2022-12-25 value 162900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2023-12-31 value 169728000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2024-12-29 value 166751000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2024-12-29 value 166751000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2024-12-29 value 166751000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2024-12-29 value 166751000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2025-03-30 value 166020000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2025-06-29 value 165306000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap IntangibleAssetsNetExcludingGoodwill USD at 2025-09-28 value 164591000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestExpenseNonoperating USD from 2022-12-26 to 2023-12-31 value 29714000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestExpenseNonoperating USD from 2024-01-01 to 2024-03-31 value 10408000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestExpenseNonoperating USD from 2024-01-01 to 2024-06-30 value 22412000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestExpenseNonoperating USD from 2024-04-01 to 2024-06-30 value 12004000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestExpenseNonoperating USD from 2024-01-01 to 2024-09-29 value 35029000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestExpenseNonoperating USD from 2024-07-01 to 2024-09-29 value 12617000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestExpenseNonoperating USD from 2024-01-01 to 2024-12-29 value 46137000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestExpenseNonoperating USD from 2024-12-30 to 2025-03-30 value 10822000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestExpenseNonoperating USD from 2024-12-30 to 2025-06-29 value 22278000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestExpenseNonoperating USD from 2025-03-31 to 2025-06-29 value 11456000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestExpenseNonoperating USD from 2024-12-30 to 2025-09-28 value 34371000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestExpenseNonoperating USD from 2025-06-30 to 2025-09-28 value 12093000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestPaidNet USD from 2022-12-26 to 2023-12-31 value 26137000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestPaidNet USD from 2024-01-01 to 2024-03-31 value 8031000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestPaidNet USD from 2024-01-01 to 2024-06-30 value 16467000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestPaidNet USD from 2024-01-01 to 2024-09-29 value 25483000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestPaidNet USD from 2024-01-01 to 2024-12-29 value 36840000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestPaidNet USD from 2024-12-30 to 2025-03-30 value 7199000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestPaidNet USD from 2024-12-30 to 2025-06-29 value 17973000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestPaidNet USD from 2024-12-30 to 2025-09-28 value 27130000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestPayableCurrent USD at 2023-12-31 value 6100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestPayableCurrent USD at 2024-12-29 value 3700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap InterestPayableCurrent USD at 2024-12-29 value 3700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestPayableCurrent USD at 2024-12-29 value 3700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestPayableCurrent USD at 2024-12-29 value 3700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap InterestPayableCurrent USD at 2025-03-30 value 6500000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap InterestPayableCurrent USD at 2025-06-29 value 6500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap InterestPayableCurrent USD at 2025-09-28 value 6500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LaborAndRelatedExpense USD from 2022-12-26 to 2023-12-31 value 64024000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LaborAndRelatedExpense USD from 2024-01-01 to 2024-03-31 value 26609000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LaborAndRelatedExpense USD from 2024-01-01 to 2024-06-30 value 53020000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LaborAndRelatedExpense USD from 2024-04-01 to 2024-06-30 value 26411000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LaborAndRelatedExpense USD from 2024-01-01 to 2024-09-29 value 77798000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LaborAndRelatedExpense USD from 2024-07-01 to 2024-09-29 value 24778000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LaborAndRelatedExpense USD from 2024-01-01 to 2024-12-29 value 103234000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LaborAndRelatedExpense USD from 2024-12-30 to 2025-03-30 value 25252000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LaborAndRelatedExpense USD from 2024-12-30 to 2025-06-29 value 50539000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LaborAndRelatedExpense USD from 2025-03-31 to 2025-06-29 value 25287000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LaborAndRelatedExpense USD from 2024-12-30 to 2025-09-28 value 74509000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LaborAndRelatedExpense USD from 2025-06-30 to 2025-09-28 value 23902000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDue USD at 2024-12-29 value 310300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDue USD at 2025-03-30 value 301800000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDue USD at 2025-06-29 value 300000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDue USD at 2025-09-28 value 300000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueAfterYearFive USD at 2024-12-29 value 216300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths USD at 2024-12-29 value 20300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths USD at 2025-03-30 value 19800000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths USD at 2025-06-29 value 20200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueNextTwelveMonths USD at 2025-09-28 value 20100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearFive USD at 2024-12-29 value 17400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearFour USD at 2024-12-29 value 17300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearFour USD at 2025-03-30 value 17100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearFour USD at 2025-06-29 value 17500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearFour USD at 2025-09-28 value 17900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearThree USD at 2024-12-29 value 19300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearThree USD at 2025-03-30 value 16900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearThree USD at 2025-06-29 value 17300000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearThree USD at 2025-09-28 value 17900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearTwo USD at 2024-12-29 value 19700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearTwo USD at 2025-03-30 value 19400000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearTwo USD at 2025-06-29 value 19800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsDueYearTwo USD at 2025-09-28 value 19900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-03-30 value 15300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-06-29 value 9200000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityPaymentsRemainderOfFiscalYear USD at 2025-09-28 value 8100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LesseeOperatingLeaseLiabilityUndiscountedExcessAmount USD at 2024-12-29 value 157800000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LesseeOperatingLeaseLiabilityUndiscountedExcessAmount USD at 2025-03-30 value 146700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LesseeOperatingLeaseLiabilityUndiscountedExcessAmount USD at 2025-06-29 value 146400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LesseeOperatingLeaseLiabilityUndiscountedExcessAmount USD at 2025-09-28 value 145000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Liabilities USD at 2023-12-31 value 581093000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Liabilities USD at 2024-12-29 value 627055000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap Liabilities USD at 2024-12-29 value 627055000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Liabilities USD at 2024-12-29 value 627055000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Liabilities USD at 2024-12-29 value 627055000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap Liabilities USD at 2025-03-30 value 646077000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap Liabilities USD at 2025-06-29 value 613707000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap Liabilities USD at 2025-09-28 value 608897000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2023-12-31 value 565582000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2024-12-29 value 542446000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2024-12-29 value 542446000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2024-12-29 value 542446000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2024-12-29 value 542446000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2025-03-30 value 544223000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2025-06-29 value 535071000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LiabilitiesAndStockholdersEquity USD at 2025-09-28 value 516770000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LiabilitiesCurrent USD at 2023-12-31 value 70728000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LiabilitiesCurrent USD at 2024-12-29 value 55230000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LiabilitiesCurrent USD at 2024-12-29 value 55230000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LiabilitiesCurrent USD at 2024-12-29 value 55230000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LiabilitiesCurrent USD at 2024-12-29 value 55230000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LiabilitiesCurrent USD at 2025-03-30 value 56581000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LiabilitiesCurrent USD at 2025-06-29 value 57285000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LiabilitiesCurrent USD at 2025-09-28 value 448236000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebt USD at 2023-12-31 value 343900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebt USD at 2024-12-29 value 415700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebt USD at 2024-12-29 value 415700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebt USD at 2024-12-29 value 415700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebt USD at 2024-12-29 value 415700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebt USD at 2025-03-30 value 413000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebt USD at 2025-06-29 value 411300000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebt USD at 2025-09-28 value 402800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtCurrent USD at 2023-12-31 value 9861000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtCurrent USD at 2024-12-29 value 10691000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtCurrent USD at 2024-12-29 value 10691000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtCurrent USD at 2024-12-29 value 10691000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtCurrent USD at 2024-12-29 value 10691000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtCurrent USD at 2025-03-30 value 10165000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtCurrent USD at 2025-06-29 value 10212000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtCurrent USD at 2025-09-28 value 400266000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths USD at 2024-12-29 value 10700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths USD at 2025-03-30 value 10300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths USD at 2025-06-29 value 10300000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths USD at 2025-09-28 value 1400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFive USD at 2024-12-29 value 8900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour USD at 2024-12-29 value 9500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour USD at 2025-03-30 value 8900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour USD at 2025-06-29 value 8900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearFour USD at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree USD at 2024-12-29 value 10400000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree USD at 2025-03-30 value 9300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree USD at 2025-06-29 value 9500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearThree USD at 2025-09-28 value 600000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo USD at 2024-12-29 value 10300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo USD at 2025-03-30 value 10300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo USD at 2025-06-29 value 10400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalInYearTwo USD at 2025-09-28 value 1500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalRemainderOfFiscalYear USD at 2025-03-30 value 10200000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalRemainderOfFiscalYear USD at 2025-06-29 value 5100000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtMaturitiesRepaymentsOfPrincipalRemainderOfFiscalYear USD at 2025-09-28 value 412600000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtNoncurrent USD at 2023-12-31 value 334020000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtNoncurrent USD at 2024-12-29 value 405007000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap LongTermDebtNoncurrent USD at 2024-12-29 value 405007000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtNoncurrent USD at 2024-12-29 value 405007000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtNoncurrent USD at 2024-12-29 value 405007000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap LongTermDebtNoncurrent USD at 2025-03-30 value 402831000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap LongTermDebtNoncurrent USD at 2025-06-29 value 401054000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap LongTermDebtNoncurrent USD at 2025-09-28 value 2459000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap MembersEquity USD at 2022-12-25 value 60176000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap MembersEquity USD at 2023-12-31 value -15511000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap MembersEquity USD at 2023-12-31 value -15511000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap MembersEquity USD at 2023-12-31 value -15511000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap MembersEquity USD at 2023-12-31 value -15511000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap MembersEquity USD at 2024-03-31 value -69600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap MembersEquity USD at 2024-06-30 value -79666000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap MembersEquity USD at 2024-06-30 value -79666000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap MembersEquity USD at 2024-09-29 value -95883000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2022-12-26 to 2023-12-31 value 15744000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-01-01 to 2024-03-31 value 10451000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-01-01 to 2024-06-30 value 21643000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-01-01 to 2024-09-29 value 33357000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-01-01 to 2024-12-29 value 37283000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-12-30 to 2025-03-30 value 7707000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-12-30 to 2025-06-29 value 11212000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInFinancingActivities USD from 2024-12-30 to 2025-09-28 value 11737000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2022-12-26 to 2023-12-31 value -14614000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-01-01 to 2024-03-31 value -3663000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-01-01 to 2024-06-30 value -13116000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-01-01 to 2024-09-29 value -20306000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-01-01 to 2024-12-29 value -20504000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-12-30 to 2025-03-30 value 434000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-12-30 to 2025-06-29 value -1371000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInInvestingActivities USD from 2024-12-30 to 2025-09-28 value -2910000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2022-12-26 to 2023-12-31 value 6045000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-03-31 value -3739000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-06-30 value -6109000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-09-29 value -7629000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-01-01 to 2024-12-29 value -15036000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-03-30 value -5739000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-06-29 value -14561000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetCashProvidedByUsedInOperatingActivities USD from 2024-12-30 to 2025-09-28 value -20456000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetIncomeLoss USD from 2022-12-26 to 2023-12-31 value -13840000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetIncomeLoss USD from 2024-01-01 to 2024-03-31 value -9221000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetIncomeLoss USD from 2024-01-01 to 2024-06-30 value -19953000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetIncomeLoss USD from 2024-04-01 to 2024-06-30 value -10732000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetIncomeLoss USD from 2024-01-01 to 2024-09-29 value -36170000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetIncomeLoss USD from 2024-07-01 to 2024-09-29 value -16217000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetIncomeLoss USD from 2024-01-01 to 2024-12-29 value -48170000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NetIncomeLoss USD from 2024-12-30 to 2025-03-30 value -12112000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NetIncomeLoss USD from 2024-12-30 to 2025-06-29 value -32896000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetIncomeLoss USD from 2025-03-31 to 2025-06-29 value -20784000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NetIncomeLoss USD from 2024-12-30 to 2025-09-28 value -57377000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NetIncomeLoss USD from 2025-06-30 to 2025-09-28 value -24481000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NonoperatingIncomeExpense USD from 2022-12-26 to 2023-12-31 value -27010000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NonoperatingIncomeExpense USD from 2024-01-01 to 2024-03-31 value -10476000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NonoperatingIncomeExpense USD from 2024-01-01 to 2024-06-30 value -22701000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NonoperatingIncomeExpense USD from 2024-04-01 to 2024-06-30 value -12225000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NonoperatingIncomeExpense USD from 2024-01-01 to 2024-09-29 value -34915000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NonoperatingIncomeExpense USD from 2024-07-01 to 2024-09-29 value -12617000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NonoperatingIncomeExpense USD from 2024-01-01 to 2024-12-29 value -48242000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NonoperatingIncomeExpense USD from 2024-12-30 to 2025-03-30 value -10791000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NonoperatingIncomeExpense USD from 2024-12-30 to 2025-06-29 value -22105000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NonoperatingIncomeExpense USD from 2025-03-31 to 2025-06-29 value -11314000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NonoperatingIncomeExpense USD from 2024-12-30 to 2025-09-28 value -33959000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NonoperatingIncomeExpense USD from 2025-06-30 to 2025-09-28 value -11854000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NumberOfOperatingSegments segment from 2024-12-30 to 2025-03-30 value 1 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NumberOfOperatingSegments segment from 2024-12-30 to 2025-06-29 value 1 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NumberOfOperatingSegments segment from 2024-12-30 to 2025-09-28 value 1 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NumberOfReportableSegments segment from 2024-01-01 to 2024-12-29 value 1 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NumberOfReportableSegments segment from 2024-12-30 to 2025-03-30 value 1 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NumberOfReportableSegments segment from 2024-12-30 to 2025-06-29 value 1 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NumberOfReportableSegments segment from 2024-12-30 to 2025-09-28 value 1 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap NumberOfRestaurants restaurant at 2024-12-29 value 170 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap NumberOfRestaurants restaurant at 2025-03-30 value 171 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap NumberOfRestaurants restaurant at 2025-06-29 value 168 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap NumberOfRestaurants restaurant at 2025-09-28 value 159 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OccupancyNet USD from 2022-12-26 to 2023-12-31 value 13112000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OccupancyNet USD from 2024-01-01 to 2024-03-31 value 6634000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OccupancyNet USD from 2024-01-01 to 2024-06-30 value 13233000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OccupancyNet USD from 2024-04-01 to 2024-06-30 value 6599000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OccupancyNet USD from 2024-01-01 to 2024-09-29 value 19872000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OccupancyNet USD from 2024-07-01 to 2024-09-29 value 6639000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OccupancyNet USD from 2024-01-01 to 2024-12-29 value 26198000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OccupancyNet USD from 2024-12-30 to 2025-03-30 value 6326000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OccupancyNet USD from 2024-12-30 to 2025-06-29 value 12668000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OccupancyNet USD from 2025-03-31 to 2025-06-29 value 6342000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OccupancyNet USD from 2024-12-30 to 2025-09-28 value 18651000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OccupancyNet USD from 2025-06-30 to 2025-09-28 value 5983000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingIncomeLoss USD from 2022-12-26 to 2023-12-31 value 12940000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingIncomeLoss USD from 2024-01-01 to 2024-03-31 value 1334000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingIncomeLoss USD from 2024-01-01 to 2024-06-30 value 2728000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingIncomeLoss USD from 2024-04-01 to 2024-06-30 value 1394000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingIncomeLoss USD from 2024-01-01 to 2024-09-29 value -1265000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingIncomeLoss USD from 2024-07-01 to 2024-09-29 value -3590000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingIncomeLoss USD from 2024-01-01 to 2024-12-29 value -8330000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingIncomeLoss USD from 2024-12-30 to 2025-03-30 value -1056000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingIncomeLoss USD from 2024-12-30 to 2025-06-29 value -12645000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingIncomeLoss USD from 2025-03-31 to 2025-06-29 value -11589000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingIncomeLoss USD from 2024-12-30 to 2025-09-28 value -26010000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingIncomeLoss USD from 2025-06-30 to 2025-09-28 value -13365000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseExpense USD from 2022-12-26 to 2023-12-31 value 10500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseExpense USD from 2024-01-01 to 2024-03-31 value 5300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseExpense USD from 2024-01-01 to 2024-06-30 value 10700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseExpense USD from 2024-04-01 to 2024-06-30 value 5400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseExpense USD from 2024-01-01 to 2024-09-29 value 16000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseExpense USD from 2024-07-01 to 2024-09-29 value 5300000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseExpense USD from 2024-01-01 to 2024-12-29 value 21200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseExpense USD from 2024-12-30 to 2025-03-30 value 5300000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseExpense USD from 2024-12-30 to 2025-06-29 value 10900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseExpense USD from 2025-03-31 to 2025-06-29 value 5600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseExpense USD from 2024-12-30 to 2025-09-28 value 15500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseExpense USD from 2025-06-30 to 2025-09-28 value 5400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseImpairmentLoss USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseImpairmentLoss USD from 2024-12-30 to 2025-09-28 value 6878000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseImpairmentLoss USD from 2025-06-30 to 2025-09-28 value 6900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiability USD at 2023-12-31 value 168200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiability USD at 2024-12-29 value 152500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiability USD at 2024-12-29 value 152500000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiability USD at 2024-12-29 value 152500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiability USD at 2024-12-29 value 152500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiability USD at 2025-03-30 value 155100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiability USD at 2025-06-29 value 153600000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiability USD at 2025-09-28 value 155000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2023-12-31 value 21585000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2024-12-29 value 7450000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2024-12-29 value 7450000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2024-12-29 value 7450000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2024-12-29 value 7450000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2025-03-30 value 6362000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2025-06-29 value 7329000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiabilityCurrent USD at 2025-09-28 value 7041000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2023-12-31 value 149489000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2024-12-29 value 146700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2024-12-29 value 146700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2024-12-29 value 146700000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2024-12-29 value 146700000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2025-03-30 value 150071000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2025-06-29 value 147254000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseLiabilityNoncurrent USD at 2025-09-28 value 147987000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeasePayments USD from 2022-12-26 to 2023-12-31 value 6500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeasePayments USD from 2024-01-01 to 2024-03-31 value 6500000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeasePayments USD from 2024-01-01 to 2024-06-30 value 11800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeasePayments USD from 2024-01-01 to 2024-09-29 value 15000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeasePayments USD from 2024-01-01 to 2024-12-29 value 21200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeasePayments USD from 2024-12-30 to 2025-03-30 value 5200000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeasePayments USD from 2024-12-30 to 2025-06-29 value 9100000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeasePayments USD from 2024-12-30 to 2025-09-28 value 15400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2023-12-31 value 166700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2024-12-29 value 141900000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2024-12-29 value 141900000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2024-12-29 value 141900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2024-12-29 value 141900000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2025-03-30 value 143700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2025-06-29 value 142800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseRightOfUseAsset USD at 2025-09-28 value 137200000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OperatingLeaseWeightedAverageDiscountRatePercent pure at 2024-12-29 value 0.091 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OperatingLeaseWeightedAverageDiscountRatePercent pure at 2025-03-30 value 0.0907 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OperatingLeaseWeightedAverageDiscountRatePercent pure at 2025-06-29 value 0.0902 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OperatingLeaseWeightedAverageDiscountRatePercent pure at 2025-09-28 value 0.0902 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2023-12-31 value 6200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2024-12-29 value 7100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2024-12-29 value 7100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2024-12-29 value 8400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2024-12-29 value 8400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2025-03-30 value 7100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2025-06-29 value 10100000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherAccruedLiabilitiesCurrent USD at 2025-09-28 value 9600000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAssetsCurrent USD at 2023-12-31 value 6280000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAssetsCurrent USD at 2024-12-29 value 7580000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAssetsCurrent USD at 2024-12-29 value 7580000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAssetsCurrent USD at 2024-12-29 value 7580000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherAssetsCurrent USD at 2024-12-29 value 7580000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAssetsCurrent USD at 2025-03-30 value 12845000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAssetsCurrent USD at 2025-06-29 value 12861000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherAssetsCurrent USD at 2025-09-28 value 12058000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAssetsNoncurrent USD at 2023-12-31 value 1817000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAssetsNoncurrent USD at 2024-12-29 value 1609000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherAssetsNoncurrent USD at 2024-12-29 value 1609000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAssetsNoncurrent USD at 2024-12-29 value 1609000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherAssetsNoncurrent USD at 2025-03-30 value 1468000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherAssetsNoncurrent USD at 2025-09-28 value 1416000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherCostAndExpenseOperating USD from 2022-12-26 to 2023-12-31 value 37722000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherCostAndExpenseOperating USD from 2024-01-01 to 2024-03-31 value 16359000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherCostAndExpenseOperating USD from 2024-01-01 to 2024-06-30 value 33008000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherCostAndExpenseOperating USD from 2024-04-01 to 2024-06-30 value 16649000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherCostAndExpenseOperating USD from 2024-01-01 to 2024-09-29 value 50073000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherCostAndExpenseOperating USD from 2024-07-01 to 2024-09-29 value 16761000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherCostAndExpenseOperating USD from 2024-01-01 to 2024-12-29 value 67155000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherCostAndExpenseOperating USD from 2024-12-30 to 2025-03-30 value 16845000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherCostAndExpenseOperating USD from 2024-12-30 to 2025-06-29 value 33907000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherCostAndExpenseOperating USD from 2025-03-31 to 2025-06-29 value 17062000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherCostAndExpenseOperating USD from 2024-12-30 to 2025-09-28 value 51021000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherCostAndExpenseOperating USD from 2025-06-30 to 2025-09-28 value 17005000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherNonoperatingIncomeExpense USD from 2022-12-26 to 2023-12-31 value 2704000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-01-01 to 2024-03-31 value -68000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-01-01 to 2024-06-30 value -289000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-04-01 to 2024-06-30 value -221000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-01-01 to 2024-09-29 value 114000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-07-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-01-01 to 2024-12-29 value 248000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-12-30 to 2025-03-30 value 31000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-12-30 to 2025-06-29 value 173000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2025-03-31 to 2025-06-29 value 142000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap OtherNonoperatingIncomeExpense USD from 2024-12-30 to 2025-09-28 value 412000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap OtherNonoperatingIncomeExpense USD from 2025-06-30 to 2025-09-28 value 239000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PaymentsToAcquireInterestInJointVenture USD at 2023-12-04 value 300000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2022-12-26 to 2023-12-31 value 23873000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-01-01 to 2024-03-31 value 3663000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-01-01 to 2024-06-30 value 13116000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-01-01 to 2024-09-29 value 20306000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-01-01 to 2024-12-29 value 25139000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-12-30 to 2025-03-30 value 3998000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-12-30 to 2025-06-29 value 5802000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PaymentsToAcquirePropertyPlantAndEquipment USD from 2024-12-30 to 2025-09-28 value 7341000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreOpeningCosts USD from 2022-12-26 to 2023-12-31 value 1136000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreOpeningCosts USD from 2024-01-01 to 2024-03-31 value 28000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreOpeningCosts USD from 2024-01-01 to 2024-06-30 value 92000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreOpeningCosts USD from 2024-04-01 to 2024-06-30 value 64000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreOpeningCosts USD from 2024-01-01 to 2024-09-29 value 935000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreOpeningCosts USD from 2024-07-01 to 2024-09-29 value 843000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreOpeningCosts USD from 2024-01-01 to 2024-12-29 value 1632000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreOpeningCosts USD from 2024-12-30 to 2025-03-30 value 517000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreOpeningCosts USD from 2024-12-30 to 2025-06-29 value 695000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreOpeningCosts USD from 2025-03-31 to 2025-06-29 value 178000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreOpeningCosts USD from 2024-12-30 to 2025-09-28 value 702000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreOpeningCosts USD from 2025-06-30 to 2025-09-28 value 7000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2024-12-29 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2024-12-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2024-12-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockIncludingAdditionalPaidInCapital USD at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2023-12-31 value 0.0001 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2024-12-29 value 0.0001 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2025-03-30 value 0.0001 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2025-06-29 value 0.0001 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockParOrStatedValuePerShare USD/shares at 2025-09-28 value 0.0001 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesAuthorized shares at 2023-12-31 value 10000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesAuthorized shares at 2024-12-29 value 10000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesAuthorized shares at 2024-12-29 value 10000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesAuthorized shares at 2024-12-29 value 10000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesAuthorized shares at 2024-12-29 value 10000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesAuthorized shares at 2025-03-30 value 10000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesAuthorized shares at 2025-06-29 value 10000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesAuthorized shares at 2025-09-28 value 10000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesIssued shares at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesIssued shares at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesIssued shares at 2024-12-29 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesIssued shares at 2024-12-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesIssued shares at 2024-12-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesIssued shares at 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesIssued shares at 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesIssued shares at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesOutstanding shares at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesOutstanding shares at 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PreferredStockSharesOutstanding shares at 2024-12-29 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesOutstanding shares at 2024-12-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesOutstanding shares at 2024-12-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PreferredStockSharesOutstanding shares at 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PreferredStockSharesOutstanding shares at 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PreferredStockSharesOutstanding shares at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2022-12-26 to 2023-12-31 value 15224000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-01-01 to 2024-03-31 value 12189000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-01-01 to 2024-06-30 value 23096000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-01-01 to 2024-09-29 value 32604000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-01-01 to 2024-12-29 value 23440000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-12-30 to 2025-03-30 value 11198000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-12-30 to 2025-06-29 value 14538000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromContributionsFromAffiliates USD from 2024-12-30 to 2025-09-28 value 19364000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2022-12-26 to 2023-12-31 value 9405000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-01-01 to 2024-03-31 value 405000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-01-01 to 2024-06-30 value 3146000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-01-01 to 2024-09-29 value 7902000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-01-01 to 2024-12-29 value 415728000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-12-30 to 2025-06-29 value 4000000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromDebtNetOfIssuanceCosts USD from 2024-12-30 to 2025-09-28 value 4000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2022-12-26 to 2023-12-31 value 9259000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-01-01 to 2024-03-31 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-01-01 to 2024-06-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-01-01 to 2024-12-29 value 4635000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-12-30 to 2025-03-30 value 4432000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-12-30 to 2025-03-30 value 4400000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-12-30 to 2025-03-30 value 4400000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-12-30 to 2025-06-29 value 4431000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ProceedsFromSaleOfPropertyPlantAndEquipment USD from 2024-12-30 to 2025-09-28 value 4431000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PropertyPlantAndEquipmentGross USD at 2023-12-31 value 92700000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PropertyPlantAndEquipmentGross USD at 2024-12-29 value 112500000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PropertyPlantAndEquipmentGross USD at 2024-12-29 value 112500000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PropertyPlantAndEquipmentGross USD at 2024-12-29 value 112500000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PropertyPlantAndEquipmentGross USD at 2024-12-29 value 112500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PropertyPlantAndEquipmentGross USD at 2025-03-30 value 112000000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PropertyPlantAndEquipmentGross USD at 2025-06-29 value 113800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PropertyPlantAndEquipmentGross USD at 2025-09-28 value 110000000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PropertyPlantAndEquipmentNet USD at 2023-12-31 value 74822000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PropertyPlantAndEquipmentNet USD at 2024-12-29 value 76675000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap PropertyPlantAndEquipmentNet USD at 2024-12-29 value 76675000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PropertyPlantAndEquipmentNet USD at 2024-12-29 value 76675000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PropertyPlantAndEquipmentNet USD at 2024-12-29 value 76675000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap PropertyPlantAndEquipmentNet USD at 2025-03-30 value 71375000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap PropertyPlantAndEquipmentNet USD at 2025-06-29 value 70271000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap PropertyPlantAndEquipmentNet USD at 2025-09-28 value 68152000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RepaymentsOfShortTermDebt USD from 2022-12-26 to 2023-12-31 value 8885000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-01-01 to 2024-03-31 value 2143000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-01-01 to 2024-06-30 value 4599000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-01-01 to 2024-09-29 value 7149000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-01-01 to 2024-12-29 value 401885000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-12-30 to 2025-03-30 value 3491000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-12-30 to 2025-06-29 value 7326000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RepaymentsOfShortTermDebt USD from 2024-12-30 to 2025-09-28 value 11627000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RestrictedCashCurrent USD at 2023-12-31 value 15046000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RestrictedCashCurrent USD at 2024-12-29 value 8725000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RestrictedCashCurrent USD at 2024-12-29 value 8725000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RestrictedCashCurrent USD at 2024-12-29 value 8725000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RestrictedCashCurrent USD at 2024-12-29 value 8725000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RestrictedCashCurrent USD at 2025-03-30 value 13511000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RestrictedCashCurrent USD at 2025-06-29 value 13212000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RestrictedCashCurrent USD at 2025-09-28 value 8781000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RestrictedCashNoncurrent USD at 2023-12-31 value 4608000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RestrictedCashNoncurrent USD at 2024-12-29 value 7793000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RestrictedCashNoncurrent USD at 2024-12-29 value 7793000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RestrictedCashNoncurrent USD at 2024-12-29 value 7793000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RestrictedCashNoncurrent USD at 2024-12-29 value 7793000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RestrictedCashNoncurrent USD at 2025-03-30 value 7624000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RestrictedCashNoncurrent USD at 2025-06-29 value 1892000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RestrictedCashNoncurrent USD at 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2024-12-29 value -84609000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2024-12-29 value -84609000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2024-12-29 value -84609000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2024-12-29 value -84609000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2025-03-30 value -101854000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2025-06-29 value -122643000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RetainedEarningsAccumulatedDeficit USD at 2025-09-28 value -147124000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2022-12-26 to 2023-12-31 value 230867000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-01-01 to 2024-03-31 value 92061000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-01-01 to 2024-06-30 value 183655000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-04-01 to 2024-06-30 value 91594000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-01-01 to 2024-09-29 value 267320000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-07-01 to 2024-09-29 value 83665000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-01-01 to 2024-12-29 value 353801000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-12-30 to 2025-03-30 value 87105000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-12-30 to 2025-06-29 value 174951000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2025-03-31 to 2025-06-29 value 87846000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2024-12-30 to 2025-09-28 value 257267000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RevenueFromContractWithCustomerExcludingAssessedTax USD from 2025-06-30 to 2025-09-28 value 82316000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability USD from 2022-12-26 to 2023-12-31 value 3600000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RightOfUseAssetObtainedInExchangeForFinanceLeaseLiability USD from 2024-01-01 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2022-12-26 to 2023-12-31 value 8100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-01-01 to 2024-03-31 value 8100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-01-01 to 2024-06-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-01-01 to 2024-12-29 value 4100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-12-30 to 2025-03-30 value 7700000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-12-30 to 2025-06-29 value 8800000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap RightOfUseAssetObtainedInExchangeForOperatingLeaseLiability USD from 2024-12-30 to 2025-09-28 value 16500000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap SaleAndLeasebackTransactionGainLossNet USD from 2023-09-25 to 2023-12-31 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap SaleAndLeasebackTransactionGainLossNet USD from 2024-09-30 to 2024-12-29 value 0 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap SaleAndLeasebackTransactionGainLossNet USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap SaleAndLeasebackTransactionGainLossNet USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap SaleAndLeasebackTransactionGainLossNet USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2023-12-31 value 3100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2024-12-29 value 2100000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2024-12-29 value 2100000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2024-12-29 value 2100000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2024-12-29 value 2100000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2025-03-30 value 2400000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2025-06-29 value 1900000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap SalesAndExciseTaxPayableCurrent USD at 2025-09-28 value 1800000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ShareBasedCompensation USD from 2022-12-26 to 2023-12-31 value 312000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ShareBasedCompensation USD from 2024-01-01 to 2024-03-31 value 101000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ShareBasedCompensation USD from 2024-01-01 to 2024-06-30 value 202000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ShareBasedCompensation USD from 2024-01-01 to 2024-09-29 value 211000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ShareBasedCompensation USD from 2024-01-01 to 2024-12-29 value 211000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ShareBasedCompensation USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap ShareBasedCompensation USD from 2024-12-30 to 2025-06-29 value 12552000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap ShareBasedCompensation USD from 2024-12-30 to 2025-09-28 value 15911000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsGrantsInPeriodGross shares at 2021-11-16 value 200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingNumber shares at 2024-12-29 value 200000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ShareBasedCompensationArrangementByShareBasedPaymentAwardOptionsOutstandingWeightedAverageExercisePrice USD/shares at 2024-12-29 value 11.43 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap ShareBasedCompensationArrangementsByShareBasedPaymentAwardOptionsGrantsInPeriodWeightedAverageExercisePrice USD/shares at 2021-11-16 value 11.43 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap StockIssued1 USD from 2024-01-01 to 2024-06-30 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockIssued1 USD from 2024-01-01 to 2024-09-29 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockIssued1 USD from 2024-12-30 to 2025-06-29 value 31205000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockIssued1 USD from 2024-12-30 to 2025-09-28 value 31205000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockIssuedDuringPeriodValueIssuedForServices USD from 2024-12-30 to 2025-06-29 value 250000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockIssuedDuringPeriodValueIssuedForServices USD from 2025-03-31 to 2025-06-29 value 250000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockIssuedDuringPeriodValueIssuedForServices USD from 2024-12-30 to 2025-09-28 value 250000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockIssuedDuringPeriodValueNewIssues USD from 2024-12-30 to 2025-03-30 value 0 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap StockIssuedDuringPeriodValueNewIssues USD from 2024-12-30 to 2025-06-29 value 0 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockIssuedDuringPeriodValueNewIssues USD from 2024-12-30 to 2025-09-28 value 0 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockholdersEquity USD at 2024-03-31 value -69600000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap StockholdersEquity USD at 2024-12-29 value -84609000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap StockholdersEquity USD at 2024-12-29 value -84609000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap StockholdersEquity USD at 2024-12-29 value -84609000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockholdersEquity USD at 2024-12-29 value -84609000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockholdersEquity USD at 2025-03-30 value -101854000 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap StockholdersEquity USD at 2025-03-30 value -101854000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockholdersEquity USD at 2025-06-29 value -78636000 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap StockholdersEquity USD at 2025-06-29 value -78636000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap StockholdersEquity USD at 2025-09-28 value -92127000 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap ValuationAllowanceDeferredTaxAssetChangeInAmount USD from 2024-01-01 to 2024-12-29 value -17000000 in 0001628280-25-009131 10-K filed 2025-02-28 report period end 2024-12-29
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2024-01-01 to 2024-09-29 value 50168271 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2024-07-01 to 2024-09-29 value 50168271 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2024-12-30 to 2025-03-30 value 47298271 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2024-12-30 to 2025-06-29 value 54033762 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2025-03-31 to 2025-06-29 value 55017636 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2024-12-30 to 2025-09-28 value 53217793 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfDilutedSharesOutstanding shares from 2025-06-30 to 2025-09-28 value 57325856 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2024-01-01 to 2024-09-29 value 50168271 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2024-07-01 to 2024-09-29 value 50168271 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2024-12-30 to 2025-03-30 value 47298271 in 0001628280-25-024370 10-Q filed 2025-05-09 report period end 2025-03-30
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2024-12-30 to 2025-06-29 value 54033762 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2025-03-31 to 2025-06-29 value 55017636 in 0001628280-25-037025 10-Q filed 2025-07-31 report period end 2025-06-29
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2024-12-30 to 2025-09-28 value 53217793 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
+    us-gaap WeightedAverageNumberOfSharesOutstandingBasic shares from 2025-06-30 to 2025-09-28 value 57325856 in 0001628280-25-051679 10-Q filed 2025-11-12 report period end 2025-09-28
