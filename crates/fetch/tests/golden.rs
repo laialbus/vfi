@@ -12,6 +12,12 @@
 //! - `cik` — the filer the case asks about, one line, where the case is about
 //!   the facts that filer reported rather than the filings it made.
 //!
+//! A case that holds a `cik` holds the filer's submissions document beside its
+//! company facts, because a retrieval of facts asks for the history after them
+//! and joins each fact to the report date that history publishes for its
+//! filing. A facts case without one would have no join to pin, and would stop
+//! at that second request.
+//!
 //! A case holds one of those two, or neither. Neither makes it a pass of the
 //! whole funnel over the filers its recordings publish, and what it pins is the
 //! verdicts that pass put on record and the histories it handed on. Both would
@@ -71,9 +77,28 @@
 //! and August to October before the change, January to March and April to June
 //! and July to September after it. Nothing reads any of that here. What a
 //! fiscal-year change does to a period is the alignment ruleset's, and this is
-//! the recording the fixture that pins it will be written against. A third
-//! facts case earns its place the way this one did, on what is left: an
-//! amendment, or a history of decades.
+//! the recording the fixture that pins it will be written against.
+//!
+//! The submissions document in `every-fact-a-filer-reported` is the one
+//! `a-ticker-resolves-to-its-history` recorded, byte for byte, and it is older
+//! than the facts beside it. That is on purpose: the facts name a tenth
+//! periodic filing, `0001213900-26-088707`, filed after that history was
+//! recorded, and its 193 facts are what pin a report period end left empty
+//! where the history does not name the filing. A history recorded later would
+//! name it. The one in `a-filer-that-changed-its-fiscal-year` was recorded
+//! after its facts, and names every filing they do.
+//!
+//! `a-filer-whose-key-is-a-bare-number` takes a difference neither of those
+//! could: its company facts document spells the filer's key as the bare number
+//! `1715819`, where both of theirs spell the ten-digit string. That is the
+//! spelling most filers' documents carry, and it is the one case that fails if
+//! the reader refuses it or lets the digits cross unpadded. It is CIK
+//! 0001715819, chosen for being small enough to commit whole — 4461 facts, and
+//! a history of 136 filings on one page, so the case holds every request it
+//! makes — and for a history that names every filing its facts were reported
+//! in. It carries amendments, a 10-K/A and 10-Q/As, and nothing reads them
+//! here. A fourth facts case earns its place the way these did, on what is
+//! left: a case about an amendment, or a history of decades.
 //!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
@@ -363,10 +388,13 @@ fn render_filing(filing: &Filing, out: &mut String) {
 /// What the retrieval hands the boundary, as text.
 ///
 /// Every fact on a line of its own, in the order the retrieval put them in, and
-/// every one of its eight fields on that line. Nothing is summarised and
+/// every one of its nine fields on that line. Nothing is summarised and
 /// nothing is sampled, because the two properties this shape of case exists for
 /// are that no fact was dropped and no value was rewritten — and a rendering
 /// that folded a thousand facts into a count would be blind to both.
+///
+/// An empty report period end is written `none`, as a filing's empty period
+/// is, so every field is one word on the line and none is trailing space.
 fn render_facts(filer: &Filer, out: &mut String) {
     let _ = writeln!(out, "filer {}", filer.cik);
     let _ = writeln!(out, "  retrieved from {}", filer.retrieved_from);
@@ -375,7 +403,7 @@ fn render_facts(filer: &Filer, out: &mut String) {
     for fact in &filer.facts {
         let _ = writeln!(
             out,
-            "    {} {} {} {} value {} in {} {} filed {}",
+            "    {} {} {} {} value {} in {} {} filed {} report period end {}",
             fact.taxonomy,
             fact.tag,
             fact.unit,
@@ -384,6 +412,10 @@ fn render_facts(filer: &Filer, out: &mut String) {
             fact.accession,
             fact.form,
             fact.filed,
+            match &*fact.report_period_end {
+                "" => "none",
+                date => date,
+            },
         );
     }
 }

@@ -33,8 +33,9 @@
 //! again.
 //!
 //! What it asks them for once a filer is worth asking about is
-//! [`company_facts`]: every fact that filer reported, in one request, each one
-//! stamped with the filing that reported it. That is the only retrieval here
+//! [`company_facts`]: every fact that filer reported, in one request beside the
+//! filer's history, each one stamped with the filing that reported it and the
+//! date that filing's period of report ends. That is the only retrieval here
 //! whose answer is a type the fetch → normalize boundary defines rather than
 //! one this crate defines, because the answer is what crosses the boundary.
 //!

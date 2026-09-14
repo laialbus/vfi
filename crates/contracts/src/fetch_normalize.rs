@@ -1,11 +1,12 @@
-//! The fetch → normalize contract at v1: what fetch hands normalize.
+//! The fetch → normalize contract at v2: what fetch hands normalize.
 //!
-//! `contracts/fetch-normalize/v1.toml` is the surface and it is frozen. This is
+//! `contracts/fetch-normalize/v2.toml` is the surface and it is frozen. This is
 //! that surface as Rust — one value per filer, holding the two fields the
 //! retrieval is identified by and every fact the document publishes for it,
-//! each fact carrying its eight. Why each field crosses and what was left out
-//! is `docs/adr/fetch-normalize-contract.md`, and none of that argument is
-//! repeated here.
+//! each fact carrying its nine. Why each field crosses and what was left out
+//! is `docs/adr/fetch-normalize-contract.md`, why the filer's key and the
+//! report period end cross as they do is `docs/adr/fetch-normalize-v2.md`, and
+//! none of that argument is repeated here.
 //!
 //! Every value crosses as the characters the document publishes. Nothing here
 //! parses a decimal or a date: the parse is a reading, and a reading made
@@ -22,7 +23,9 @@ carries! {
     #[derive(Clone, Debug, Eq, PartialEq)]
     pub struct Filer {
         fields {
-            /// The filer the document is about, as the document states it.
+            /// The filer the document is about, as ten digits left-padded with
+            /// zeros whichever way the document spelled it: the one spelling
+            /// this boundary carries, and the one `registry/filers/` binds.
             pub cik: Box<str>,
             /// The request the document came back from — recorded by the
             /// retrieval rather than published by the document, and held once
@@ -43,7 +46,7 @@ carries! {
 carries! {
     /// One fact the document publishes, with where it was reported.
     ///
-    /// The last three repeat across every fact one filing reported, and they
+    /// The last four repeat across every fact one filing reported, and they
     /// repeat on purpose: a fact that pointed at its filing instead could point
     /// at one that is not there, and a value whose filing cannot be named is
     /// the loss this contract exists to prevent.
@@ -74,6 +77,14 @@ carries! {
             /// The date that filing was received, which is what orders two
             /// reports of one period.
             pub filed: Box<str>,
+            /// The date that filing's period of report ends, as the filer's
+            /// submissions document publishes it in `reportDate`.
+            ///
+            /// Unparsed, and empty in two states a reader cannot tell apart
+            /// and need not: that document publishes no report date for the
+            /// filing, or the history retrieved does not name the filing at
+            /// all. It is not the fact's own period, which is `period`.
+            pub report_period_end: Box<str>,
         }
     }
 }
@@ -95,7 +106,7 @@ shapes! {
 
 /// The types above against the bytes they transcribe.
 ///
-/// The contracts gate digests `v1.toml` and never reads it, so a type that
+/// The contracts gate digests `v2.toml` and never reads it, so a type that
 /// drifted from the surface it states would stay green on every gate this
 /// repository had before this one. This is the comparison that closes that: a
 /// field renamed, added or dropped on either side leaves the two readings
@@ -107,7 +118,7 @@ mod states_what_is_published {
 
     /// The file this module states, relative to the repository root, named
     /// here and nowhere else in this module.
-    const PATH: &str = "contracts/fetch-normalize/v1.toml";
+    const PATH: &str = "contracts/fetch-normalize/v2.toml";
 
     fn published() -> Contract {
         Contract::at(PATH)

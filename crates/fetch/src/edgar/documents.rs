@@ -109,10 +109,13 @@ pub(super) struct Overflow<'a> {
 /// direction to be wrong in.
 #[derive(Deserialize)]
 pub(super) struct CompanyFacts<'a> {
-    /// The filer the document is about, padded to ten digits, which is how a
-    /// submissions document writes the same key.
+    /// The filer the document is about, spelled one of the two ways EDGAR
+    /// spells it here: the ten-digit string a submissions document writes, or
+    /// the bare number. Held raw, because which of the two it is decides how it
+    /// is read, and a type naming one spelling refuses every document of the
+    /// other before a field is read.
     #[serde(borrow)]
-    pub(super) cik: Cow<'a, str>,
+    pub(super) cik: &'a RawValue,
     #[serde(borrow)]
     pub(super) facts: BTreeMap<&'a str, BTreeMap<&'a str, Element<'a>>>,
 }
