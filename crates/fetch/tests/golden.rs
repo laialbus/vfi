@@ -100,6 +100,21 @@
 //! here. A fourth facts case earns its place the way these did, on what is
 //! left: a case about an amendment, or a history of decades.
 //!
+//! `a-filer-whose-shareholders-equity-is-negative` takes neither, because what
+//! it differs in is a sign rather than a shape: it is the case recorded for a
+//! filer whose liabilities exceed its assets. It is CIK 0002011954, whose
+//! company facts document spells its key as the ten-digit string. At every
+//! balance sheet it states under `us-gaap:StockholdersEquity` — the element the
+//! committed registry reaches `shareholders_equity` by — the value is published
+//! with a minus sign: 2024-12-29 on its 10-K, and 2025-03-30, 2025-06-29 and
+//! 2025-09-28 on its 10-Qs. The three cases above carry a negative value under
+//! that element at some instants too, and none was recorded for it. The filer's
+//! deficit at 2023-12-31 is published under `us-gaap:MembersEquity` instead, and
+//! the one at 2024-03-31 under each element by a different 10-Q. It was chosen
+//! for being small enough to commit whole — 1157 facts, every one from a 10-K
+//! or a 10-Q, and a history of 86 filings on one page that names every filing
+//! they were reported in.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
