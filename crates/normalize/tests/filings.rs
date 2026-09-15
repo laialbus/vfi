@@ -1,13 +1,19 @@
 //! Which of a filer's filings answer a period, and what a concept comes to
 //! inside each of them, over the facts one filer actually reported.
 //!
-//! Every case reads the merged fetch fixture and the committed registry. The
-//! three shapes `docs/adr/period-alignment.md` argues Rule 2 from are all in
-//! that one filer: a quarter it published in full and then quoted for two years
-//! in filings that carry two facts of it; a quarter it never filed a report of
-//! its own for, reported in full by a filing a year later; and the instant
-//! where the only entry that could reach `shares_outstanding` is the cover-page
-//! one this boundary cannot admit.
+//! Every case reads the merged fetch fixture, and the committed registry unless
+//! it says otherwise. The three shapes `docs/adr/period-alignment.md` argues
+//! Rule 2 from are all in that one filer: a quarter it published in full and
+//! then quoted for two years in filings that carry two facts of it; a quarter it
+//! never filed a report of its own for, reported in full by a filing a year
+//! later; and the instant where the only entry that could reach
+//! `shares_outstanding` is the cover-page one, which no filing answering that
+//! instant admits.
+//!
+//! Where the cover-page entry is admitted, this filer also tagged the
+//! period-end count, which wins. So the cases that show the admission itself
+//! exclude the period-end entry in a planted copy of the registry, leaving the
+//! cover-page count as the only way to the concept.
 //!
 //! Nothing here asks which of several answering filings wins, because nothing
 //! under test decides that. What the cases pin is that every filing carrying a
@@ -20,10 +26,10 @@ use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 use vfi_normalize::answering::Admits;
 use vfi_normalize::filings::{self, Attempted, Filing};
-use vfi_normalize::registry::Registry;
+use vfi_normalize::registry::{Reading, Registry};
 use vfi_normalize::settling::{self, SetBy, Settled};
 
-use fixture::{FILER, committed, duration, instant, read, reported};
+use fixture::{FILER, committed, duration, instant, overriding, planted, read, reported};
 
 /// The kind the filer's own registry file assigns it.
 const KIND: Option<Kind> = Some(Kind::Operating);
@@ -42,6 +48,13 @@ const QUOTED: (&str, &str) = ("2023-10-01", "2023-12-31");
 /// the two either side of it that it does.
 const NO_COUNT: &str = "2023-12-31";
 const COUNTED: &str = "2024-03-31";
+
+/// The 10-Q filed 2024-05-08, whose own period of report ends on [`COUNTED`].
+const REPORTS_COUNTED: &str = "0001213900-24-040632";
+
+/// The 10-Q filed 2026-08-13, which the filer's submissions history publishes
+/// no report date for.
+const NO_REPORT_DATE: &str = "0001213900-26-088707";
 
 /// The 10-Q filed 2025-08-20, the latest of the five filings that answer
 /// [`NO_COUNT`] and the one `docs/adr/period-alignment.md` prices the cover-page
@@ -261,17 +274,17 @@ fn no_value_reads_a_fact_of_another_filing() {
     assert!(checked > 0, "no value resolved, so nothing was checked");
 }
 
-/// The cover-page count is never a candidate, so the share count at an instant
-/// the filer tagged no period-end count for is absent with its reason.
+/// The share count at an instant no answering filing reports as its own, and
+/// that the filer tagged no period-end count for, is absent with its reason.
 ///
 /// Five filings answer 2023-12-31 and not one tags
 /// `CommonStockSharesOutstanding` there, so both entries the registry reaches
 /// the concept through decline for the same reason: no fact of the filing
-/// answers the period asked for. The cover-page entry declines because this
-/// boundary cannot state the condition that would admit it, and the record's
-/// direction for that is the absence rather than the count.
+/// answers the period asked for. The cover-page entry declines because none of
+/// the five has a period of report ending that day, and the record's direction
+/// for that is the absence rather than the count.
 #[test]
-fn the_cover_page_count_is_never_a_candidate_and_the_share_count_is_absent() {
+fn the_share_count_is_absent_where_no_answering_filing_reports_the_instant_as_its_own() {
     let facts = reported();
     let registry = read(&committed());
     let period = instant(NO_COUNT);
@@ -373,6 +386,253 @@ fn the_count_the_refused_entry_would_have_supplied_is_not_the_filers_own() {
             ("0001213900-25-078735", "unknown".to_owned()),
         ]
     );
+}
+
+/// A copy of the committed registry in which the filer excludes the period-end
+/// count, so the cover-page count is the only entry left for the concept.
+fn cover_count_alone(case: &str) -> Registry {
+    let root = planted(case);
+    overriding(
+        &root,
+        &format!("\n[[exclude]]\nid = \"{PERIOD_END_COUNT}\"\n"),
+    );
+    read(&root)
+}
+
+/// What each attempt declined, where every attempt came to `Unknown`.
+fn declined_in_each(attempted: &[Attempted]) -> Vec<Vec<(String, String)>> {
+    attempted
+        .iter()
+        .map(|held| match held.settled() {
+            Settled::Unknown(attempt) => read_attempt(attempt),
+            _ => panic!("{} settled to a value or an exclusion", held.accession()),
+        })
+        .collect()
+}
+
+/// The cover-page count is admitted inside the filing whose own period of
+/// report ends on the instant asked for, and inside no other filing answering
+/// that instant.
+///
+/// The 10-Q filed 2024-05-08 reports the quarter ending 2024-03-31, and with
+/// the period-end entry excluded its cover count, dated 2024-05-08, is the one
+/// candidate there. It stands in for the concept, so the value names the
+/// stand-in rule. The four later filings quoting that instant report periods
+/// ending later, so the same entry reads nothing in them.
+#[test]
+fn the_cover_page_count_is_admitted_where_the_filings_period_of_report_ends_on_the_instant() {
+    let facts = reported();
+    let registry = cover_count_alone("cover-count-admitted-at-its-report-date");
+    let period = instant(COUNTED);
+    let answering = filings::answering(&facts, &period);
+
+    let attempted = filings::attempted(
+        &registry,
+        FILER,
+        KIND,
+        Concept::SharesOutstanding,
+        &period,
+        &answering,
+    );
+    assert_eq!(
+        each(&attempted),
+        vec![
+            (REPORTS_COUNTED, by(&registry, "60000000", COVER_COUNT)),
+            ("0001213900-24-067900", "unknown".to_owned()),
+            ("0001213900-24-101777", "unknown".to_owned()),
+            ("0001213900-25-042964", "unknown".to_owned()),
+            ("0001213900-25-078735", "unknown".to_owned()),
+        ]
+    );
+
+    let Settled::Value(value) = attempted[0].settled() else {
+        unreachable!("the first attempt above is a value")
+    };
+    let SetBy::Rule { rule, facts, .. } = value.set_by() else {
+        unreachable!("the value above was set by a rule")
+    };
+    assert_eq!(rule.reading(), Reading::StandIn);
+    let read: Vec<(&str, &str, &Period, &str)> = facts
+        .iter()
+        .map(|fact| (&*fact.tag, &*fact.accession, &fact.period, &*fact.value))
+        .collect();
+    assert_eq!(
+        read,
+        vec![(
+            "EntityCommonStockSharesOutstanding",
+            REPORTS_COUNTED,
+            &instant("2024-05-08"),
+            "60000000"
+        )]
+    );
+}
+
+/// The cover-page count is admitted at no instant that no answering filing
+/// reports as its own, and at no duration, whatever the duration ends on.
+///
+/// At 2023-12-31 the five answering filings report periods ending 2024-03-31
+/// and later, so the 60,500,000 on the cover of the 10-Q filed 2025-08-20 is
+/// still no candidate. At the quarter ending 2024-03-31, which the 10-Q filed
+/// 2024-05-08 reports, the concept is a balance and a duration answers none,
+/// so that filing admits the entry no more than the others do.
+#[test]
+fn the_cover_page_count_is_refused_at_an_instant_no_filing_reports_and_at_every_duration() {
+    let facts = reported();
+    let registry = cover_count_alone("cover-count-refused-elsewhere");
+    let no_fact = vec![(
+        settling::named(registry.version(), COVER_COUNT),
+        "no fact answering the period asked for".to_owned(),
+    )];
+
+    for (period, answered_by) in [
+        (
+            instant(NO_COUNT),
+            vec![
+                "0001213900-24-040632",
+                "0001213900-24-067900",
+                "0001213900-25-013785",
+                "0001213900-25-042964",
+                NINETEEN_MONTHS_LATER,
+            ],
+        ),
+        (
+            duration("2024-01-01", COUNTED),
+            vec![
+                REPORTS_COUNTED,
+                "0001213900-24-067900",
+                "0001213900-25-042964",
+                "0001213900-25-078735",
+            ],
+        ),
+    ] {
+        let answering = filings::answering(&facts, &period);
+        let attempted = filings::attempted(
+            &registry,
+            FILER,
+            KIND,
+            Concept::SharesOutstanding,
+            &period,
+            &answering,
+        );
+        assert_eq!(
+            each(&attempted),
+            answered_by
+                .iter()
+                .map(|accession| (*accession, "unknown".to_owned()))
+                .collect::<Vec<_>>(),
+            "{period:?}"
+        );
+        assert_eq!(
+            declined_in_each(&attempted),
+            vec![no_fact.clone(); answered_by.len()],
+            "{period:?}"
+        );
+    }
+}
+
+/// A filing the history names no report date for admits the cover-page count
+/// nowhere, even at the instant its own statements are dated.
+///
+/// The 10-Q filed 2026-08-13 is the one filing answering 2026-06-30 and carries
+/// a cover count of 64,125,000, which it would hand over if asked with every
+/// entry. Its `report_period_end` is empty, so the condition is not met, and
+/// the concept is `Unknown` exactly as it was before the field crossed.
+#[test]
+fn a_filing_with_no_report_period_end_never_admits_the_cover_page_count() {
+    let facts = reported();
+    let registry = cover_count_alone("cover-count-without-a-report-date");
+    let period = instant("2026-06-30");
+    let answering = filings::answering(&facts, &period);
+
+    let attempted = filings::attempted(
+        &registry,
+        FILER,
+        KIND,
+        Concept::SharesOutstanding,
+        &period,
+        &answering,
+    );
+    assert_eq!(
+        each(&attempted),
+        vec![(NO_REPORT_DATE, "unknown".to_owned())]
+    );
+    assert_eq!(
+        declined_in_each(&attempted),
+        vec![vec![(
+            settling::named(registry.version(), COVER_COUNT),
+            "no fact answering the period asked for".to_owned(),
+        )]]
+    );
+
+    let admitted = settling::settle(
+        &registry,
+        FILER,
+        KIND,
+        Concept::SharesOutstanding,
+        &period,
+        answering[0].facts(),
+        Admits::EveryEntry,
+    );
+    assert_eq!(came_to(&admitted), by(&registry, "64125000", COVER_COUNT));
+}
+
+/// With the committed registry the period-end count still sets the share count
+/// inside every filing at its own report date, so admitting the cover-page
+/// count there moves no number.
+///
+/// This filer tags `CommonStockSharesOutstanding` at each of its nine report
+/// dates in the filing that reports it. That entry reads the concept exactly and
+/// the cover-page one stands in, so the cover count drops behind it.
+#[test]
+fn the_period_end_count_still_wins_at_every_report_date() {
+    let facts = reported();
+    let registry = read(&committed());
+
+    let expected = [
+        ("2024-03-31", REPORTS_COUNTED, "60000000"),
+        ("2024-06-30", "0001213900-24-067900", "60000000"),
+        ("2024-09-30", "0001213900-24-101777", "60000000"),
+        ("2024-12-31", "0001213900-25-013785", "60000000"),
+        ("2025-03-31", "0001213900-25-042964", "60500000"),
+        ("2025-06-30", "0001213900-25-078735", "60500000"),
+        ("2025-09-30", "0001213900-26-002691", "60500000"),
+        ("2025-12-31", "0001213900-26-018584", "60500000"),
+        ("2026-03-31", "0001213900-26-059248", "64125000"),
+    ];
+
+    let mut report_dates: Vec<&str> = facts
+        .iter()
+        .map(|fact| &*fact.report_period_end)
+        .filter(|date| !date.is_empty())
+        .collect();
+    report_dates.sort_unstable();
+    report_dates.dedup();
+    assert_eq!(
+        report_dates,
+        expected.iter().map(|(date, ..)| *date).collect::<Vec<_>>()
+    );
+
+    for (date, reports, count) in expected {
+        let period = instant(date);
+        let answering = filings::answering(&facts, &period);
+        let attempted = filings::attempted(
+            &registry,
+            FILER,
+            KIND,
+            Concept::SharesOutstanding,
+            &period,
+            &answering,
+        );
+        let own = attempted
+            .iter()
+            .find(|held| held.accession() == reports)
+            .unwrap_or_else(|| panic!("{reports} does not answer {date}"));
+        assert_eq!(
+            came_to(own.settled()),
+            by(&registry, count, PERIOD_END_COUNT),
+            "{date}"
+        );
+    }
 }
 
 /// A period no fact of this filer carries is answered by no filing at all, and

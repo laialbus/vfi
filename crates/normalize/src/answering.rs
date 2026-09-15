@@ -44,9 +44,8 @@
 //!
 //! Whether such an entry is admitted at all is the caller's, and arrives as
 //! [`Admits`]. The condition the alignment ruleset sets for admitting one is a
-//! statement about the filing rather than about a fact, so it cannot be asked
-//! here: this module is handed one filing's facts and could not say which
-//! period that filing reports even if the boundary said.
+//! statement about the filing rather than about a fact, so it is asked where
+//! filings are told apart, in [`crate::filings`], and not here.
 //!
 //! The period asked for is compared whole, in the shape the boundary publishes
 //! it: a balance is answered at the instant it is asked at, and a duration

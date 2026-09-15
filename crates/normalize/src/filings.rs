@@ -27,17 +27,25 @@
 //! gross profit, tax and cash flow absent for a quarter the filer published in
 //! full.
 //!
-//! **The cover-page entry is refused.** The record admits an entry that answers
-//! the period of the filing it was reported in on one condition — "only when
-//! that filing's own period of report ends on the period asked for" — and then
-//! says what this boundary does with it: "the condition cannot be stated, so it
-//! is never met and such an entry is never a candidate." Nothing published says
-//! which period a filing reports, so [`ADMITS`] is what every filing here is
-//! asked with. What admitting it unchecked would cost is measured on the same
-//! fixture: `shares_outstanding` at 2023-12-31 handed a count from a cover page
-//! nineteen months later, 60,500,000 against the filer's own 60,000,000 either
-//! side of it. The absence that stands in its place is one M5 shows with its
-//! reason, and the two are not mistakable for each other.
+//! **The cover-page entry is admitted on one condition and no other.** The
+//! record admits an entry that answers the period of the filing it was reported
+//! in "only when that filing's own period of report ends on the period asked
+//! for", and `fetch-normalize` v2 carries that period's end on every fact as
+//! `report_period_end`. So a filing is asked with every entry where the period
+//! asked for is an instant and each of the filing's facts publishes that
+//! instant's date as its period of report's end, character for character. What
+//! admitting it unchecked would cost is measured on the same fixture:
+//! `shares_outstanding` at 2023-12-31 handed a count from a cover page nineteen
+//! months later, 60,500,000 against the filer's own 60,000,000 either side of
+//! it. No filing's period of report ends on that day, so none is asked with the
+//! entry there.
+//!
+//! The period asked for has to be an instant. The condition compares a date
+//! with it, and the concept the entry reaches is a balance, which
+//! `docs/adr/candidate-choice.md` answers only by an instant: a duration ending
+//! on the report date admits the entry in no filing. An empty
+//! `report_period_end` names no date, so it meets the condition nowhere, and
+//! the concept is left where the silence reading puts it.
 //!
 //! **Nothing here ranks and nothing here is dropped.** Which of several
 //! answering filings sets the value is the record's Rule 3, and the record
@@ -56,16 +64,6 @@ use vfi_contracts::fetch_normalize::{Fact, Period};
 use crate::answering::Admits;
 use crate::registry::Registry;
 use crate::settling::{self, Settled};
-
-/// What a filing is asked with at `fetch-normalize` v1: every entry the
-/// registry states for the concept except one that answers the period of the
-/// filing it was reported in.
-///
-/// The record's condition for admitting that one is a statement about the
-/// filing's own period of report, which is the field this boundary withholds. A
-/// condition that cannot be stated is never met, so the entry is refused here
-/// rather than admitted on nothing.
-const ADMITS: Admits = Admits::OnlyThePeriodAskedFor;
 
 /// One filing that answers a period, and the facts of it.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -88,6 +86,23 @@ impl<'f> Filing<'f> {
     /// another, so what a filing answers with is the filing.
     pub fn facts(&self) -> &[&'f Fact] {
         &self.facts
+    }
+
+    /// Which entries this filing is asked with at `period`.
+    ///
+    /// Every fact is read rather than the first, because the field repeats per
+    /// fact and nothing on the type holds the copies to one date. A filing whose
+    /// facts disagree on where its period of report ends has not said where it
+    /// ends, and a condition not stated is not met.
+    fn admits(&self, period: &Period) -> Admits {
+        let Period::Instant { at } = period else {
+            return Admits::OnlyThePeriodAskedFor;
+        };
+        if !at.is_empty() && self.facts.iter().all(|fact| fact.report_period_end == *at) {
+            Admits::EveryEntry
+        } else {
+            Admits::OnlyThePeriodAskedFor
+        }
     }
 }
 
@@ -137,8 +152,9 @@ pub fn answering<'f>(facts: &'f [Fact], period: &Period) -> Vec<Filing<'f>> {
 /// attempt per filing and in the order they arrived in.
 ///
 /// Every attempt is the candidate-choice procedure over one filing's facts,
-/// which is the whole of what turns a period and a filing into a value or an
-/// absence. Nothing is compared between two of them here.
+/// asked with the entries that filing's own period of report admits, which is
+/// the whole of what turns a period and a filing into a value or an absence.
+/// Nothing is compared between two of them here.
 pub fn attempted<'r, 'f>(
     registry: &'r Registry,
     filer: &str,
@@ -158,7 +174,7 @@ pub fn attempted<'r, 'f>(
                 concept,
                 period,
                 filing.facts(),
-                ADMITS,
+                filing.admits(period),
             ),
         });
     }
