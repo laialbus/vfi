@@ -143,6 +143,50 @@
 //! from a 10-K or a 10-Q, and a history of 313 filings on one page that names
 //! every filing they were reported in.
 //!
+//! `a-filer-whose-statements-have-no-gross-profit` is the case recorded for the
+//! filer whose statements do not fit the ordinary shape, and the shape it does
+//! fit is the vocabulary's `reit`. It is CIK 0000798783, whose company facts
+//! document spells its key as the bare number `798783`. What it pins is an
+//! absence: no fact in the document is reported under `us-gaap:GrossProfit`, nor
+//! under `CostOfRevenue`, `CostOfGoodsAndServicesSold`, `CostOfGoodsSold` or
+//! `CostOfServices` — the four the committed registry's difference forms
+//! subtract from `revenue` to reach `gross_profit`, the concept whose
+//! `applies_to` is `operating` alone. So the filer publishes nothing a gross
+//! profit could be read or derived from, which is the milestone's point: a
+//! number put there would be one nobody reported.
+//!
+//! Why it is a `reit` is read off its own facts against that kind's clause,
+//! point for point, and none of it is asserted here. It earns rental and
+//! related income from property it owns:
+//! `us-gaap:OperatingLeasesIncomeStatementMinimumLeaseRevenue` and
+//! `us-gaap:PercentageRent` carry the revenue through the filing reporting to
+//! 2018-12-31, and `us-gaap:LessorOperatingLeasePaymentsToBeReceived` the lease
+//! payments still to come at each year end after it. Its balance sheet is
+//! unclassified and led by real estate at cost less accumulated depreciation: at
+//! every instant it states one, `RealEstateInvestmentPropertyAtCost` less
+//! `RealEstateInvestmentPropertyAccumulatedDepreciation` is
+//! `RealEstateInvestmentPropertyNet`, which at 2025-12-31 is 353140000 of
+//! `Assets` of 564907000. Its income statement runs revenues to the operating
+//! block and depreciation to a profit before interest: for 2025, `Revenues` of
+//! 99190000 less `CostsAndExpenses` of 64427000 — `OtherCostAndExpenseOperating`
+//! 29973000 and `DepreciationDepletionAndAmortization` 28859000 among them — is
+//! an `OperatingIncomeLoss` of 34763000, with `InterestIncomeExpenseNet` of
+//! -18850000 below it.
+//!
+//! The four concepts beside `gross_profit` whose clause is `operating` alone
+//! have nothing in these statements either, and that is the same shape saying
+//! so: no fact anywhere in the document is reported under `AssetsCurrent` or
+//! `LiabilitiesCurrent`, which `current_assets` and `current_liabilities` are
+//! read off, none under `InventoryNet`, and none under `ShortTermInvestments`,
+//! `MarketableSecuritiesCurrent`,
+//! `AvailableForSaleSecuritiesDebtSecuritiesCurrent` or
+//! `OtherShortTermInvestments`. `operating_income` is the one narrower clause
+//! that names `reit` beside `operating`, and this filer reports it — so what is
+//! recorded here is a filer some of the vocabulary passes over, not one it all
+//! does. It was chosen for being small enough to commit whole — 14724 facts
+//! from 62 filings, every one a 10-K, a 10-Q or a DEF 14A, and a history of 789
+//! filings on one page that names every filing they were reported in.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
