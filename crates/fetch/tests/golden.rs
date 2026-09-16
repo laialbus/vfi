@@ -115,6 +115,34 @@
 //! or a 10-Q, and a history of 86 filings on one page that names every filing
 //! they were reported in.
 //!
+//! `a-filer-that-suspended-its-dividend` is the case recorded for a filer that
+//! paid a dividend and then stopped, rather than one that never started. It is
+//! CIK 0001778784, whose company facts document spells its key as the bare
+//! number `1778784`. What it pins is said in periods, because a period missing
+//! from a paying history reads as a suspension too. A dividend is reported in
+//! each of the eleven consecutive filings whose report period ends 2020-06-30,
+//! 2020-09-30, 2020-12-31, 2021-03-31, 2021-06-30, 2021-09-30, 2021-12-31,
+//! 2022-03-31, 2022-06-30, 2022-09-30 and 2022-12-31: each carries a non-zero
+//! value at its own period end under both
+//! `us-gaap:CommonStockDividendsPerShareDeclared` and
+//! `us-gaap:PaymentsOfDividends`, the elements the committed registry reaches
+//! `dividends_declared_per_share` and `dividends_paid` by. After 2022-12-31
+//! none is. The eleven filings whose report period ends 2023-03-31,
+//! 2023-06-30, 2023-09-30, 2023-12-31, 2024-03-31, 2024-06-30, 2024-09-30,
+//! 2024-12-31, 2025-03-31, 2025-06-30 and 2025-09-30 carry no fact at it under
+//! either of those or under `PaymentsOfDividendsCommonStock` or
+//! `PaymentsOfDividendsPreferredStockAndPreferenceStock`, and no fact under any
+//! of the four is for a period ending after 2022. That silence is the filer's
+//! and not a tag it moved to: from 2023-06-30 on, all but the filing at
+//! 2024-03-31 state a zero for the year to date, under `us-gaap:DividendsCash`
+//! in 2023 and `us-gaap:Dividends` after, neither of which the registry maps. The three filings before the
+//! paying run, at 2019-09-30, 2019-12-31 and 2020-03-31, are silent too, and
+//! are a dividend not yet begun: the half year to 2020-06-30 declares the same
+//! 0.03 as its second quarter. It was chosen for a suspension plain in its own
+//! facts and for being small enough to commit whole — 12083 facts, every one
+//! from a 10-K or a 10-Q, and a history of 313 filings on one page that names
+//! every filing they were reported in.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
