@@ -1,9 +1,9 @@
 # Among the filings that answer a period, the one filed last sets the value, whether or not the earlier ones agree
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-13, by `M4-23`
-- **Decided:** —
+- **Decided:** 2026-09-14, by the decider
 - **Touches:** Rule 3 of the accepted `docs/adr/period-alignment.md`, and nothing
   else of it. An accepted record is never edited, so a rule that contradicts
   itself is repaired by a record that states it whole; superseding one is above a
@@ -505,7 +505,33 @@ What nothing checks, said plainly.
 
 By the decider, not the proposer.
 
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach. It supersedes one rule of a
+  Structural record with a record of the same kind, adds no field to any
+  contract, moves no protected path, weakens no gate, and changes no anchor.
+  Flagged for later human review, as the tier requires.
+- **Checked:** anchor 5, which the withdrawn agreeing-value exception would
+  have crossed by reading a number to choose provenance; the invariant that a
+  resolved fact records where it came from; `candidate-choice.md`, which this
+  reads and does not reopen; `period-alignment.md`, whose Rules 1 and 2,
+  fiscal-year decision, cover-page condition and v2 proposal stand, every
+  quotation from it matching its text. Re-derived from the fixtures directly:
+  the half-year's two filings with 38 facts each, the quarter's four with 15,
+  2, 16 and 2, diluted EPS −0.002 then −0.0015, net income −24,908 in all four
+  quarter filings with the 10-Q filed 2025-08-20 last, no shared `filed` date
+  across 10, 14 and 21 filings, the 10-Q and 10-Q/A one day apart, the four
+  dividend elements CIK 0001859199 reports, and no fixture carrying any of the
+  eight elements the registry maps to the three silence-read concepts. The
+  alternatives as argued: latest-that-changed falls on anchor 5 before its
+  other three grounds are needed; the own-period preference falls on both
+  restatement fixtures; recording both is a vocabulary bump for a convenience.
+- **Verdict and why:** accepted. The rule is a maximum over `filed` with a
+  stated tie on `form`, and nothing in it reads a value, so replay is a
+  comparison and the question of when two literals are one number stays
+  unasked. That is the only reading under which the three silence readings at
+  the half-year can be stated at all. The cost is real and priced: provenance
+  churns, and a period's row names filings per value, not per period.
+- **What would have changed it:** a fixture in which the reading taken changed
+  a number the other reading would not, or a way to state latest-that-changed
+  without an equality test over published literals. Neither exists. The
+  silence-zero displacement named under Consequences is the nearest thing to
+  one, and it is M4-30's to decide, not a reason to hold this.
