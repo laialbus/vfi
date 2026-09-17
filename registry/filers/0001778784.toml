@@ -1,0 +1,185 @@
+# Provident Bancorp, Inc. /MD/, the filer
+# fixtures/fetch/a-filer-that-suspended-its-dividend is recorded from. The kind
+# below is read off that filer's own facts against the clause the published
+# vocabulary states for each kind, and the facts named here are the ones that
+# settle it.
+#
+# Its filings report a dividend at each report period end from 2020-06-30 to
+# 2022-12-31 and at none from 2023-03-31 to 2025-09-30. No clause the vocabulary
+# publishes reads a dividend, so neither stretch is read here for what the
+# filer is. A kind holds for every period it holds for, so each stretch is read
+# on its own below, and the two read the same. Before is the balance sheets at
+# 2021-12-31 (10-K filed 2022-03-24) and 2022-12-31 (10-K filed 2023-03-31) and
+# the years they close; after is 2024-12-31 (10-K filed 2025-03-31) with the
+# year it closes, and 2025-09-30 (10-Q filed 2025-11-07) with the nine months to
+# it. Each figure is as the filing named for its date states it, and each
+# identity named here closes to the dollar.
+#
+# The bank clause reads a depository or lender earning net interest income and
+# fees, funded by deposits and borrowings, presenting an unclassified balance
+# sheet ordered by liquidity rather than by term. This filer is each of those on
+# both sides, save the order, which the facts do not carry: they state amounts,
+# not where a statement lists them. What they do carry is that no line is split
+# by term.
+#
+# Funded by deposits and borrowings. Before: at 2021-12-31 Liabilities
+# 1,495,501,000 is Deposits 1,459,895,000, LongTermDebt 13,500,000,
+# OperatingLeaseLiability 4,387,000 and OtherLiabilities 17,719,000. At
+# 2022-12-31 Liabilities 1,428,839,000 is Deposits 1,279,582,000,
+# ShortTermBorrowings 108,500,000, LongTermDebt 18,329,000,
+# OperatingLeaseLiability 4,282,000 and OtherLiabilities 18,146,000. After: at
+# 2024-12-31 Liabilities 1,362,083,000 is Deposits 1,308,960,000,
+# ShortTermBorrowings 35,000,000, LongTermDebt 9,563,000, OperatingLeaseLiability
+# 3,862,000 and OtherLiabilities 4,698,000. At 2025-09-30 Liabilities
+# 1,250,594,000 is Deposits 1,232,391,000, ShortTermBorrowings 3,000,000,
+# LongTermDebt 4,462,000, OperatingLeaseLiability 5,900,000 and OtherLiabilities
+# 4,841,000. The two borrowings after are AdvancesFromFederalHomeLoanBanks,
+# 44,563,000 and 7,462,000 at those instants. At each of the four, Deposits is
+# NoninterestBearingDepositLiabilities with InterestBearingDepositLiabilities:
+# 626,587,000 with 833,308,000, 520,226,000 with 759,356,000, 351,528,000 with
+# 957,432,000, and 280,288,000 with 952,103,000.
+#
+# A lender. Before: at 2021-12-31 Assets 1,729,283,000 is
+# CashCashEquivalentsAndShortTermInvestments 153,115,000,
+# AvailableForSaleSecuritiesDebtSecurities 36,837,000, FederalHomeLoanBankStock
+# 785,000, LoansReceivableHeldForSaleAmount 22,846,000,
+# LoansAndLeasesReceivableNetReportedAmount 1,433,803,000,
+# BankOwnedLifeInsurance 42,569,000, PropertyPlantAndEquipmentNet 14,258,000,
+# InterestReceivable 5,703,000, OperatingLeaseRightOfUseAsset 4,102,000 and
+# OtherAssets 15,265,000. At 2022-12-31 Assets 1,636,381,000 is
+# CashCashEquivalentsAndShortTermInvestments 80,629,000,
+# AvailableForSaleSecuritiesDebtSecurities 28,600,000, FederalHomeLoanBankStock
+# 4,266,000, LoansAndLeasesReceivableNetReportedAmount 1,416,047,000,
+# BankOwnedLifeInsurance 43,615,000, PropertyPlantAndEquipmentNet 13,580,000,
+# InterestReceivable 6,597,000, OtherForeclosedAssets 6,051,000,
+# DeferredIncomeTaxAssetsNet 16,793,000, OperatingLeaseRightOfUseAsset 3,942,000
+# and OtherAssets 16,261,000. After: at 2024-12-31 Assets 1,593,170,000 is
+# CashCashEquivalentsAndShortTermInvestments 169,142,000,
+# AvailableForSaleSecuritiesDebtSecurities 25,693,000, FederalHomeLoanBankStock
+# 2,697,000, FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss
+# 1,305,508,000, BankOwnedLifeInsurance 46,017,000, PropertyPlantAndEquipmentNet
+# 10,188,000, InterestReceivable 5,296,000, DeferredIncomeTaxAssetsNet
+# 13,808,000, OperatingLeaseRightOfUseAsset 3,429,000 and OtherAssets
+# 11,392,000. At 2025-09-30 Assets 1,491,623,000 is
+# CashCashEquivalentsAndShortTermInvestments 128,881,000,
+# DebtSecuritiesAvailableForSaleExcludingAccruedInterest 24,441,000,
+# FederalHomeLoanBankStock 1,004,000,
+# FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss
+# 1,250,964,000, BankOwnedLifeInsurance 47,028,000, PropertyPlantAndEquipmentNet
+# 10,062,000, InterestReceivable 4,210,000, DeferredIncomeTaxAssetsNet
+# 11,890,000, OperatingLeaseRightOfUseAsset 5,431,000 and OtherAssets 7,712,000.
+# Loans are the largest line at every one of the four.
+#
+# Earning net interest income and fees. Before, over 2021 (10-K filed
+# 2022-03-24): InterestAndDividendIncomeOperating 64,803,000, of which
+# InterestAndFeeIncomeLoansAndLeases is 63,873,000, less InterestExpense
+# 3,370,000 — InterestExpenseDeposits 3,085,000 and InterestExpenseBorrowings
+# 285,000 — is InterestIncomeExpenseNet 61,433,000; less
+# ProvisionForLoanAndLeaseLosses 3,887,000 it is
+# InterestIncomeExpenseAfterProvisionForLoanLoss 57,546,000; with
+# NoninterestIncome 5,166,000 and less NoninterestExpense 40,619,000 it is
+# IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+# 22,093,000, and less IncomeTaxExpenseBenefit 5,954,000 it is NetIncomeLoss
+# 16,139,000. Over 2022 (10-K filed 2023-03-31): 79,327,000, of which loans
+# 77,253,000, less InterestExpense 4,297,000 — InterestExpenseDeposits
+# 3,578,000, InterestExpenseShortTermBorrowings 422,000 and
+# InterestExpenseLongTermDebt 297,000 — is 75,030,000; less
+# ProvisionForLoanAndLeaseLosses 56,428,000 it is 18,602,000; with
+# NoninterestIncome 6,149,000 and less NoninterestExpense 52,009,000 it is
+# -27,258,000, and less IncomeTaxExpenseBenefit -5,790,000 it is -21,468,000.
+# After, over 2024 (10-K filed 2025-03-31): 89,457,000, of which loans
+# 83,178,000, less InterestExpenseOperating 38,966,000 — InterestExpenseDeposits
+# 36,678,000, InterestExpenseShortTermBorrowings 2,164,000 and
+# InterestExpenseLongTermDebt 124,000 — is 50,491,000; less
+# ProvisionForLoanLeaseAndOtherLosses 1,003,000 it is 49,488,000; with
+# NoninterestIncome 5,912,000 and less NoninterestExpense 46,019,000 it is
+# 9,381,000, and less IncomeTaxExpenseBenefit 2,110,000 it is 7,271,000. Over
+# the nine months to 2025-09-30 (10-Q filed 2025-11-07): 63,190,000, of which
+# loans 58,998,000, less InterestExpenseOperating 23,602,000 —
+# InterestExpenseDeposits 22,507,000, InterestExpenseShortTermBorrowings
+# 1,007,000 and InterestExpenseLongTermDebt 88,000 — is 39,588,000; less
+# ProvisionForLoanLeaseAndOtherLosses -808,000 it is 40,396,000; with
+# NoninterestIncome 5,169,000 and less NoninterestExpense 34,957,000 it is
+# 10,608,000, and less IncomeTaxExpenseBenefit 2,944,000 it is 7,664,000.
+#
+# Unclassified. Deposits holds deposits payable on demand beside time deposits
+# running years out, in one line. At 2022-12-31 TimeDeposits 153,604,000 is
+# TimeDepositMaturitiesYearOne 146,624,000, YearTwo 5,149,000, YearThree
+# 1,461,000, YearFour 208,000 and YearFive 162,000, and Deposits 1,279,582,000 is
+# that with NoninterestBearingDomesticDepositDemand 520,226,000,
+# DepositsMoneyMarketDeposits 318,417,000, DepositsNegotiableOrderOfWithdrawalNOW
+# 145,533,000 and DepositsSavingsDeposits 141,802,000. At 2024-12-31 TimeDeposits
+# 278,277,000 is 275,599,000, 2,447,000, 129,000, 86,000 and 16,000 under the
+# same five, and Deposits 1,308,960,000 is that with DemandDepositAccounts
+# 351,528,000, DepositsMoneyMarketDeposits 463,687,000,
+# DepositsNegotiableOrderOfWithdrawalNOW 83,270,000 and DepositsSavingsDeposits
+# 132,198,000. Its borrowings are not split by term either. At 2022-12-31
+# DebtLongtermAndShorttermCombinedAmount 126,829,000 is the ShortTermBorrowings
+# and LongTermDebt above, and it is also
+# LongTermDebtMaturitiesRepaymentsOfPrincipalInNextTwelveMonths 117,132,000,
+# InYearTwo 134,000, InYearThree 5,136,000, InYearFour 138,000, InYearFive
+# 139,000 and AfterYearFive 4,150,000: 8,632,000 more falls due within twelve
+# months than ShortTermBorrowings holds, and over 2023 (10-K filed 2024-03-28)
+# RepaymentsOfFederalHomeLoanBankBorrowings is 8,632,000.
+#
+# Each of the other four kinds is refused by a fact of this filer's, on both
+# sides.
+#
+# Operating. The clause reads a non-financial filer with a classified balance
+# sheet and an income statement running revenue to cost of revenue to operating
+# expenses to operating income. Deposits are 1,279,582,000 of Liabilities
+# 1,428,839,000 at 2022-12-31 and 1,308,960,000 of 1,362,083,000 at 2024-12-31,
+# which is a depository's funding, and neither deposits nor borrowings are split
+# by term, as above. Each run above closes from interest income to net income
+# through net interest income and a provision for loan losses, and no cost of
+# revenue or operating income is among the lines that close it.
+#
+# Insurer. The clause reads premiums and investment income earned against
+# claims and reserves. What each run above earns is interest, most of it
+# InterestAndFeeIncomeLoansAndLeases, and what it charges against that is
+# interest on deposits and borrowings and a provision for loan losses; each
+# liabilities side above closes from deposits, borrowings, lease and other
+# liabilities, with no reserve among them. The insurance its facts do name is
+# insurance it buys or owns. GeneralInsuranceExpense 1,791,000 over 2022 and
+# 1,210,000 over 2024, and FederalDepositInsuranceCorporationPremiumExpense
+# 1,307,000 over 2024, are expenses by their own elements.
+# BankOwnedLifeInsurance, 43,615,000 at 2022-12-31 and 46,017,000 at
+# 2024-12-31, is one of the lines that close Assets above, with
+# BankOwnedLifeInsuranceIncome 1,046,000 and 1,282,000 over those years.
+#
+# REIT. The clause reads rental income from property the filer owns and a
+# balance sheet led by real estate at cost less depreciation. This filer's
+# property is small beside its loans: PropertyPlantAndEquipmentNet 13,580,000 at
+# 2022-12-31 is PropertyPlantAndEquipmentGross 25,042,000 less
+# AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment
+# 11,462,000, against loans of 1,416,047,000, and it is 10,188,000 at 2024-12-31
+# against 1,305,508,000. It rents rather than lets: an
+# OperatingLeaseRightOfUseAsset and an OperatingLeaseLiability close each
+# balance sheet above, with OperatingLeaseCost 315,000 over 2022 and
+# OperatingLeaseExpense 363,000 over 2024. And the runs above earn interest, not
+# rent.
+#
+# Investment company. The clause reads a portfolio carried at fair value and a
+# statement of operations to net investment income, with realised and
+# unrealised results below. This filer's largest asset is carried net of an
+# allowance for credit losses, which a fair value does not carry:
+# LoansAndLeasesReceivableAllowance is 19,496,000 at 2021-12-31 and 28,069,000
+# at 2022-12-31; at 2024-12-31 the 1,305,508,000 above is
+# FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss
+# 1,326,595,000 less
+# FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest 21,087,000,
+# and at 2025-09-30 the 1,250,964,000 is 1,271,378,000 less 20,414,000. The
+# securities it does carry at fair value are small, and their unrealised results
+# run outside net income. At 2022-12-31 AvailableForSaleSecuritiesDebtSecurities
+# 28,600,000 is AvailableForSaleDebtSecuritiesAmortizedCostBasis 31,457,000 less
+# AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedLossBeforeTax 2,859,000
+# plus AvailableForSaleDebtSecuritiesAccumulatedGrossUnrealizedGainBeforeTax
+# 2,000, and at 2024-12-31 25,693,000 is 27,798,000 less 2,107,000 plus 2,000.
+# Over 2022
+# OtherComprehensiveIncomeUnrealizedHoldingGainLossOnSecuritiesArisingDuringPeriodBeforeTax
+# is -3,709,000, and ComprehensiveIncomeNetOfTax -24,317,000 is NetIncomeLoss
+# -21,468,000 with OtherComprehensiveIncomeLossNetOfTax -2,849,000; over 2024
+# they are -167,000, and 7,142,000 is 7,271,000 with -129,000.
+
+cik = "0001778784"
+kind = "bank"
