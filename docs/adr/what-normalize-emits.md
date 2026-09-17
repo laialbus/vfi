@@ -1,9 +1,9 @@
 # Normalize emits a filer's periods keyed by their dates alone, every concept in one state at each, and a value that names which of three ways set it, published as `canonical-concepts` v2
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-16, by `M4-32`
-- **Decided:** —
+- **Decided:** 2026-09-16, by the decider
 - **Touches:** `contracts/canonical-concepts/`, at v2 — the normalize → analyze
   contract (anchor 3). Its boundary's `carries` line and what its `Value` and
   `Unknown` states carry change, and it gains the two period shapes; proposed
@@ -432,7 +432,66 @@ What nothing checks, said plainly.
 
 By the decider, not the proposer.
 
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach. It proposes contract lines, the
+  tier's own example: a v2 of the normalize → analyze vocabulary that reshapes
+  `carries`, `Value` and `Unknown`. It writes no contract byte, edits no accepted
+  record, anchor or protected-path entry, and weakens no gate. The published
+  bytes are a later task's, under the review `contracts/` already requires.
+  Flagged for later human review, as the tier requires.
+- **Checked:** anchors 2, 3 and 5. The caller-named period falls on anchor 2,
+  and the one-contract-per-boundary reading holds anchor 3. The registry version
+  on a silence value is anchor 5's recorded premise. Every quotation matches its
+  source. Those are v1's `carries`, `[state_set]`, `Value` and `Unknown` lines,
+  `settling.rs`, `lib.rs`, Rules 1 and 2 and the row-key sentence of
+  `period-alignment.md`, the Rule 3 record's stamping and replay sentences, the
+  silence record's version-bump, "tells them apart" and "tables stand" sentences,
+  candidate choice's measure line and six reasons, anchor 3, the registry gate's
+  version line and the normalize harness. `Resolution::Value` takes four required
+  strings, and `Version` is 32 bytes.
+
+  Re-derived on c57e19b, whose registry, fixtures and crates match 71365cc, by a
+  throwaway run of `filings::answering` and `attempted` with Rule 3 and the
+  silence reading applied, then deleted:
+  - CIK 0002003750: 32 periods, 19 durations and 13 instants. 531 `Unknown`s,
+    387 of them over several filings with the same candidate names in each. 96
+    silence zeros, 45 at a period of the wrong shape. 6,765 rendered lines
+    against 1,646.
+  - Both Rule 3 tables: 12 and 8 read values, three silence rows each.
+  - CIK 0001859199 at 2024-12-31: nine answering filings, two stating
+    `PreferredStockValue` and four later ones silent.
+  - All twelve `revenue` entries are kind-scoped. The 2023 year on CIK
+    0001778784 has five attempts and no candidate.
+  - CIK 0001778784 also holds the 0.03 beside an `Unknown` paid, and the 24
+    instants, which are the silence record's 24 of 26. The FY2023 silence zero
+    sits beside 198,132,000 from the 10-K filed 2025-03-31. The Q4 2020 and Q4
+    2021 zeros sit beside year-to-date payments of 1,167,000 to 1,636,000 and
+    1,895,000 to 2,560,000.
+  - No tie and no `NotApplicable` in any fixture.
+
+  The alternatives as argued: the caller-named period falls on anchor 2 and on
+  Rule 1's set living inside normalize. The period on the `Value` falls on the
+  absences, which need it too, and on the accepted row-key sentence. Inferring
+  the way from which fields are present falls on v1's own "no empty case".
+- **Verdict and why:** accepted. The record makes a crossing already decided in
+  pieces explicit, and it adds no rule. Rule 1 fixes the periods, Rule 3 and the
+  silence record fix the values, and `SetBy` already carries the three ways. The
+  one real choice is naming the way rather than inferring it from missing
+  fields. That is right for the reason the record gives: a dropped field would
+  otherwise be a well-formed value of another way, the plausible wrong answer
+  this milestone exists to stop. Taking M4-30's registry-version bump in the same
+  version moves the vocabulary once.
+
+  Two costs are priced rather than solved, and both go to the human review.
+  First, every period carries every concept, so a balance concept is a silence
+  zero at a duration: 45 of 96 zeros on the restatement filer, and a zero over
+  2023 beside 198,132,000 at its end. That is read, not chosen, from the accepted
+  tables. Second, both dividend concepts read a conditional zero in two quarters
+  the suspension filer paid in, which is the vocabulary's pair reading and not
+  this record's. The first can be removed by a record superseding those table
+  rows before anything is stored. After that, removing it is a v3.
+- **What would have changed it:** a fixture claim that did not re-derive. So
+  would a reading of the accepted Rule 3 or silence records under which the
+  wrong-shape rows were not pinned. Then dropping them would not be a reopening,
+  and the narrower shape would win. Neither holds: the silence record says
+  M4-23's tables "stand as accepted, including their three silence rows at the
+  half-year and the quarter".
