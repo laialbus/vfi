@@ -143,6 +143,117 @@
 //! from a 10-K or a 10-Q, and a history of 313 filings on one page that names
 //! every filing they were reported in.
 //!
+//! `a-filer-whose-shape-has-no-gross-profit` is the case recorded for the filer
+//! the milestone names among the golden fixtures, the one whose statements do
+//! not fit the ordinary shape. It is CIK 0002033615, Magnolia Bancorp, whose
+//! company facts document spells its key as the ten-digit string. What it pins
+//! is an absence, stated over the registry as it stands: `gross_profit` is
+//! reached by `us-gaap:GrossProfit`, or by a difference between `revenue` and
+//! one of `us-gaap:CostOfRevenue`, `CostOfGoodsAndServicesSold`,
+//! `CostOfGoodsSold` and `CostOfServices`. The document carries no element of
+//! any of those five names, under any of its taxonomies, so not one of the
+//! eight filings its facts were reported in states a fact under one.
+//!
+//! The kind that absence is correct for is `bank`, read off this filer's own
+//! facts against the vocabulary's clause for it — a depository or lender
+//! earning net interest income and fees, funded by deposits and borrowings,
+//! presenting an unclassified balance sheet ordered by liquidity rather than by
+//! term. Nothing asserts the kind here. That is `registry/filers/`, decided
+//! against different evidence in a task of its own, and this diff adds no file
+//! there.
+//!
+//! The balance sheet closes to the dollar at both year ends and subtotals no
+//! current section at either. At 2024-12-31 (10-K filed 2025-03-28) Assets
+//! 43,962,000 is loans of 30,627,000 under
+//! FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss, with
+//! CashAndDueFromBanks 9,937,000, PropertyPlantAndEquipmentNet 1,506,000,
+//! OtherAssets 1,470,000, FederalHomeLoanBankStock 351,000, InterestReceivable
+//! 68,000 and InterestBearingDepositsInBanks 3,000; and Liabilities 30,046,000
+//! is Deposits 29,535,000 with AdvancePaymentsByBorrowersForTaxesAndInsurance
+//! 343,000, AccruedLiabilitiesAndOtherLiabilities 145,000,
+//! DeferredIncomeTaxLiabilitiesNet 21,000 and
+//! InterestPayableCurrentAndNoncurrent 2,000. At 2025-12-31 (10-K filed
+//! 2026-03-16) Assets 37,396,000 is 30,719,000, 4,513,000, 1,497,000, 234,000,
+//! 367,000 and 66,000 under the same elements, and Liabilities 17,400,000 is
+//! Deposits 16,852,000 with 485,000 and 63,000. The deposits are
+//! InterestBearingDepositLiabilities 27,852,000 and
+//! NoninterestBearingDepositLiabilities 1,683,000 at the earlier instant, and
+//! 15,193,000 and 1,659,000 at the later. The borrowings are the Federal Home
+//! Loan Bank's: AdvancesFromFederalHomeLoanBanks 500,000 at 2023-12-31, and
+//! over 2024 ProceedsFromFederalHomeLoanBankBorrowings and
+//! RepaymentsOfFederalHomeLoanBankBorrowings of 855,000 each.
+//!
+//! The income statement runs interest income to interest expense to net
+//! interest income, and carries no line above that for a cost of revenue to be
+//! subtracted from. Over 2024 (10-K filed 2025-03-28)
+//! InterestAndDividendIncomeOperating 1,458,000 —
+//! InterestAndFeeIncomeLoansAndLeases 1,337,000,
+//! InterestIncomeDepositsWithFinancialInstitutions 102,000 and
+//! DividendIncomeOperating 19,000 — less InterestExpenseOperating 390,000 is
+//! InterestIncomeExpenseNet 1,068,000, which
+//! ProvisionForLoanLeaseAndOtherLosses of 0 leaves as
+//! InterestIncomeExpenseAfterProvisionForLoanLoss 1,068,000; with
+//! NoninterestIncome 35,000 and NoninterestExpense 1,230,000 that comes to
+//! -127,000 before tax. Over 2025 (10-K filed 2026-03-16)
+//! InterestIncomeOperating 1,576,000 less 240,000 is 1,336,000, the provision
+//! is 0 again, and 34,000 against 1,561,000 comes to -191,000, which
+//! IncomeTaxExpenseBenefit -21,000 leaves as NetIncomeLoss -170,000. The 2024
+//! run does not close that last step in the filing that states it:
+//! IncomeTaxExpenseBenefit there is -26,977, the one figure that filing does
+//! not round to thousands, and -127,000 less it is -100,023 against the
+//! NetIncomeLoss -100,000 beside it. The 10-K filed
+//! 2026-03-16 states that year's tax as -27,000 and closes.
+//!
+//! The elements those two statements are built from are what the `operating`
+//! clause has no place for: Deposits and its two halves,
+//! AdvancesFromFederalHomeLoanBanks, FederalHomeLoanBankStock,
+//! FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss,
+//! InterestAndDividendIncomeOperating and InterestIncomeOperating,
+//! InterestExpenseOperating, InterestIncomeExpenseNet,
+//! ProvisionForLoanLeaseAndOtherLosses,
+//! InterestIncomeExpenseAfterProvisionForLoanLoss, NoninterestIncome and
+//! NoninterestExpense. Beside them the document states what a regulator reads
+//! and a manufacturer does not: TierOneLeverageCapitalToAverageAssets 0.378 at
+//! 2024-12-31 and 0.4648 at 2025-12-31, against the adequacy and
+//! well-capitalised minimums it is published with.
+//!
+//! The other three non-operating kinds are refused by the same facts. No
+//! element in the document names a premium, a policy, a claim or an insurance
+//! reserve, so nothing reads as the insurer clause. The only element naming
+//! real estate is TransferToOtherRealEstate — 39,000 over 2024, 0 over 2023 and
+//! over 2025 — which is property taken out of loans rather than property the
+//! filer earns rent on: the balance sheets above carry no real estate at cost
+//! and no depreciation accumulated against one, and OperatingLeaseLeaseIncome
+//! 24,000 over 2024 sits inside NoninterestIncome of 35,000, beside
+//! RevenueFromContractWithCustomerExcludingAssessedTax 9,000 and
+//! NoninterestIncomeOther 2,000, against interest and dividend income of
+//! 1,458,000. And no element names a portfolio, an investment carried at fair
+//! value, or the filer's net assets: FederalHomeLoanBankStock 351,000 and
+//! 367,000 is the holding membership of that bank requires, and the one
+//! fair-value element, FairValueDisclosureOffbalanceSheetRisksAmountLiability
+//! 2,180,000 at 2026-06-30, is a commitment off the balance sheet.
+//!
+//! Five other concepts carry a clause narrower than all five kinds, and this
+//! filer's statements show where each stands. `current_assets`,
+//! `current_liabilities` and `inventory` apply to `operating` alone, and the
+//! registry reaches them by `us-gaap:AssetsCurrent`, `LiabilitiesCurrent` and
+//! `InventoryNet` — none of which the document carries, the balance sheets
+//! above being the whole of what it presents. `short_term_investments` applies
+//! to `operating` alone too, and none of `ShortTermInvestments`,
+//! `MarketableSecuritiesCurrent`,
+//! `AvailableForSaleSecuritiesDebtSecuritiesCurrent` and
+//! `OtherShortTermInvestments`, the four the registry reaches it by, appears
+//! either. `operating_income` applies to `operating` and `reit`, and
+//! `us-gaap:OperatingIncomeLoss`, the one element the registry reaches it by,
+//! is absent as well; where it would sit the filer states
+//! `IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest`.
+//!
+//! It was chosen for an absence plain in its own facts and for being small
+//! enough to commit whole — 2591 facts, three taxonomies and four units, every
+//! fact from a 10-K, a 10-Q or a 10-Q/A, and a history of 53 filings on one
+//! page that names all eight of the filings they were reported in. Nothing
+//! reads the case yet.
+//!
 //! No case reaches the network. The transport below answers from the case
 //! directory and has no wire under it, so a request nothing recorded is a
 //! fixture that was never finished — it stops the case and says which file to
