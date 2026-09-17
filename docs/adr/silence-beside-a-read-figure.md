@@ -1,9 +1,9 @@
 # A silence reading is read over every filing that answers the period, so a later filing's silence supplies no zero beside a figure an earlier filing read
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-14, by `M4-30`
-- **Decided:** —
+- **Decided:** 2026-09-15, by the decider
 - **Touches:** how far the silence readings `contracts/canonical-concepts/v1.toml`
   publishes for `short_term_investments`, `dividends_declared_per_share` and
   `dividends_paid` reach once several filings answer one period — readings
@@ -368,7 +368,52 @@ What nothing checks, said plainly.
 
 By the decider, not the proposer.
 
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach. It settles how a published
+  silence reading applies across the filings that answer one period, the same
+  kind of reading the accepted open-questions record made inside one filing. It
+  moves no contract byte, adds no field, edits no accepted record, weakens no
+  gate, changes no anchor, and leaves Rule 3 the maximum over `filed` accepted
+  on 2026-09-14. Flagged for later human review, as the tier requires.
+- **Checked:** anchor 5, which the record applies rather than crosses: a zero
+  no filing states enters only where the vocabulary's test supports it, and a
+  stated figure for the period removes that support. The invariant that a
+  resolved fact records where it came from, which the reading not taken would
+  break without a field the vocabulary lacks. `which-filing-sets-the-value.md`
+  as accepted, whose Consequences name this case and whose first-clause reason
+  is quoted to the word; `canonical-concepts-open-questions.md`, whose silence
+  test and pair support are quoted to the word; the published vocabulary's
+  `carries`, `constructible_from`, `unknown_when` and "silence is silence in the
+  fact set" lines, each matching `v1.toml`; `settling.rs`, whose
+  `Matched::Nothing` and override-settled comments match. Re-derived on 493ac66
+  from the fixtures directly: 1,643 facts in 10 filings, 4,232 in 14, 4,461 in
+  21 and 1,157 in 4; no fact under any of the eight registry elements in any of
+  them; CIK 0001859199's dividends under `Dividends`, `DividendsCash` and
+  `DividendsPreferredStock`; `AssetsCurrent` at 49 instants, the last-filed
+  answering filing silent at 38 and more than one filing answering at 42; the
+  financing total at 59 durations, silent at 13, more than one answering at 36;
+  five filings answering 2024-03-31 on CIK 0002003750, the 10-Q filed
+  2024-05-08 carrying 30 facts there and the 10-Q filed 2025-08-20 one,
+  `StockholdersEquity`. The alternatives as argued: per filing falls first on
+  the routine erasure the counts show; the Rule 3 clause falls on the pair,
+  since `unknown_when` forbids a paid zero beside a non-zero declared figure;
+  the narrower rule makes silence mean two things; `Unknown` wherever several
+  filings answer withdraws the zero at most periods and leaves the suspension
+  fixture unwritable.
+- **Verdict and why:** accepted. The rule reads one bit per attempt, whether it
+  reached the concept, and never a figure, `filed` or form, so it stays inside
+  anchor 5 and inside what a `Value` already carries: a silence zero still names
+  no filing, and it now means one thing wherever it is stored. Placing it beside
+  the silence readings rather than in Rule 3 is right for the reason the record
+  gives and the 2026-09-12 sweep recommended: whether a zero is supported is the
+  silence test's question, and which statement is current is Rule 3's. The cost
+  is priced honestly. A line withdrawn by omission keeps its old figure, which
+  for `short_term_investments` can flatter, and the recovery is the assertion
+  the vocabulary already provides.
+- **What would have changed it:** a fixture in which the per-period reading
+  produced a number the filer's own later statement contradicts, or a way for
+  the per-filing reading to tell a displacing zero from a true one without a
+  field. Neither exists. The suspension fixture merged in #191 the same sweep
+  holds the record's shape at four dividend durations and at 24 of 26
+  `ShortTermInvestments` instants, where the last-filed answering filing is
+  silent on a line an earlier one stated. It is the fixture the record names,
+  and it argues for the reading, not against it.
