@@ -1,0 +1,174 @@
+# Twin Hospitality Group Inc., the filer
+# fixtures/fetch/a-filer-whose-shareholders-equity-is-negative is recorded from.
+# The kind below is read off that filer's own facts against the clause the
+# published vocabulary states for each kind, and the facts named here are the
+# ones that settle it.
+#
+# Every fact is from four filings: the 10-K filed 2025-02-28 and the 10-Qs filed
+# 2025-05-09, 2025-07-31 and 2025-11-12. They state the filer's equity under two
+# elements. MembersEquity is 60,176,000 at 2022-12-25 (10-K), -15,511,000 at
+# 2023-12-31 (all four), -79,666,000 at 2024-06-30 (10-Qs filed 2025-07-31 and
+# 2025-11-12) and -95,883,000 at 2024-09-29 (10-Q filed 2025-11-12).
+# StockholdersEquity is -84,609,000 at 2024-12-29 (all four), -101,854,000 at
+# 2025-03-30, -78,636,000 at 2025-06-29 and -92,127,000 at 2025-09-28. At
+# 2024-03-31 the 10-Q filed 2025-05-09 states -69,600,000 under
+# StockholdersEquity and the one filed 2025-07-31 the same under MembersEquity.
+# A kind holds for every period it holds for, so each side is read on its own
+# below, and the two read the same. The one balance sheet stated under
+# MembersEquity is 2023-12-31; no Assets, AssetsCurrent, Liabilities or
+# LiabilitiesCurrent is stated at the other instants that element is. Under
+# StockholdersEquity they are 2024-12-29, 2025-03-30, 2025-06-29 and 2025-09-28.
+# Each element is the equity total of its balance sheet: at 2023-12-31
+# Liabilities 581,093,000 and MembersEquity -15,511,000 make
+# LiabilitiesAndStockholdersEquity 565,582,000, which is Assets, and at
+# 2024-12-29 Liabilities 627,055,000 and StockholdersEquity -84,609,000 make
+# 542,446,000, which is Assets.
+#
+# That the equity is negative is not read here. The vocabulary publishes that a
+# negative amount is a value, so a deficit says nothing about which balance
+# sheet or income statement a filer presents. Nor is the change of element: no
+# kind's clause reads the name a filer's equity is stated under.
+#
+# The operating clause asks for two things, and this filer presents both on each
+# side. Each figure is as the filing named for it states it, and each identity
+# named here closes to the dollar.
+#
+# A classified balance sheet, current against non-current. Before: at 2023-12-31
+# (10-K) AssetsCurrent 28,093,000 is Cash 4,491,000, RestrictedCashCurrent
+# 15,046,000, AccountsReceivableNetCurrent 2,276,000 and OtherAssetsCurrent
+# 6,280,000. LiabilitiesCurrent is 70,728,000, and four lines are split by term:
+# RestrictedCashCurrent against RestrictedCashNoncurrent 4,608,000,
+# LongTermDebtCurrent 9,861,000 against LongTermDebtNoncurrent 334,020,000,
+# OperatingLeaseLiabilityCurrent 21,585,000 against
+# OperatingLeaseLiabilityNoncurrent 149,489,000, and
+# ContractWithCustomerLiabilityCurrent 1,118,000 against
+# ContractWithCustomerLiabilityNoncurrent 4,365,000. The current liabilities are
+# not offered as an identity there: AccountsPayableCurrent 9,487,000,
+# AccruedLiabilitiesCurrent 25,677,000, ContractWithCustomerLiabilityCurrent,
+# LongTermDebtCurrent and OperatingLeaseLiabilityCurrent come to 67,728,000.
+# After: at 2024-12-29 (10-K) AssetsCurrent 28,805,000 is Cash 9,370,000,
+# RestrictedCashCurrent 8,725,000, AccountsReceivableNetCurrent 3,130,000 and
+# OtherAssetsCurrent 7,580,000, and LiabilitiesCurrent 55,230,000 is
+# AccountsPayableCurrent 9,800,000, AccruedLiabilitiesCurrent 23,335,000,
+# ContractWithCustomerLiabilityCurrent 3,954,000, LongTermDebtCurrent 10,691,000
+# and OperatingLeaseLiabilityCurrent 7,450,000. The same two identities close at
+# 2025-03-30 (10-Q filed 2025-05-09) and 2025-06-29 (10-Q filed 2025-07-31). At
+# 2025-09-28 (10-Q filed 2025-11-12) AssetsCurrent 28,268,000 is Cash 5,478,000,
+# RestrictedCashCurrent 8,781,000, AccountsReceivableNetCurrent 1,951,000 and
+# OtherAssetsCurrent 12,058,000, and LiabilitiesCurrent 448,236,000 is
+# AccountsPayableCurrent 10,780,000, AccruedLiabilitiesCurrent 27,371,000,
+# ContractWithCustomerLiabilityCurrent 2,778,000, LongTermDebtCurrent
+# 400,266,000 and OperatingLeaseLiabilityCurrent 7,041,000. The debt moved
+# across the line between 2025-06-29 and 2025-09-28: at the first
+# LongTermDebtCurrent is 10,212,000 and LongTermDebtNoncurrent 401,054,000, and
+# at the second LongTermDebtNoncurrent is 2,459,000. Assets and Liabilities are
+# not offered as identities at any of the five instants: at 2024-12-29
+# AssetsCurrent, PropertyPlantAndEquipmentNet 76,675,000,
+# OperatingLeaseRightOfUseAsset 141,900,000, Goodwill 117,185,000,
+# IntangibleAssetsNetExcludingGoodwill 166,751,000, OtherAssetsNoncurrent
+# 1,609,000 and RestrictedCashNoncurrent 7,793,000 come to 540,718,000 against
+# Assets 542,446,000. What stands there is the current subtotals themselves.
+#
+# An income statement running revenue to cost of revenue to operating expenses
+# to operating income. No GrossProfit is stated, and the clause asks for no such
+# subtotal. Before, where a run ends at an instant stated under MembersEquity:
+# over 2022-12-26 to 2023-12-31 (10-K), called 2023 below,
+# RevenueFromContractWithCustomerExcludingAssessedTax 230,867,000 less
+# CostsAndExpenses 217,927,000 is OperatingIncomeLoss 12,940,000, and
+# CostsAndExpenses is
+# CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization 53,512,000,
+# LaborAndRelatedExpense 64,024,000, OccupancyNet 13,112,000,
+# OtherCostAndExpenseOperating 37,722,000, GeneralAndAdministrativeExpense
+# 19,252,000, AdvertisingExpense 16,792,000, PreOpeningCosts 1,136,000 and
+# DepreciationDepletionAndAmortization 12,377,000. Over the three months to
+# 2024-09-29 (10-Q filed 2025-11-12), 83,665,000 less 87,255,000 is -3,590,000,
+# the costs 20,826,000, 24,778,000, 6,639,000, 16,761,000, 7,167,000, 4,328,000,
+# 843,000 and 5,913,000 under the same eight. After, over 2024-01-01 to
+# 2024-12-29 (10-K), called 2024 below, 353,801,000 less 362,131,000 is
+# -8,330,000, the costs 87,414,000, 103,234,000, 26,198,000, 67,155,000,
+# 33,232,000, 19,751,000, 1,632,000 and 23,515,000. Over the six months to
+# 2025-06-29 (10-Q filed 2025-07-31), 174,951,000 less 187,596,000 is
+# -12,645,000, the costs 42,778,000, 50,539,000, 12,668,000, 33,907,000,
+# 26,708,000, 10,135,000, 695,000 and 10,166,000. NumberOfRestaurants is 170 at
+# 2024-12-29 and 159 at 2025-09-28.
+#
+# Each of the other four kinds is refused by a fact of this filer's, on both
+# sides. The balance sheets above refuse all four at once: the bank, insurer and
+# REIT clauses each read an unclassified balance sheet, the investment-company
+# clause a statement of assets and liabilities in place of a classified one, and
+# this filer subtotals its current assets and current liabilities under either
+# equity element. What follows, for each kind, are the facts that could suggest
+# it and where each of them stands.
+#
+# Bank. The clause reads a depository or lender earning net interest income and
+# fees, funded by deposits and borrowings. This filer is funded by borrowings —
+# LongTermDebt 343,900,000 at 2023-12-31 and 415,700,000 at 2024-12-29 — and its
+# interest is a cost below operating income. Each OperatingIncomeLoss above is
+# the one revenue line less the eight costs, so no interest earned enters the
+# run to it. Over 2023 (10-K) NonoperatingIncomeExpense -27,010,000 is
+# OtherNonoperatingIncomeExpense 2,704,000 less InterestExpenseNonoperating
+# 29,714,000, and with OperatingIncomeLoss 12,940,000 it makes
+# IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+# -14,070,000. Over 2024 (10-K) -48,242,000 is 248,000 less 46,137,000 and
+# GainsLossesOnExtinguishmentOfDebt -2,353,000, and with -8,330,000 it makes
+# -56,572,000. Its borrowings are split by term, and moved across that split
+# between 2025-06-29 and 2025-09-28, as above. What it owes its customers is
+# ContractWithCustomerLiabilityCurrent and
+# ContractWithCustomerLiabilityNoncurrent, also split by term, and not a
+# deposit.
+#
+# Insurer. The clause reads premiums and investment income earned against claims
+# and reserves, presented with no cost of revenue. This filer subtracts
+# CostOfGoodsAndServiceExcludingDepreciationDepletionAndAmortization in every
+# run above: 53,512,000 over 2023, 20,826,000 over the three months to
+# 2024-09-29, 87,414,000 over 2024 and 42,778,000 over the six months to
+# 2025-06-29. The liability it carries toward its customers is the
+# ContractWithCustomerLiabilityCurrent and
+# ContractWithCustomerLiabilityNoncurrent above, by their own elements a
+# contract with a customer and not a reserve. What it earns besides revenue over
+# 2023 and 2024 is inside OtherNonoperatingIncomeExpense, below operating income
+# in the identities the bank paragraph names.
+#
+# REIT. The clause reads rental income from property the filer owns, an
+# unclassified balance sheet led by real estate at cost less depreciation, and
+# revenues run to property operating expenses and depreciation. This filer holds
+# property and sells it: PropertyPlantAndEquipmentNet is 74,822,000 at
+# 2023-12-31 and 76,675,000 at 2024-12-29, and
+# ProceedsFromSaleOfPropertyPlantAndEquipment is 9,259,000 over 2023, 4,635,000
+# over 2024 and 4,432,000 over the quarter to 2025-03-30 (10-Q filed
+# 2025-05-09), beside SaleAndLeasebackTransactionGainLossNet 0 over that quarter
+# and over 2023-09-25 to 2023-12-31 and 2024-09-30 to 2024-12-29 (10-K). It is a
+# tenant: OperatingLeaseRightOfUseAsset is 166,700,000 at 2023-12-31 and
+# 141,900,000 at 2024-12-29, against the lease liabilities split by term above,
+# and OperatingLeaseExpense is 10,500,000 over 2023 and 21,200,000 over 2024.
+# OccupancyNet is one of the eight costs inside CostsAndExpenses, and each
+# OperatingIncomeLoss above is that one revenue line less those costs, so no
+# rental income reaches it. At 2023-12-31 and 2024-12-29 the property stands
+# beside Goodwill 117,159,000 and 117,185,000 and
+# IntangibleAssetsNetExcludingGoodwill 169,728,000 and 166,751,000, on balance
+# sheets that subtotal AssetsCurrent.
+#
+# Investment company. The clause reads a portfolio carried at fair value, a
+# statement of assets and liabilities, and investment income run to net
+# investment income with realised and unrealised results below. The facts that
+# could suggest one are an investment and money from affiliates.
+# PaymentsToAcquireInterestInJointVenture 300,000 is stated at 2023-12-04
+# (10-K), and it is not inside 2023's investing total: over 2023 (10-K)
+# NetCashProvidedByUsedInInvestingActivities -14,614,000 is
+# ProceedsFromSaleOfPropertyPlantAndEquipment 9,259,000 less
+# PaymentsToAcquirePropertyPlantAndEquipment 23,873,000. Over 2024 (10-K)
+# -20,504,000 is 4,635,000 less 25,139,000, and over the nine months to
+# 2025-09-28 (10-Q filed 2025-11-12) -2,910,000 is 4,431,000 less 7,341,000.
+# What affiliates provide is financing, not income: over 2023
+# NetCashProvidedByUsedInFinancingActivities 15,744,000 is
+# ProceedsFromContributionsFromAffiliates 15,224,000 and
+# ProceedsFromDebtNetOfIssuanceCosts 9,405,000 less RepaymentsOfShortTermDebt
+# 8,885,000, and over 2024 37,283,000 is 23,440,000 and 415,728,000 less
+# 401,885,000. IncreaseDecreaseInDueToAffiliates -31,200,000, stated at
+# 2025-06-04 (10-Qs filed 2025-07-31 and 2025-11-12), is by its own element a
+# change in what the filer owes them. And what it acquires it consolidates:
+# GoodwillAcquiredDuringPeriod 12,100,000 over 2023 is GoodwillGross 105,100,000
+# at 2022-12-25 becoming 117,200,000 at 2023-12-31.
+
+cik = "0002011954"
+kind = "operating"
