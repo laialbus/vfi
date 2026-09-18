@@ -1,0 +1,150 @@
+# Magnolia Bancorp, Inc., the filer
+# fixtures/fetch/a-filer-whose-shape-has-no-gross-profit is recorded from. The
+# kind below is read off that filer's own facts against the clause the
+# published vocabulary states for each kind, and the facts named here are the
+# ones that settle it.
+#
+# The recording carries no fact under GrossProfit or any of the four
+# cost-of-revenue elements the registry subtracts to reach gross_profit. No
+# clause the vocabulary publishes reads either, so that absence is not read
+# here for what the filer is.
+#
+# It states a balance sheet and a year's income statement at three year ends:
+# 2023-12-31 and 2024-12-31 in the 10-K filed 2025-03-28, and 2025-12-31 in the
+# 10-K filed 2026-03-16. Each is read in the filing named for it, figures as
+# that filing states them. A kind holds for every period it holds for, so each
+# year end is read on its own below, and the three read the same.
+#
+# The bank clause reads a depository or lender earning net interest income and
+# fees, funded by deposits and borrowings, presenting an unclassified balance
+# sheet ordered by liquidity rather than by term. This filer is each of those at
+# all three, save the order, which the facts do not carry: they state amounts,
+# not where a statement lists them. What they do carry is that no line is split
+# by term.
+#
+# Funded by deposits and borrowings. At 2023-12-31 Liabilities 21,787,000 is
+# Deposits 20,856,000, AdvancesFromFederalHomeLoanBanks 500,000,
+# AdvancePaymentsByBorrowersForTaxesAndInsurance 318,000,
+# AccruedLiabilitiesAndOtherLiabilities 61,000, DeferredIncomeTaxLiabilitiesNet
+# 48,000 and InterestPayableCurrentAndNoncurrent 4,000. At 2024-12-31
+# Liabilities 30,046,000 is Deposits 29,535,000 with 343,000, 145,000, 21,000
+# and 2,000 under the last four, and AdvancesFromFederalHomeLoanBanks is 0,
+# ProceedsFromFederalHomeLoanBankBorrowings and
+# RepaymentsOfFederalHomeLoanBankBorrowings 855,000 each over 2024. At
+# 2025-12-31 Liabilities 17,400,000 is Deposits 16,852,000,
+# AdvancePaymentsByBorrowersForTaxesAndInsurance 485,000 and
+# AccruedLiabilitiesAndOtherLiabilities 63,000. Deposits is
+# InterestBearingDepositLiabilities with NoninterestBearingDepositLiabilities
+# at each: 20,001,000 with 855,000, 27,852,000 with 1,683,000, and 15,193,000
+# with 1,659,000.
+#
+# A lender. At 2023-12-31 Assets 35,803,000 is
+# FinancingReceivableExcludingAccruedInterestAfterAllowanceForCreditLoss
+# 31,981,000, CashAndDueFromBanks 1,695,000, PropertyPlantAndEquipmentNet
+# 1,583,000, FederalHomeLoanBankStock 333,000, OtherAssets 135,000,
+# InterestReceivable 61,000 and InterestBearingDepositsInBanks 15,000. At
+# 2024-12-31 Assets 43,962,000 is 30,627,000, 9,937,000, 1,506,000, 351,000,
+# 1,470,000, 68,000 and 3,000 under the same seven. At 2025-12-31 Assets
+# 37,396,000 is 30,719,000, 4,513,000, 1,497,000, 367,000, 234,000 and 66,000
+# under the first six. Loans are the largest line at all three. Each balance
+# sheet closes: with StockholdersEquity 14,016,000, 13,916,000 and 19,996,000,
+# the Liabilities above make LiabilitiesAndStockholdersEquity, which is Assets.
+#
+# Earning net interest income and fees. Over 2023 (10-K filed 2025-03-28)
+# InterestAndDividendIncomeOperating 1,483,000 is
+# InterestAndFeeIncomeLoansAndLeases 1,322,000,
+# InterestIncomeDepositsWithFinancialInstitutions 146,000 and
+# DividendIncomeOperating 15,000; less InterestExpenseOperating 160,000 —
+# InterestExpenseDeposits 145,000 and
+# InterestExpenseFederalHomeLoanBankAndFederalReserveBankAdvancesLongTerm
+# 15,000 — it is InterestIncomeExpenseNet 1,323,000;
+# ProvisionForLoanLeaseAndOtherLosses 0 leaves it as
+# InterestIncomeExpenseAfterProvisionForLoanLoss 1,323,000; with
+# NoninterestIncome 36,000 and less NoninterestExpense 1,250,000 it is
+# IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+# 109,000. Over 2024 (same 10-K) 1,458,000 is 1,337,000, 102,000 and 19,000;
+# less 390,000 — 364,000 and 26,000 — it is 1,068,000; the provision is 0; with
+# 35,000 and less 1,230,000 it is -127,000. Over 2025 (10-K filed 2026-03-16)
+# InterestIncomeOperating 1,576,000 is 1,354,000 from loans and 222,000 from
+# deposits with financial institutions; less InterestExpenseOperating 240,000,
+# all of it InterestExpenseDeposits, it is 1,336,000; the provision is 0; with
+# NoninterestIncome 34,000 and less NoninterestExpense 1,561,000 it is
+# -191,000, and less IncomeTaxExpenseBenefit -21,000 it is NetIncomeLoss
+# -170,000.
+#
+# The tax step is not offered as closing in the 10-K filed 2025-03-28. There
+# IncomeTaxExpenseBenefit is 23,217 over 2023 against NetIncomeLoss 86,000 on
+# 109,000, and -26,977 over 2024 against NetIncomeLoss -100,000 on -127,000.
+# No other recorded filing states 2023's year. The 10-K filed 2026-03-16
+# states 2024's tax as -27,000, and -127,000 less it is -100,000.
+#
+# Unclassified. Deposits holds transaction and savings accounts beside time
+# deposits falling due years out, in one line. TimeDeposits is
+# TimeDepositMaturitiesYearOne through YearFive: 9,530,000 at 2023-12-31 is
+# 6,986,000, 2,435,000, 104,000, 5,000 and 0; 9,581,000 at 2024-12-31 is
+# 9,125,000, 365,000, 78,000, 1,000 and 12,000; 6,073,000 at 2025-12-31 is
+# 4,842,000, 740,000, 459,000, 4,000 and 28,000. At 2023-12-31 Deposits
+# 20,856,000 is that with DepositsNegotiableOrderOfWithdrawalNOW 8,528,000 and
+# DepositsSavingsDeposits 2,798,000, and at 2024-12-31 29,535,000 is that with
+# 8,406,000 and 11,548,000. At 2025-12-31 InterestBearingDepositLiabilities
+# 15,193,000 is that with DemandDepositAccounts 7,197,000 and
+# DepositsSavingsDeposits 1,923,000.
+#
+# Each of the other four kinds is refused by a fact of this filer's, at all
+# three year ends.
+#
+# Operating. The clause reads a non-financial filer with a classified balance
+# sheet and an income statement running revenue to cost of revenue to operating
+# expenses to operating income. Deposits are 20,856,000 of Liabilities
+# 21,787,000, 29,535,000 of 30,046,000 and 16,852,000 of 17,400,000, which is a
+# depository's funding, and each Assets and Liabilities above closes from lines
+# none of which is a current subtotal, with time deposits of one to five years
+# inside one Deposits line. Each run above closes from interest income through
+# net interest income and a provision for loan losses, and no cost of revenue or
+# operating income is among the lines that close it.
+# RevenueFromContractWithCustomerExcludingAssessedTax is a part of
+# NoninterestIncome, not a top line: over 2023 NoninterestIncome 36,000 is it at
+# 8,000 with OperatingLeaseLeaseIncome 21,000 and NoninterestIncomeOther 7,000;
+# over 2024, 35,000 is 9,000, 24,000 and 2,000; over 2025, 34,000 is 6,000 and
+# NoninterestIncomeOther 28,000.
+#
+# Insurer. The clause reads premiums and investment income earned against
+# claims and reserves. What each run above earns is interest, most of it
+# InterestAndFeeIncomeLoansAndLeases, and what it charges against that is
+# interest on deposits and Federal Home Loan Bank advances and a provision for
+# loan losses; each Liabilities above closes with no reserve among its lines.
+# The insurance its facts name is not the filer's to pay out.
+# AdvancePaymentsByBorrowersForTaxesAndInsurance, 318,000, 343,000 and 485,000
+# at the three, is by its element what borrowers have paid in toward their own
+# taxes and insurance. GeneralInsuranceExpense 88,000 over 2025 (10-K filed
+# 2026-03-16) is an expense by its element.
+#
+# REIT. The clause reads rental income from property the filer owns and a
+# balance sheet led by real estate at cost less depreciation. This filer's
+# property is small beside its loans: PropertyPlantAndEquipmentNet is
+# PropertyPlantAndEquipmentGross less
+# AccumulatedDepreciationDepletionAndAmortizationPropertyPlantAndEquipment,
+# 3,113,000 less 1,530,000 at 2023-12-31, 3,113,000 less 1,607,000 at
+# 2024-12-31 and 2,585,000 less 1,088,000 at 2025-12-31, against the loans
+# above. The rent it earns is the OperatingLeaseLeaseIncome of 21,000 and
+# 24,000 inside NoninterestIncome over 2023 and 2024, against interest and
+# dividend income of 1,483,000 and 1,458,000. TransferToOtherRealEstate, 0 over
+# 2023, 39,000 over 2024 and 0 over 2025, is by its element property taken in
+# from loans, and no real estate line is among those that close Assets at any
+# of the three.
+#
+# Investment company. The clause reads a portfolio carried at fair value and a
+# statement of operations to net investment income, with realised and
+# unrealised results below. This filer's largest asset is carried net of an
+# allowance for credit losses, which a fair value does not carry:
+# FinancingReceivableExcludingAccruedInterestBeforeAllowanceForCreditLoss less
+# FinancingReceivableAllowanceForCreditLossExcludingAccruedInterest is
+# 32,181,000 less 200,000 at 2023-12-31, 30,812,000 less 185,000 at 2024-12-31
+# and 30,904,000 less 185,000 at 2025-12-31, the loans above. The one security
+# among the lines that close Assets is FederalHomeLoanBankStock. Where a run
+# closes to NetIncomeLoss it does so by tax alone, with no realised or
+# unrealised result between: -127,000 less -27,000 is -100,000 over 2024 (10-K
+# filed 2026-03-16), and -191,000 less -21,000 is -170,000 over 2025.
+
+cik = "0002033615"
+kind = "bank"
