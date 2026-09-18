@@ -48,13 +48,9 @@
 //! the concept is left where the silence reading puts it.
 //!
 //! **Nothing here ranks and nothing here is dropped.** Which of several
-//! answering filings sets the value is the record's Rule 3, and the record
-//! states it twice in ways that do not agree — the rule takes the filing with
-//! the greatest `filed`, while the restatement fixture the same record asks for
-//! expects the values that did not change to go on naming the earlier filing.
-//! That is a question for the decider, so nothing here orders two filings,
-//! parses `filed`, or reads a form. Which periods a filer has is Rule 1, which
-//! asks that settled answer and waits on the same ruling.
+//! answering filings sets the value is Rule 3, and it is [`crate::standing`]'s:
+//! nothing here orders two filings, parses `filed`, or reads a form. Which
+//! periods a filer has is Rule 1, which asks that settled answer.
 
 use std::collections::BTreeMap;
 
@@ -111,6 +107,7 @@ impl<'f> Filing<'f> {
 pub struct Attempted<'r, 'f> {
     accession: &'f str,
     settled: Settled<'r, 'f>,
+    reached: bool,
 }
 
 impl<'r, 'f> Attempted<'r, 'f> {
@@ -123,6 +120,21 @@ impl<'r, 'f> Attempted<'r, 'f> {
     /// vocabulary publishes, out of this filing's facts alone.
     pub fn settled(&self) -> &Settled<'r, 'f> {
         &self.settled
+    }
+
+    /// Whether the attempt reached the concept: an assertion settled it, or
+    /// candidate choice's first step found a candidate for it here. A contest
+    /// that did not settle reached it; a silence, whatever it reads as, did not.
+    pub fn reached(&self) -> bool {
+        self.reached
+    }
+
+    pub(crate) fn settled_mut(&mut self) -> &mut Settled<'r, 'f> {
+        &mut self.settled
+    }
+
+    pub(crate) fn into_settled(self) -> Settled<'r, 'f> {
+        self.settled
     }
 }
 
@@ -165,17 +177,19 @@ pub fn attempted<'r, 'f>(
 ) -> Vec<Attempted<'r, 'f>> {
     let mut attempted = Vec::with_capacity(answering.len());
     for filing in answering {
+        let (settled, reached) = settling::reaching(
+            registry,
+            filer,
+            kind,
+            concept,
+            period,
+            filing.facts(),
+            filing.admits(period),
+        );
         attempted.push(Attempted {
             accession: filing.accession,
-            settled: settling::settle(
-                registry,
-                filer,
-                kind,
-                concept,
-                period,
-                filing.facts(),
-                filing.admits(period),
-            ),
+            settled,
+            reached,
         });
     }
     attempted

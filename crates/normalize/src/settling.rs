@@ -138,7 +138,16 @@ pub enum SetBy<'r, 'f> {
     },
     /// Nothing matched, and the vocabulary reads this concept's silence as a
     /// zero — outright, or on the condition it publishes with the concept.
-    Silence { reading: Silence },
+    ///
+    /// It keeps what the four steps found, every eligible rule and why it was
+    /// not a candidate, because the zero is not this filing's alone to give:
+    /// `docs/adr/silence-beside-a-read-figure.md` withholds it where another
+    /// filing answering the period reached the concept, and the `Unknown` it
+    /// comes to then carries what was attempted here.
+    Silence {
+        reading: Silence,
+        attempted: Attempt,
+    },
 }
 
 impl<'r, 'f> Value<'r, 'f> {
@@ -230,7 +239,27 @@ pub fn settle<'r, 'f>(
     filing: &[&'f Fact],
     admits: Admits,
 ) -> Settled<'r, 'f> {
-    asked(Asked {
+    reaching(registry, filer, kind, concept, period, filing, admits).0
+}
+
+/// What [`settle`] answers, and whether the attempt reached the concept: an
+/// assertion settled it, or the first step found a candidate for it, whether
+/// or not the candidates then settled.
+///
+/// That one bit is what `docs/adr/silence-beside-a-read-figure.md` lets cross
+/// from one filing to another, and it is read off the steps rather than off
+/// the state, because an `Unknown` is both a contest that did not settle and a
+/// silence read as unknown, and only the first reached anything.
+pub(crate) fn reaching<'r, 'f>(
+    registry: &'r Registry,
+    filer: &str,
+    kind: Option<Kind>,
+    concept: Concept,
+    period: &Period,
+    filing: &[&'f Fact],
+    admits: Admits,
+) -> (Settled<'r, 'f>, bool) {
+    attempt(Asked {
         registry,
         filer,
         kind,
@@ -243,16 +272,20 @@ pub fn settle<'r, 'f>(
 }
 
 fn asked<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Settled<'r, 'f> {
+    attempt(question).0
+}
+
+fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> (Settled<'r, 'f>, bool) {
     if let applicability::Answer::Excluded(state) =
         applicability::ask(question.concept, question.kind)
     {
-        return Settled::NotApplicable(state);
+        return (Settled::NotApplicable(state), false);
     }
 
     match matched(question) {
-        Matched::Value(value) => Settled::Value(value),
-        Matched::Undecided(declined) => Settled::Unknown(Attempt::that_ran(declined)),
-        Matched::Nothing(declined) => silent(question, declined),
+        Matched::Value(value) => (Settled::Value(value), true),
+        Matched::Undecided(declined) => (Settled::Unknown(Attempt::that_ran(declined)), true),
+        Matched::Nothing(declined) => (silent(question, declined), false),
     }
 }
 
@@ -594,12 +627,13 @@ fn silent<'r, 'f>(question: Asked<'_, 'r, 'f>, declined: Vec<Declined>) -> Settl
         }
     };
 
+    let attempted = Attempt::that_ran(declined);
     match zero {
         true => Settled::Value(Value {
             amount: ZERO.into(),
-            set_by: SetBy::Silence { reading },
+            set_by: SetBy::Silence { reading, attempted },
         }),
-        false => Settled::Unknown(Attempt::that_ran(declined)),
+        false => Settled::Unknown(attempted),
     }
 }
 
@@ -634,7 +668,7 @@ fn silent_on(question: Asked<'_, '_, '_>, concept: Concept) -> bool {
 /// publishes as conditional and this does not pair takes `Unknown`, which is the
 /// direction to be wrong in: the pair is what supports the zero, so a condition
 /// that cannot be read supports nothing.
-fn conditioned_on(concept: Concept) -> Option<Concept> {
+pub(crate) fn conditioned_on(concept: Concept) -> Option<Concept> {
     match concept {
         Concept::DividendsDeclaredPerShare => Some(Concept::DividendsPaid),
         Concept::DividendsPaid => Some(Concept::DividendsDeclaredPerShare),
