@@ -119,9 +119,14 @@ pub fn duration(start: &str, end: &str) -> Period {
 /// a rendering this reader stopped understanding fails here rather than quietly
 /// leaving a case with fewer facts than the fixture holds.
 pub fn reported() -> Vec<Fact> {
+    reported_in(CASE)
+}
+
+/// Every fact another merged fetch fixture records, read the same way.
+pub fn reported_in(case: &str) -> Vec<Fact> {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../fixtures/fetch")
-        .join(CASE)
+        .join(case)
         .join("expected");
     let text = fs::read_to_string(&path)
         .unwrap_or_else(|e| panic!("{}: cannot be read ({e})", path.display()));
