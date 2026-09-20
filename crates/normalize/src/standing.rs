@@ -7,7 +7,7 @@
 //!
 //! **Applicability first.** A concept the filer's kind excludes comes to the
 //! correct absence [`crate::applicability`] answers, with no filing consulted
-//! and no attempt weighed. `contracts/canonical-concepts/v1.toml` makes the
+//! and no attempt weighed. `contracts/canonical-concepts/v2.toml` makes the
 //! state "a function of the kind", and a filer with no kind established
 //! reaches it nowhere, as that module has it.
 //!

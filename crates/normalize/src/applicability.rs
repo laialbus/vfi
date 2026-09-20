@@ -1,7 +1,7 @@
 //! The question asked ahead of every other: does this concept exist for the
 //! accounting shape this filer presents.
 //!
-//! `contracts/canonical-concepts/v1.toml` publishes it as a property rather
+//! `contracts/canonical-concepts/v2.toml` publishes it as a property rather
 //! than as a step — "a concept whose applies_to omits the filer's kind resolves
 //! NotApplicable and is never looked up, so a lookup failure has no path to
 //! NotApplicable" — and `docs/adr/candidate-choice.md` reads the same order

@@ -1,29 +1,62 @@
-//! The canonical concept vocabulary at v1: what normalize resolves and analyze
+//! The canonical concept vocabulary at v2: what normalize resolves and analyze
 //! consumes.
 //!
-//! `contracts/canonical-concepts/v1.toml` is the surface and it is frozen. This
-//! is that surface as Rust — the three states a concept resolves to, the five
-//! filer kinds, and the twenty-eight concepts, each read on the four axes the
-//! file defines once and names once per concept. Why each concept is in the set
-//! and what each reading was argued against is `docs/adr/canonical-concepts.md`
-//! and the open-questions record beside it, and none of that argument is
-//! repeated here.
+//! `contracts/canonical-concepts/v2.toml` is the surface and it is frozen. This
+//! is that surface as Rust — the two shapes a period takes, the three states a
+//! concept resolves to, the five filer kinds, and the twenty-eight concepts,
+//! each read on the four axes the file defines once and names once per concept.
+//! Why each concept is in the set and what each reading was argued against is
+//! `docs/adr/canonical-concepts.md` and the open-questions record beside it,
+//! what v2 reshaped is `docs/adr/what-normalize-emits.md`, and none of that
+//! argument is repeated here.
 //!
 //! What the type states is the shape; what the file states is the content. A
 //! concept's meaning, a kind's accounting shape, revenue's reading per kind and
 //! the two conditional silence clauses are prose, so they stay in the bytes: a
 //! copy of them here would be a transcription nothing compares.
 //!
+//! [`Period`] is stated here rather than borrowed from the fetch → normalize
+//! boundary, because the stage that consumes this contract reads this one and
+//! no other. Both surfaces are frozen, so the two statements cannot drift in
+//! place.
+//!
+//! A [`Value`](Resolution::Value) names the way it was set rather than leaving
+//! it to be read off which of its fields are filled in. [`SetBy`] is that name,
+//! and it is an enum for the reason the states are: a writer that dropped a
+//! source tag would otherwise turn a read figure into an asserted one, a
+//! well-formed value of another way that nothing would flag.
+//!
 //! The two absences are kept apart by what each can be built from, which is the
 //! reason for compiling the vocabulary rather than remembering it.
 //! `NotApplicable` takes an [`Excluded`], which only a concept's own
 //! applicability clause hands out and only for a kind that clause omits.
-//! `Unknown` takes an [`Attempt`], which is what a resolution that ran has to
-//! show for itself. The two witnesses come from disjoint inputs, so neither
-//! absence is reachable from the other's evidence — and a filer whose kind has
-//! not been established has no `Kind` to ask a clause about at all, so it
-//! resolves through the attempt and never to a correct absence nobody
-//! established.
+//! `Unknown` takes [`Attempts`], which is at least one [`Attempt`] under the
+//! accession of the filing it ran in — what a resolution that ran has to show
+//! for itself. The two witnesses come from disjoint inputs, so neither absence
+//! is reachable from the other's evidence — and a filer whose kind has not been
+//! established has no `Kind` to ask a clause about at all, so it resolves
+//! through the attempt and never to a correct absence nobody established.
+
+shapes! {
+    /// A period of the filer's history, which is what a row of resolved
+    /// concepts is keyed by: one of these, never both and never neither.
+    ///
+    /// Its dates are the whole of its name. Nothing here carries a year, a
+    /// quarter, a fiscal label, a length or an ordinal, and two periods are one
+    /// exactly when their dates are equal character for character — so an
+    /// instant and a duration are never one, whatever dates they share.
+    ///
+    /// The dates cross as the characters the facts carried them, for the reason
+    /// the amounts do: a date parsed on the way out is a reading the consumer
+    /// cannot check against what was filed.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub enum Period {
+        /// The date the period is stated at.
+        Instant { at: Box<str> },
+        /// The date the period starts and the date it ends.
+        Duration { start: Box<str>, end: Box<str> },
+    }
+}
 
 names! {
     /// The accounting shape a filer presents, which decides which concepts
@@ -181,14 +214,18 @@ pub struct Declined {
     pub rule: Box<str>,
 }
 
-/// What a resolution attempt that ran has to show for itself, which is the
-/// whole of what `Unknown` is built from.
+/// What a resolution attempt that ran has to show for itself, which is what
+/// `Unknown` is built from, one of these per filing that answered the period.
 ///
 /// This crate holds no logic and cannot watch an attempt run. What it holds is
 /// that this witness and [`Excluded`] are made from disjoint inputs — candidates
 /// and rules on one side, a kind and a clause on the other — so a lookup that
 /// failed has nothing to build a correct absence out of, and a kind that
 /// excludes a concept has nothing to build a failure out of.
+///
+/// An attempt that considered no candidate is one of these with nothing
+/// declined. It is not an empty case: it still ran, and the filing it ran in is
+/// what [`Attempted`] puts beside it.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct Attempt {
     declined: Vec<Declined>,
@@ -204,28 +241,174 @@ impl Attempt {
     }
 }
 
+/// One filing's attempt, under the accession of the filing it ran in.
+///
+/// Inside one filing a candidate is named by its rule and that is enough.
+/// Across the filings that answer one period the same rules decline the same
+/// way in each, so a flat list of candidates could not say which filing tried
+/// what, and an attempt that considered none would be nothing at all.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Attempted {
+    accession: Box<str>,
+    attempt: Attempt,
+}
+
+impl Attempted {
+    pub fn in_filing(accession: Box<str>, attempt: Attempt) -> Self {
+        Attempted { accession, attempt }
+    }
+
+    pub fn accession(&self) -> &str {
+        &self.accession
+    }
+
+    pub fn attempt(&self) -> &Attempt {
+        &self.attempt
+    }
+}
+
+/// What left a concept undecided where the filings that produced a value tied
+/// and nothing beneath the tie broke it: the tied filings, and the tie itself.
+///
+/// The reason is the tie, so nothing here names one. Which filings can tie, and
+/// on what, is the ruleset's and not this contract's.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Tie {
+    accessions: Vec<Box<str>>,
+}
+
+impl Tie {
+    pub fn between(accessions: Vec<Box<str>>) -> Self {
+        Tie { accessions }
+    }
+
+    pub fn accessions(&self) -> &[Box<str>] {
+        &self.accessions
+    }
+}
+
+/// The whole of what `Unknown` is built from: every filing that answered the
+/// period, each under its own accession, and the tie where one survived.
+///
+/// At least one, which the split into a first and the rest holds rather than
+/// checks. A period no filing answered is a period alignment does not admit, so
+/// an `Unknown` with nothing attempted is the empty case the published state
+/// set closes itself against — and behind a plain `Vec` it would be a value
+/// anyone could write.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Attempts {
+    first: Attempted,
+    rest: Vec<Attempted>,
+    undecided: Option<Tie>,
+}
+
+impl Attempts {
+    pub fn in_filings(first: Attempted, rest: Vec<Attempted>) -> Self {
+        Attempts {
+            first,
+            rest,
+            undecided: None,
+        }
+    }
+
+    /// The same attempts, with the tie that left the concept undecided.
+    pub fn undecided_by(self, tie: Tie) -> Self {
+        Attempts {
+            undecided: Some(tie),
+            ..self
+        }
+    }
+
+    /// Every filing's attempt, in the order they were given.
+    pub fn in_each_filing(&self) -> impl Iterator<Item = &Attempted> {
+        std::iter::once(&self.first).chain(&self.rest)
+    }
+
+    pub fn tie(&self) -> Option<&Tie> {
+        self.undecided.as_ref()
+    }
+}
+
+/// One element a rule read a figure out of, named the way the boundary on the
+/// other side names it.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct SourceTag {
+    pub taxonomy: Box<str>,
+    pub tag: Box<str>,
+}
+
+/// A rule as the pair that names it: the version of the registry it was read
+/// under, and its id within that registry.
+///
+/// Both halves, because replaying a value means running that id against that
+/// registry, and an id alone names a rule that may since have been edited.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Rule {
+    pub registry: Box<str>,
+    pub id: Box<str>,
+}
+
+/// The way a `Value` was set: one of three, never both and never neither.
+///
+/// The way is carried, not inferred from which fields are filled in. Read off
+/// the fields instead, a value that lost its source tag would be a well-formed
+/// asserted one and a value that lost its rule a well-formed silence zero —
+/// each the plausible wrong answer, and each invisible to a reader checking
+/// only that the value is well formed.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub enum SetBy {
+    /// A registry rule read the figure out of an answering filing's facts.
+    ///
+    /// Every element the rule read directly: one for a `tag`, one per operand
+    /// for a `sum`, the element term for a `difference`. A difference's concept
+    /// operand is a resolved concept rather than an element, and the rule's id
+    /// names it, so a replay walks to it again rather than reading a copy kept
+    /// here.
+    Read {
+        source_tags: Vec<SourceTag>,
+        filing: Box<str>,
+        rule: Rule,
+    },
+    /// An override in the filer's registry file stated the figure outright for
+    /// the period.
+    ///
+    /// The filing is the one the assertion cites, and not the filing that
+    /// answered the period: an assertion is total, so which answering filing
+    /// was filed last says nothing about where the figure came from. No source
+    /// tag, because it was read from none.
+    Asserted { rule: Rule, filing: Box<str> },
+    /// No filing answering the period reached the concept, and the concept's
+    /// published silence reading supplied the figure.
+    ///
+    /// The registry is the version under which nothing reached the concept,
+    /// which is what a replay of the figure needs and the only thing this way
+    /// has to name. A version with no rule id beside it is not a rule, so this
+    /// way still carries no tag, no filing and no rule.
+    Silence {
+        reading: Silence,
+        registry: Box<str>,
+    },
+}
+
 shapes! {
     /// What a concept resolves to: one of the three states, never both and
     /// never neither.
     #[derive(Clone, Debug, Eq, PartialEq)]
     pub enum Resolution {
         /// The concept resolved to an amount, with the provenance M4 requires
-        /// of every resolved value.
+        /// of every resolved value: the way it was set, and what that way has
+        /// to name.
         ///
         /// The amount crosses as the characters it was published as, for the
         /// reason it crossed into normalize that way: a binary float is a lossy
         /// reading of a published decimal, and this crate depends on nothing
         /// that could hold one losslessly.
-        Value {
-            amount: Box<str>,
-            source_tag: Box<str>,
-            filing: Box<str>,
-            rule: Box<str>,
-        },
+        Value { amount: Box<str>, set_by: SetBy },
         /// The concept does not exist for this filer's accounting shape.
         NotApplicable { excluded: Excluded },
-        /// A resolution attempt ran and returned nothing.
-        Unknown { attempted: Attempt },
+        /// A resolution attempt ran in every filing that answered the period
+        /// and none of them returned a figure.
+        Unknown { attempted: Attempts },
     }
 }
 
@@ -377,19 +560,19 @@ impl Concept {
 
 /// The types above against the bytes they transcribe.
 ///
-/// The contracts gate digests `v1.toml` and never reads it, so a type that
+/// The contracts gate digests `v2.toml` and never reads it, so a type that
 /// drifted from the surface it states would stay green on every gate this
 /// repository has. This is the comparison that closes that: a name, a member or
 /// a reading changed on either side leaves the two readings unequal, and the
 /// failure prints both.
 #[cfg(test)]
 mod states_what_is_published {
-    use super::{Concept, Kind, Measure, Resolution, Sign, Silence, Unit};
+    use super::{Concept, Kind, Measure, Period, Resolution, Sign, Silence, Unit};
     use crate::published::Contract;
 
     /// The file this module states, relative to the repository root, named here
     /// and nowhere else in this module.
-    const PATH: &str = "contracts/canonical-concepts/v1.toml";
+    const PATH: &str = "contracts/canonical-concepts/v2.toml";
 
     fn published() -> Contract {
         Contract::at(PATH)
@@ -428,6 +611,38 @@ mod states_what_is_published {
             declared,
             published.names_under("state"),
             "the shapes `Resolution` declares are not the [[state]] names {PATH} states"
+        );
+    }
+
+    /// That a period is one shape and never both and never neither is the
+    /// enum's, and the compiler holds it. What is compared here is which shapes
+    /// there are and how many dates each takes.
+    #[test]
+    fn a_period_takes_the_shapes_the_published_bytes_name() {
+        let declared: Vec<(String, usize)> = Period::SHAPES
+            .iter()
+            .map(|(shape, dates)| (as_published(shape), *dates))
+            .collect();
+
+        let published = published();
+        let stated: Vec<(String, usize)> = published
+            .occurrences("period.shape")
+            .iter()
+            .map(|pairs| {
+                let name = published
+                    .unquoted(published.value_of(pairs, "name", "[[period.shape]]"))
+                    .to_owned();
+                let dates = published.value_of(pairs, "dates", "[[period.shape]]");
+                let dates = dates.parse().unwrap_or_else(|_| {
+                    panic!("{PATH} states `dates = {dates}`, which is no count")
+                });
+                (name, dates)
+            })
+            .collect();
+
+        assert_eq!(
+            declared, stated,
+            "the shapes `Period` declares are not the [[period.shape]] entries {PATH} states"
         );
     }
 
