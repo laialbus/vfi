@@ -12,3 +12,19 @@ something already recorded here.
 
 An accepted record is never edited. Supersede it with a new one; its value is
 that it shows what was believed at the time.
+
+## Partial supersessions and rulings
+
+A record that supersedes part of another names the part in its **Touches**
+line, and the pair is listed here so a reader of the older record can find the
+newer one. The older record is not annotated. A ruling made outside a record —
+in a task file or a pull request — is listed here too, since the file it lived in
+is deleted when the task retires.
+
+| Superseded or ruled on | By | What |
+| :--- | :--- | :--- |
+| `period-alignment.md`, Rule 3 | `which-filing-sets-the-value.md` | The latest filing sets every value, agreeing ones included. |
+| `fetch-normalize-v2.md`, "no others" | PR #181, the owner's ruling on the 2026-09-13 M4-25 stop | `v2.toml` rewords three descriptive lines the record said cross unchanged; the published bytes are the record. |
+| `which-filing-sets-the-value.md`, a silence `Value` "in the contest" | `silence-zero-supplied-once-per-period.md` | A silence zero is supplied once for the period and never enters Rule 3. |
+| `what-normalize-emits.md`, its claims on CIK 0001778784 | `suspension-fixture-is-the-bank-fixture.md` | Re-derived under the `bank` kind; `short_term_investments` is `NotApplicable` there. |
+| `period-alignment.md`, Rule 1 as read by M4-36 | PR #209, the owner's ruling on the 2026-09-18 M4-36 stop | A `Value` a silence reading supplied makes no period exist. |
