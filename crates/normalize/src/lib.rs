@@ -1,6 +1,6 @@
 //! Normalize stage: resolves filing tags to canonical facts.
 //!
-//! Six modules, in the order the records fix between them.
+//! Seven modules, in the order the records fix between them.
 //! [`applicability`] is asked first, of the published clauses alone, and a
 //! concept the filer's kind excludes stops there. [`registry`] is the one way
 //! to the tag mapping, which is data rather than code, and a concept reaches it
@@ -13,15 +13,16 @@
 //! over more than one filing: given a filer's facts it says which of that
 //! filer's filings answer a period, and runs the procedure inside each of them.
 //! [`standing`] weighs those attempts: the silence reading over the period, and
-//! then Rule 3, which of several answering filings sets the value.
+//! then Rule 3, which of several answering filings sets the value. [`periods`]
+//! is Rule 1, which canonical periods a filer has, asked of what stands.
 //!
-//! Nothing runs over a filer's history end to end through them yet. Which
-//! canonical periods a filer has is the one rule of the alignment ruleset this
-//! crate does not carry, so the period is still the caller's to name.
+//! The crate carries the alignment ruleset whole. Nothing runs over a filer's
+//! history end to end through it yet.
 
 pub mod answering;
 pub mod applicability;
 pub mod filings;
+pub mod periods;
 pub mod registry;
 pub mod settling;
 pub mod standing;

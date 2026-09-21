@@ -46,12 +46,13 @@
 //! Nothing else enters: no window, no day count, no quorum, no preference for
 //! an annual report, an original or a filing's own period, and no comparison of
 //! two figures. `filed` is compared as a date, which is where the fetch record
-//! puts the parse. Which periods a filer has is Rule 1, and the caller still
-//! names the period.
+//! puts the parse. Which periods a filer has is Rule 1, [`crate::periods`],
+//! which asks this.
 
 use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution, Silence};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
+use crate::answering::Admits;
 use crate::applicability;
 use crate::filings::{self, Attempted};
 use crate::registry::Registry;
@@ -123,6 +124,29 @@ pub fn stands<'r, 'f>(
     period: &Period,
     facts: &'f [Fact],
 ) -> Option<Stands<'r, 'f>> {
+    standing(
+        registry,
+        filer,
+        kind,
+        concept,
+        period,
+        facts,
+        Admits::EveryEntry,
+    )
+}
+
+/// [`stands`], with no filing asked with more entries than `within` admits:
+/// the question [`crate::periods`] asks, through the entries that answer the
+/// period asked for.
+pub(crate) fn standing<'r, 'f>(
+    registry: &'r Registry,
+    filer: &str,
+    kind: Option<Kind>,
+    concept: Concept,
+    period: &Period,
+    facts: &'f [Fact],
+    within: Admits,
+) -> Option<Stands<'r, 'f>> {
     if let applicability::Answer::Excluded(state) = applicability::ask(concept, kind) {
         return Some(Stands::NotApplicable(state));
     }
@@ -132,11 +156,12 @@ pub fn stands<'r, 'f>(
         return None;
     }
 
-    let mut attempted = filings::attempted(registry, filer, kind, concept, period, &answering);
+    let mut attempted =
+        filings::attempted_within(registry, filer, kind, concept, period, &answering, within);
     let reached = attempted.iter().any(Attempted::reached)
         || (concept.definition().silence == Silence::Conditional
             && settling::conditioned_on(concept).is_some_and(|other| {
-                filings::attempted(registry, filer, kind, other, period, &answering)
+                filings::attempted_within(registry, filer, kind, other, period, &answering, within)
                     .iter()
                     .any(Attempted::reached)
             }));
