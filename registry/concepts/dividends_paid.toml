@@ -1,3 +1,11 @@
+# The equity statement's declared cash dividends stand in for the cash paid from
+# financing: the same population, differing by the declared-but-unpaid balance at
+# each period end, and DividendsCommonStockCash leaves out the preferred that a
+# filer paying both also pays.
+#
+# Dividends is not this concept: it is dividends declared for every class, cash
+# and stock, paid and unpaid alike.
+#
 # PaymentsOfDividendsMinorityInterest is not part of this concept: the
 # non-controlling interest is not a shareholder of the parent.
 
@@ -14,4 +22,18 @@ reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PaymentsOfDividendsCommonStock" },
   { taxonomy = "us-gaap", tag = "PaymentsOfDividendsPreferredStockAndPreferenceStock" },
+]
+
+[[entry]]
+form = "tag"
+reading = "stand_in"
+operands = [
+  { taxonomy = "us-gaap", tag = "DividendsCash" },
+]
+
+[[entry]]
+form = "tag"
+reading = "stand_in"
+operands = [
+  { taxonomy = "us-gaap", tag = "DividendsCommonStockCash" },
 ]
