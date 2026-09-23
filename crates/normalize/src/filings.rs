@@ -55,7 +55,7 @@
 
 use std::collections::BTreeMap;
 
-use vfi_contracts::canonical_concepts::{Concept, Kind};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
 use crate::answering::Admits;
@@ -109,6 +109,7 @@ pub struct Attempted<'r, 'f> {
     accession: &'f str,
     settled: Settled<'r, 'f>,
     reached: bool,
+    withheld: Option<Attempt>,
 }
 
 impl<'r, 'f> Attempted<'r, 'f> {
@@ -130,8 +131,13 @@ impl<'r, 'f> Attempted<'r, 'f> {
         self.reached
     }
 
-    pub(crate) fn settled_mut(&mut self) -> &mut Settled<'r, 'f> {
-        &mut self.settled
+    /// This filing's silence zero withheld, where the reading made over the
+    /// period supplies none: the filing comes to `Unknown`, carrying what its
+    /// four steps found. Anything else is left as it is.
+    pub(crate) fn withhold_silence(&mut self) {
+        if let Some(attempted) = self.withheld.take() {
+            self.settled = Settled::Unknown(attempted);
+        }
     }
 
     pub(crate) fn into_settled(self) -> Settled<'r, 'f> {
@@ -202,7 +208,7 @@ pub(crate) fn attempted_within<'r, 'f>(
 ) -> Vec<Attempted<'r, 'f>> {
     let mut attempted = Vec::with_capacity(answering.len());
     for filing in answering {
-        let (settled, reached) = settling::reaching(
+        let ran = settling::reaching(
             registry,
             filer,
             kind,
@@ -216,8 +222,9 @@ pub(crate) fn attempted_within<'r, 'f>(
         );
         attempted.push(Attempted {
             accession: filing.accession,
-            settled,
-            reached,
+            settled: ran.settled,
+            reached: ran.reached,
+            withheld: ran.withheld,
         });
     }
     attempted
