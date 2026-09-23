@@ -50,7 +50,8 @@
 //! **Nothing here ranks and nothing here is dropped.** Which of several
 //! answering filings sets the value is Rule 3, and it is [`crate::standing`]'s:
 //! nothing here orders two filings, parses `filed`, or reads a form. Which
-//! periods a filer has is Rule 1, which asks that settled answer.
+//! periods a filer has is Rule 1, [`crate::periods`], which asks that settled
+//! answer.
 
 use std::collections::BTreeMap;
 
@@ -175,6 +176,30 @@ pub fn attempted<'r, 'f>(
     period: &Period,
     answering: &[Filing<'f>],
 ) -> Vec<Attempted<'r, 'f>> {
+    attempted_within(
+        registry,
+        filer,
+        kind,
+        concept,
+        period,
+        answering,
+        Admits::EveryEntry,
+    )
+}
+
+/// [`attempted`], with no filing asked with more entries than `within` admits.
+///
+/// Rule 1 asks through the entries that answer the period asked for and no
+/// other, so it narrows every filing to those; nothing else narrows.
+pub(crate) fn attempted_within<'r, 'f>(
+    registry: &'r Registry,
+    filer: &str,
+    kind: Option<Kind>,
+    concept: Concept,
+    period: &Period,
+    answering: &[Filing<'f>],
+    within: Admits,
+) -> Vec<Attempted<'r, 'f>> {
     let mut attempted = Vec::with_capacity(answering.len());
     for filing in answering {
         let (settled, reached) = settling::reaching(
@@ -184,7 +209,10 @@ pub fn attempted<'r, 'f>(
             concept,
             period,
             filing.facts(),
-            filing.admits(period),
+            match within {
+                Admits::EveryEntry => filing.admits(period),
+                Admits::OnlyThePeriodAskedFor => Admits::OnlyThePeriodAskedFor,
+            },
         );
         attempted.push(Attempted {
             accession: filing.accession,
