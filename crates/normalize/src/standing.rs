@@ -26,16 +26,25 @@
 //! every answering filing's first step has run before any of them keeps a
 //! zero, whatever order the filings arrive in.
 //!
+//! **The zero is supplied once, and never enters the contest.**
+//! `docs/adr/silence-zero-supplied-once-per-period.md`: where the reading above
+//! supplies it, the vocabulary supplies it once for the period. It carries its
+//! reading and the registry version, names no filing, and has no `filed` and no
+//! `form`, so there is nothing for Rule 3 to order and Rule 3 does not run. Two
+//! answering filings both silent come to that zero exactly as one silent filing
+//! does. Where the reading supplies no zero, each filing's own is withheld and
+//! Rule 3 runs over the values an attempt read or an assertion set, which is
+//! also the only company a tie is reached among.
+//!
 //! **Rule 3.** `docs/adr/which-filing-sets-the-value.md`, which supersedes Rule
 //! 3 of `docs/adr/period-alignment.md` and nothing else of it: among the
 //! answering filings whose attempt produced a `Value`, "the value that stands is
 //! the one produced by the attempt in the filing with the greatest `filed`. The
 //! `Value` is that attempt's, and it carries what that attempt gave it. Whether
 //! an earlier filing's attempt produced the same figure is not read". So the
-//! rule chooses an attempt and stamps nothing onto it: a silence zero that wins
-//! still names no filing. An attempt that produced an `Unknown` displaces
-//! nothing, whatever left it unknown. An amendment is a filing, and wins for
-//! what it states because it states it later.
+//! rule chooses an attempt and stamps nothing onto it. An attempt that produced
+//! an `Unknown` displaces nothing, whatever left it unknown. An amendment is a
+//! filing, and wins for what it states because it states it later.
 //!
 //! **`form` is read once, to break a tie on `filed`.** Where two answering
 //! filings share the greatest `filed`, "a filing whose form is another's with
@@ -49,14 +58,14 @@
 //! puts the parse. Which periods a filer has is Rule 1, [`crate::periods`],
 //! which asks this.
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution, Silence};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
 use crate::answering::Admits;
 use crate::applicability;
 use crate::filings::{self, Attempted};
 use crate::registry::Registry;
-use crate::settling::{self, SetBy, Settled, Value};
+use crate::settling::{self, Settled, Value};
 
 /// What separates a form from the one it amends.
 const AMENDS: &str = "/A";
@@ -68,7 +77,8 @@ pub enum Stands<'r, 'f> {
     /// The filer's kind is excluded from the concept, as
     /// [`crate::applicability`] built it.
     NotApplicable(Resolution),
-    /// The value Rule 3 chose, as the attempt that produced it built it.
+    /// The value Rule 3 chose, as the attempt that produced it built it, or the
+    /// zero the vocabulary supplied once for the period.
     Value(Value<'r, 'f>),
     /// No attempt's value stands.
     Unknown(Unsettled<'f>),
@@ -158,19 +168,21 @@ pub(crate) fn standing<'r, 'f>(
 
     let mut attempted =
         filings::attempted_within(registry, filer, kind, concept, period, &answering, within);
-    let reached = attempted.iter().any(Attempted::reached)
-        || (concept.definition().silence == Silence::Conditional
-            && settling::conditioned_on(concept).is_some_and(|other| {
-                filings::attempted_within(registry, filer, kind, other, period, &answering, within)
-                    .iter()
-                    .any(Attempted::reached)
-            }));
-    if reached {
-        for held in &mut attempted {
-            withhold_silence(held.settled_mut());
+
+    if !attempted.iter().any(Attempted::reached) {
+        let supplied = settling::supplied(registry.version(), kind, concept, |other| {
+            filings::attempted_within(registry, filer, kind, other, period, &answering, within)
+                .iter()
+                .any(Attempted::reached)
+        });
+        if let Some(zero) = supplied {
+            return Some(Stands::Value(zero));
         }
     }
 
+    for held in &mut attempted {
+        held.withhold_silence();
+    }
     Some(latest(&answering, attempted))
 }
 
@@ -298,17 +310,4 @@ impl Date {
         };
         ((1..=12).contains(&date.month) && (1..=31).contains(&date.day)).then_some(date)
     }
-}
-
-/// A silence zero an attempt produced, withheld: it comes to `Unknown`
-/// carrying what its four steps found. Anything else is left as it is.
-fn withhold_silence(settled: &mut Settled<'_, '_>) {
-    let withheld = match &*settled {
-        Settled::Value(value) => match value.set_by() {
-            SetBy::Silence { attempted, .. } => attempted.clone(),
-            SetBy::Rule { .. } | SetBy::Assertion { .. } => return,
-        },
-        Settled::NotApplicable(_) | Settled::Unknown(_) => return,
-    };
-    *settled = Settled::Unknown(withheld);
 }

@@ -136,18 +136,20 @@ pub enum SetBy<'r, 'f> {
         version: Version,
         assertion: &'r Assertion,
     },
-    /// Nothing matched, and the vocabulary reads this concept's silence as a
+    /// Nothing reached the concept, and the vocabulary reads its silence as a
     /// zero — outright, or on the condition it publishes with the concept.
     ///
-    /// It keeps what the four steps found, every eligible rule and why it was
-    /// not a candidate, because the zero is not this filing's alone to give:
-    /// `docs/adr/silence-beside-a-read-figure.md` withholds it where another
-    /// filing answering the period reached the concept, and the `Unknown` it
-    /// comes to then carries what was attempted here.
-    Silence {
-        reading: Silence,
-        attempted: Attempt,
-    },
+    /// The version is the registry the concept was not reached under, which is
+    /// what replaying the zero needs and the only thing this way names. A
+    /// version with no rule id beside it is not a rule, so the value still
+    /// carries no tag, no filing and no rule.
+    ///
+    /// What the four steps found is not here.
+    /// `docs/adr/silence-zero-supplied-once-per-period.md` makes the reading
+    /// once for the period, so the zero is no one filing's to give and carries
+    /// no one filing's attempt. A filing whose own zero the period withholds
+    /// keeps what it attempted beside its state, where the attempt ran.
+    Silence { reading: Silence, version: Version },
 }
 
 impl<'r, 'f> Value<'r, 'f> {
@@ -239,17 +241,33 @@ pub fn settle<'r, 'f>(
     filing: &[&'f Fact],
     admits: Admits,
 ) -> Settled<'r, 'f> {
-    reaching(registry, filer, kind, concept, period, filing, admits).0
+    reaching(registry, filer, kind, concept, period, filing, admits).settled
 }
 
-/// What [`settle`] answers, and whether the attempt reached the concept: an
-/// assertion settled it, or the first step found a candidate for it, whether
-/// or not the candidates then settled.
+/// What one filing's attempt came to, for a reading made over every filing
+/// answering the period.
 ///
-/// That one bit is what `docs/adr/silence-beside-a-read-figure.md` lets cross
-/// from one filing to another, and it is read off the steps rather than off
-/// the state, because an `Unknown` is both a contest that did not settle and a
-/// silence read as unknown, and only the first reached anything.
+/// `reached` is whether the attempt reached the concept: an assertion settled
+/// it, or the first step found a candidate for it, whether or not the
+/// candidates then settled. That one bit is what
+/// `docs/adr/silence-beside-a-read-figure.md` lets cross from one filing to
+/// another, and it is read off the steps rather than off the state, because an
+/// `Unknown` is both a contest that did not settle and a silence read as
+/// unknown, and only the first reached anything.
+///
+/// `withheld` is what the four steps found, and it is here only where the
+/// vocabulary's zero is what settled the attempt. A reading made over the
+/// period may withhold that zero, and this is the `Unknown` the filing comes to
+/// where it does — kept beside the value because the zero names no filing and
+/// carries no filing's attempt.
+pub(crate) struct Ran<'r, 'f> {
+    pub settled: Settled<'r, 'f>,
+    pub reached: bool,
+    pub withheld: Option<Attempt>,
+}
+
+/// What [`settle`] answers, with the two things beside it a reading over the
+/// period needs.
 pub(crate) fn reaching<'r, 'f>(
     registry: &'r Registry,
     filer: &str,
@@ -258,7 +276,7 @@ pub(crate) fn reaching<'r, 'f>(
     period: &Period,
     filing: &[&'f Fact],
     admits: Admits,
-) -> (Settled<'r, 'f>, bool) {
+) -> Ran<'r, 'f> {
     attempt(Asked {
         registry,
         filer,
@@ -272,20 +290,26 @@ pub(crate) fn reaching<'r, 'f>(
 }
 
 fn asked<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Settled<'r, 'f> {
-    attempt(question).0
+    attempt(question).settled
 }
 
-fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> (Settled<'r, 'f>, bool) {
+fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Ran<'r, 'f> {
+    let ran = |settled, reached| Ran {
+        settled,
+        reached,
+        withheld: None,
+    };
+
     if let applicability::Answer::Excluded(state) =
         applicability::ask(question.concept, question.kind)
     {
-        return (Settled::NotApplicable(state), false);
+        return ran(Settled::NotApplicable(state), false);
     }
 
     match matched(question) {
-        Matched::Value(value) => (Settled::Value(value), true),
-        Matched::Undecided(declined) => (Settled::Unknown(Attempt::that_ran(declined)), true),
-        Matched::Nothing(declined) => (silent(question, declined), false),
+        Matched::Value(value) => ran(Settled::Value(value), true),
+        Matched::Undecided(declined) => ran(Settled::Unknown(Attempt::that_ran(declined)), true),
+        Matched::Nothing(declined) => silent(question, declined),
     }
 }
 
@@ -616,24 +640,77 @@ fn contains(whole: &[&Fact], part: &[&Fact]) -> bool {
 /// other way the two clauses would both hold at once where an assertion states a
 /// non-zero one — the facts being silent and the concept resolving all the
 /// same — and only one of them can be right.
-fn silent<'r, 'f>(question: Asked<'_, 'r, 'f>, declined: Vec<Declined>) -> Settled<'r, 'f> {
+fn silent<'r, 'f>(question: Asked<'_, 'r, 'f>, declined: Vec<Declined>) -> Ran<'r, 'f> {
     let reading = question.concept.definition().silence;
+    let attempted = Attempt::that_ran(declined);
 
-    let zero = match reading {
+    match supplies(question.concept, reading, |other| {
+        silent_on(question, other)
+    }) {
+        true => Ran {
+            settled: Settled::Value(zero(reading, question.registry.version())),
+            reached: false,
+            withheld: Some(attempted),
+        },
+        false => Ran {
+            settled: Settled::Unknown(attempted),
+            reached: false,
+            withheld: None,
+        },
+    }
+}
+
+/// The zero the vocabulary supplies for `concept` over the whole period, and
+/// nothing where its reading supplies none.
+///
+/// `docs/adr/silence-zero-supplied-once-per-period.md` makes the reading once,
+/// for the period, after every answering filing's attempt has run and none
+/// reached the concept: "the vocabulary then supplies the zero once. It carries
+/// its reading and the registry version, names no filing, and has no `filed`
+/// and no `form`, so there is nothing for Rule 3 to order and Rule 3 does not
+/// run."
+///
+/// `reached` answers, of the concept a conditional reading is published
+/// against, whether any filing answering the period reached it — the one bit
+/// the silence record lets cross between filings, asked here for the second
+/// half of the pair condition. The first half is that nothing reached this
+/// concept, which is what asking this at all says. A concept the filer's kind
+/// excludes is not silent, here as inside one filing: nothing was asked of the
+/// facts about it, so they said nothing about it either way.
+pub(crate) fn supplied<'r, 'f>(
+    version: Version,
+    kind: Option<Kind>,
+    concept: Concept,
+    reached: impl FnOnce(Concept) -> bool,
+) -> Option<Value<'r, 'f>> {
+    let reading = concept.definition().silence;
+    supplies(concept, reading, |other| {
+        applicability::ask(other, kind) == applicability::Answer::Proceeds && !reached(other)
+    })
+    .then(|| zero(reading, version))
+}
+
+/// Whether the vocabulary's reading supplies its zero, given what the concept
+/// its condition names came to where it publishes one.
+///
+/// The three readings branch here and nowhere else, so the reading made inside
+/// one filing and the reading made over the period cannot come apart on which
+/// of them a zero is under.
+fn supplies(concept: Concept, reading: Silence, paired: impl FnOnce(Concept) -> bool) -> bool {
+    match reading {
         Silence::Unknown => false,
         Silence::Zero => true,
-        Silence::Conditional => {
-            conditioned_on(question.concept).is_some_and(|other| silent_on(question, other))
-        }
-    };
+        Silence::Conditional => conditioned_on(concept).is_some_and(paired),
+    }
+}
 
-    let attempted = Attempt::that_ran(declined);
-    match zero {
-        true => Settled::Value(Value {
-            amount: ZERO.into(),
-            set_by: SetBy::Silence { reading, attempted },
-        }),
-        false => Settled::Unknown(attempted),
+/// The zero a silence reading supplies, as the value it is: the vocabulary's
+/// number, the reading that supplied it, and the registry nothing reached the
+/// concept under.
+fn zero<'r, 'f>(reading: Silence, version: Version) -> Value<'r, 'f> {
+    Value {
+        amount: ZERO.into(),
+        set_by: SetBy::Silence { reading, version },
     }
 }
 

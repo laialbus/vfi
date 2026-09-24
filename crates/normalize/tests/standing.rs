@@ -12,7 +12,7 @@
 
 mod fixture;
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Silence};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 use vfi_normalize::answering::Admits;
 use vfi_normalize::filings;
@@ -61,6 +61,12 @@ fn earlier() -> (&'static str, &'static str, &'static str) {
 
 fn later() -> (&'static str, &'static str, &'static str) {
     (LATER, "10-Q", LATER_FILED)
+}
+
+/// Filed the day the later filing was, under a form that is not its with `/A`
+/// appended, so Rule 3 can order the two by neither `filed` nor `form`.
+fn same_day() -> (&'static str, &'static str, &'static str) {
+    (FIRST_BY_ACCESSION, "10-K", LATER_FILED)
 }
 
 /// A fact under an element no rule of the three silence-read concepts names,
@@ -181,23 +187,7 @@ fn an_earlier_contest_that_did_not_settle_beside_a_later_silence_is_unknown_and_
 
     // The withheld zero carries what its four steps found: every eligible rule,
     // none of them a candidate.
-    let answering = filings::answering(&facts, &at);
-    let Settled::Value(zero) = settling::settle(
-        &registry,
-        FILER,
-        KIND,
-        Concept::ShortTermInvestments,
-        &at,
-        answering[1].facts(),
-        Admits::OnlyThePeriodAskedFor,
-    ) else {
-        panic!("the later filing alone reads the zero");
-    };
-    let SetBy::Silence { attempted, .. } = zero.set_by() else {
-        panic!("the later filing's zero is the silence reading");
-    };
-    assert_eq!(unsettled.attempted()[1].1, *attempted);
-    assert_eq!(attempted.declined().len(), 4);
+    assert_eq!(unsettled.attempted()[1].1.declined().len(), 4);
 }
 
 #[test]
@@ -370,6 +360,125 @@ fn a_conditional_reading_whose_partner_one_filing_reached() {
     let value = value(&paid);
     assert_eq!(value.amount(), "1000");
     assert_eq!(read_from(value), [EARLIER]);
+}
+
+/// The reading and the registry version a silence zero carries, and the two
+/// things it is asked for beyond its amount.
+fn supplied(value: &Value) -> (Silence, String) {
+    match value.set_by() {
+        SetBy::Silence { reading, version } => (*reading, version.rendered()),
+        other => panic!("expected a silence zero, got {other:?}"),
+    }
+}
+
+#[test]
+fn filings_sharing_the_greatest_filed_and_all_silent_come_to_the_zero_and_not_to_a_tie() {
+    let registry = read(&committed());
+    let at = instant(AT);
+    let facts = [
+        silent(&at, earlier()),
+        silent(&at, later()),
+        silent(&at, same_day()),
+    ];
+    assert_eq!(
+        per_filing(&registry, Concept::ShortTermInvestments, &at, &facts),
+        pairs(&[
+            (FIRST_BY_ACCESSION, "silence zero"),
+            (EARLIER, "silence zero"),
+            (LATER, "silence zero"),
+        ]),
+    );
+
+    let stood = standing(&registry, Concept::ShortTermInvestments, &at, &facts);
+    let value = value(&stood);
+    assert_eq!(value.amount(), "0");
+    assert_eq!(value.set_by().rule(), None);
+    assert_eq!(
+        supplied(value),
+        (Silence::Zero, registry.version().rendered())
+    );
+}
+
+#[test]
+fn a_filing_reaching_the_concept_stands_beside_one_filed_the_same_day_and_silent() {
+    let registry = read(&committed());
+    let at = instant(AT);
+    let facts = [
+        fact("ShortTermInvestments", "USD", &at, "500", same_day()),
+        silent(&at, later()),
+    ];
+
+    let stood = standing(&registry, Concept::ShortTermInvestments, &at, &facts);
+    let value = value(&stood);
+    assert_eq!(value.amount(), "500");
+    assert_eq!(read_from(value), [FIRST_BY_ACCESSION]);
+}
+
+#[test]
+fn two_filings_reaching_the_concept_on_the_same_day_are_the_tie_as_before() {
+    let registry = read(&committed());
+    let at = instant(AT);
+    let facts = [
+        fact("ShortTermInvestments", "USD", &at, "500", same_day()),
+        fact("ShortTermInvestments", "USD", &at, "600", later()),
+    ];
+
+    let stood = standing(&registry, Concept::ShortTermInvestments, &at, &facts);
+    let unsettled = unknown(&stood);
+    assert_eq!(
+        unsettled.undecided(),
+        Some(&Undecided::Tie(vec![FIRST_BY_ACCESSION, LATER]))
+    );
+}
+
+#[test]
+fn a_conditional_reading_whose_partner_one_same_day_filing_reached_is_unknown() {
+    let registry = read(&committed());
+    let quarter = duration(QUARTER.0, QUARTER.1);
+    let facts = [
+        fact("PaymentsOfDividends", "USD", &quarter, "1000", same_day()),
+        silent(&quarter, later()),
+    ];
+    assert_eq!(
+        per_filing(
+            &registry,
+            Concept::DividendsDeclaredPerShare,
+            &quarter,
+            &facts
+        ),
+        pairs(&[(FIRST_BY_ACCESSION, "unknown"), (LATER, "silence zero")]),
+    );
+
+    let declared = standing(
+        &registry,
+        Concept::DividendsDeclaredPerShare,
+        &quarter,
+        &facts,
+    );
+    let unsettled = unknown(&declared);
+    assert_eq!(
+        accessions(unsettled.attempted()),
+        [FIRST_BY_ACCESSION, LATER]
+    );
+    assert_eq!(unsettled.undecided(), None);
+}
+
+#[test]
+fn two_same_day_filings_silent_on_both_members_of_the_pair_come_to_the_zero() {
+    let registry = read(&committed());
+    let quarter = duration(QUARTER.0, QUARTER.1);
+    let facts = [silent(&quarter, later()), silent(&quarter, same_day())];
+
+    for concept in [Concept::DividendsDeclaredPerShare, Concept::DividendsPaid] {
+        let stood = standing(&registry, concept, &quarter, &facts);
+        let value = value(&stood);
+        assert_eq!(value.amount(), "0", "{concept:?}");
+        assert_eq!(
+            supplied(value),
+            (Silence::Conditional, registry.version().rendered()),
+            "{concept:?}"
+        );
+    }
 }
 
 #[test]
