@@ -1,3 +1,8 @@
+# DividendsPreferredStock is the equity statement's declared preferred cash
+# dividend, and stands in for this concept because it is the same claim declared
+# rather than accrued, leaving out the accretion and redemption adjustments the
+# meaning takes with them.
+
 [[entry]]
 form = "tag"
 reading = "exact"
@@ -12,4 +17,11 @@ form = "tag"
 reading = "stand_in"
 operands = [
   { taxonomy = "us-gaap", tag = "PreferredStockDividendsIncomeStatementImpact" },
+]
+
+[[entry]]
+form = "tag"
+reading = "stand_in"
+operands = [
+  { taxonomy = "us-gaap", tag = "DividendsPreferredStock" },
 ]
