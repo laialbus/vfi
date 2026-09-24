@@ -7,15 +7,17 @@
 //! committed registry reads them all, under the filer the merged fixture
 //! records, whose kind is `operating`.
 //!
-//! The fixture cases re-derive what the two records claim about the merged
-//! fetch fixtures, and pin it.
+//! The fixture cases re-derive what those records and
+//! `docs/adr/silence-zero-only-at-the-concepts-own-shape.md` claim about the
+//! merged fetch fixtures, and pin it.
 
 mod fixture;
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Silence};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Measure, Silence};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 use vfi_normalize::answering::Admits;
 use vfi_normalize::filings;
+use vfi_normalize::periods::periods;
 use vfi_normalize::registry::Registry;
 use vfi_normalize::settling::{self, SetBy, Settled, Value};
 use vfi_normalize::standing::{Stands, Undecided, stands};
@@ -481,6 +483,92 @@ fn two_same_day_filings_silent_on_both_members_of_the_pair_come_to_the_zero() {
     }
 }
 
+/// Whether `period` is of `concept`'s own shape, read off the published
+/// measure here rather than through the crate, so the rule the crate applies is
+/// checked against the vocabulary and not against itself.
+fn own_shape(concept: Concept, period: &Period) -> bool {
+    matches!(
+        (concept.definition().measure, period),
+        (Measure::Flow, Period::Duration { .. }) | (Measure::Balance, Period::Instant { .. })
+    )
+}
+
+/// `docs/adr/silence-zero-only-at-the-concepts-own-shape.md`: the zero is
+/// reached at an instant for a balance and at a duration for a flow, and at the
+/// other shape the concept is `Unknown`, carrying each answering filing's
+/// attempt as any other `Unknown` does.
+///
+/// Each filing's own reading is pinned beside the reading made over the period,
+/// because the two are made in one place and a zero one of them refused is one
+/// the other must refuse too.
+#[test]
+fn a_silence_zero_is_reached_only_at_a_period_of_the_concepts_own_shape() {
+    let registry = read(&committed());
+    let at = instant(AT);
+    let quarter = duration(QUARTER.0, QUARTER.1);
+
+    for (concept, own, other) in [
+        (Concept::ShortTermInvestments, &at, &quarter),
+        (Concept::DividendsPaid, &quarter, &at),
+    ] {
+        assert!(own_shape(concept, own) && !own_shape(concept, other));
+
+        let facts = [silent(own, earlier())];
+        let stood = standing(&registry, concept, own, &facts);
+        assert_eq!(value(&stood).amount(), "0", "{concept:?}");
+        assert!(is_silence(value(&stood)), "{concept:?}");
+
+        let facts = [silent(other, earlier()), silent(other, later())];
+        assert_eq!(
+            per_filing(&registry, concept, other, &facts),
+            pairs(&[(EARLIER, "unknown"), (LATER, "unknown")]),
+            "{concept:?}"
+        );
+        let stood = standing(&registry, concept, other, &facts);
+        assert_eq!(
+            accessions(unknown(&stood).attempted()),
+            [EARLIER, LATER],
+            "{concept:?}"
+        );
+    }
+}
+
+/// The conditional pair at an instant, which is neither member's shape: both
+/// are `Unknown`, and stay so where an assertion makes one of them reached, the
+/// condition being unasked where there is no zero for it to hold up.
+#[test]
+fn the_conditional_pair_at_an_instant_is_unknown_whatever_its_partner() {
+    let at = instant(AT);
+    let facts = [silent(&at, earlier())];
+
+    let registry = read(&committed());
+    for concept in [Concept::DividendsDeclaredPerShare, Concept::DividendsPaid] {
+        let stood = standing(&registry, concept, &at, &facts);
+        assert_eq!(
+            accessions(unknown(&stood).attempted()),
+            [EARLIER],
+            "{concept:?}"
+        );
+    }
+
+    let root = planted("the-conditional-pair-at-an-instant");
+    overriding(
+        &root,
+        &format!(
+            "\n[[assert]]\nconcept = \"dividends_paid\"\n\
+             period = {{ instant = \"{AT}\" }}\n\
+             value = \"1000\"\n\
+             source = {{ accession = \"0001213900-24-101777\", line = \"58\" }}\n"
+        ),
+    );
+    let asserting = read(&root);
+
+    let paid = standing(&asserting, Concept::DividendsPaid, &at, &facts);
+    assert_eq!(value(&paid).amount(), "1000");
+    let declared = standing(&asserting, Concept::DividendsDeclaredPerShare, &at, &facts);
+    assert_eq!(accessions(unknown(&declared).attempted()), [EARLIER]);
+}
+
 #[test]
 fn a_concept_the_kind_excludes_is_not_applicable_with_no_filing_consulted() {
     let registry = read(&committed());
@@ -537,47 +625,74 @@ fn a_filing_whose_filed_does_not_read_as_a_date_orders_nothing() {
     );
 }
 
+/// What a row of the two tables below expects.
+///
+/// `Unknown` carries no accessions of its own: at a period of the wrong shape
+/// every answering filing attempted the concept, so the row states that the
+/// accessions are those filings' and `pins` reads them off the period.
+enum Stood {
+    /// The amount that stands, and the filing every fact behind it was reported
+    /// in.
+    Read(&'static str, &'static str),
+    /// The zero the vocabulary's silence reading supplied for the period.
+    Silence,
+    Unknown,
+}
+
 /// The two tables `docs/adr/which-filing-sets-the-value.md` states for the
-/// restatement fixture: each concept, the amount that stands, and the filing it
-/// was read from, or none for the silence rows.
-const HALF_YEAR: [(Concept, &str, Option<&str>); 15] = [
-    (Concept::Revenue, "264956", Some(RESTATING)),
-    (Concept::GrossProfit, "103206", Some(RESTATING)),
-    (Concept::OperatingIncome, "-76928", Some(RESTATING)),
-    (Concept::PretaxIncome, "-77035", Some(RESTATING)),
-    (Concept::IncomeTaxExpense, "367", Some(RESTATING)),
-    (Concept::NetIncome, "-77402", Some(RESTATING)),
-    (Concept::InterestExpense, "536", Some(RESTATING)),
-    (Concept::DepreciationAndAmortization, "401", Some(RESTATING)),
-    (Concept::OperatingCashFlow, "-127584", Some(RESTATING)),
-    (Concept::CapitalExpenditure, "3729", Some(RESTATING)),
+/// restatement fixture, with the `short_term_investments` row of each as
+/// `docs/adr/silence-zero-only-at-the-concepts-own-shape.md` supersedes it: a
+/// balance at a half-year and at a quarter is `Unknown`, where the tables said
+/// zero. The two dividend rows stand as the tables state them, both concepts
+/// being flows read at a duration.
+const HALF_YEAR: [(Concept, Stood); 15] = [
+    (Concept::Revenue, Stood::Read("264956", RESTATING)),
+    (Concept::GrossProfit, Stood::Read("103206", RESTATING)),
+    (Concept::OperatingIncome, Stood::Read("-76928", RESTATING)),
+    (Concept::PretaxIncome, Stood::Read("-77035", RESTATING)),
+    (Concept::IncomeTaxExpense, Stood::Read("367", RESTATING)),
+    (Concept::NetIncome, Stood::Read("-77402", RESTATING)),
+    (Concept::InterestExpense, Stood::Read("536", RESTATING)),
+    (
+        Concept::DepreciationAndAmortization,
+        Stood::Read("401", RESTATING),
+    ),
+    (
+        Concept::OperatingCashFlow,
+        Stood::Read("-127584", RESTATING),
+    ),
+    (Concept::CapitalExpenditure, Stood::Read("3729", RESTATING)),
     (
         Concept::DilutedSharesWeightedAverage,
-        "50301639",
-        Some(RESTATING),
+        Stood::Read("50301639", RESTATING),
     ),
-    (Concept::EarningsPerShareDiluted, "-0.0015", Some(RESTATING)),
-    (Concept::ShortTermInvestments, "0", None),
-    (Concept::DividendsDeclaredPerShare, "0", None),
-    (Concept::DividendsPaid, "0", None),
+    (
+        Concept::EarningsPerShareDiluted,
+        Stood::Read("-0.0015", RESTATING),
+    ),
+    (Concept::ShortTermInvestments, Stood::Unknown),
+    (Concept::DividendsDeclaredPerShare, Stood::Silence),
+    (Concept::DividendsPaid, Stood::Silence),
 ];
 
-const QUARTER_OF_IT: [(Concept, &str, Option<&str>); 11] = [
-    (Concept::Revenue, "140986", Some(RESTATING)),
-    (Concept::GrossProfit, "55075", Some(RESTATING)),
-    (Concept::OperatingIncome, "-24626", Some(RESTATING)),
-    (Concept::PretaxIncome, "-24626", Some(RESTATING)),
-    (Concept::IncomeTaxExpense, "282", Some(RESTATING)),
+const QUARTER_OF_IT: [(Concept, Stood); 11] = [
+    (Concept::Revenue, Stood::Read("140986", RESTATING)),
+    (Concept::GrossProfit, Stood::Read("55075", RESTATING)),
+    (Concept::OperatingIncome, Stood::Read("-24626", RESTATING)),
+    (Concept::PretaxIncome, Stood::Read("-24626", RESTATING)),
+    (Concept::IncomeTaxExpense, Stood::Read("282", RESTATING)),
     (
         Concept::DilutedSharesWeightedAverage,
-        "60000000",
-        Some(RESTATING),
+        Stood::Read("60000000", RESTATING),
     ),
-    (Concept::EarningsPerShareDiluted, "-0.0004", Some(RESTATING)),
-    (Concept::NetIncome, "-24908", Some(QUOTING)),
-    (Concept::ShortTermInvestments, "0", None),
-    (Concept::DividendsDeclaredPerShare, "0", None),
-    (Concept::DividendsPaid, "0", None),
+    (
+        Concept::EarningsPerShareDiluted,
+        Stood::Read("-0.0004", RESTATING),
+    ),
+    (Concept::NetIncome, Stood::Read("-24908", QUOTING)),
+    (Concept::ShortTermInvestments, Stood::Unknown),
+    (Concept::DividendsDeclaredPerShare, Stood::Silence),
+    (Concept::DividendsPaid, Stood::Silence),
 ];
 
 /// The 10-Q filed 2025-05-14, which restated the half-year's diluted loss per
@@ -587,14 +702,19 @@ const RESTATING: &str = "0001213900-25-042964";
 /// The 10-Q filed 2025-08-20, quoting one comparative line of the quarter.
 const QUOTING: &str = "0001213900-25-078735";
 
-fn pins(facts: &[Fact], period: &Period, table: &[(Concept, &str, Option<&str>)]) {
+fn pins(facts: &[Fact], period: &Period, table: &[(Concept, Stood)]) {
     let registry = read(&committed());
-    for (concept, amount, filing) in table {
+    let answering: Vec<&str> = filings::answering(facts, period)
+        .iter()
+        .map(|filing| filing.accession())
+        .collect();
+
+    for (concept, expected) in table {
         let stood = standing(&registry, *concept, period, facts);
-        let value = value(&stood);
-        assert_eq!(value.amount(), *amount, "{concept:?}");
-        match filing {
-            Some(accession) => {
+        match expected {
+            Stood::Read(amount, accession) => {
+                let value = value(&stood);
+                assert_eq!(value.amount(), *amount, "{concept:?}");
                 let read = read_from(value);
                 assert!(!read.is_empty(), "{concept:?}");
                 assert!(
@@ -602,7 +722,18 @@ fn pins(facts: &[Fact], period: &Period, table: &[(Concept, &str, Option<&str>)]
                     "{concept:?}: {read:?}"
                 );
             }
-            None => assert!(is_silence(value), "{concept:?}"),
+            Stood::Silence => {
+                let value = value(&stood);
+                assert_eq!(value.amount(), "0", "{concept:?}");
+                assert!(is_silence(value), "{concept:?}");
+            }
+            Stood::Unknown => {
+                assert_eq!(
+                    accessions(unknown(&stood).attempted()),
+                    answering,
+                    "{concept:?}"
+                );
+            }
         }
     }
 }
@@ -704,4 +835,38 @@ fn preferred_equity_stands_as_the_read_zero_the_four_later_silences_do_not_displ
         unreachable!()
     };
     assert_eq!(&*read[0].tag, "PreferredStockValue");
+}
+
+/// The counts `docs/adr/silence-zero-only-at-the-concepts-own-shape.md` states
+/// for the merged fixture, over every period Rule 1 admits and every concept
+/// the vocabulary publishes: 51 silence values, every one at a period of the
+/// concept's own shape, and 576 `Unknown`s.
+///
+/// These are the emit record's 96 and 531 with its 45 wrong-shape zeros moved
+/// across, and the record that moved them says a count that does not re-derive
+/// is an escalation rather than a number to adjust.
+#[test]
+fn the_merged_fixture_comes_to_the_counts_the_record_supersedes_the_emit_records_with() {
+    let registry = read(&committed());
+    let facts = reported();
+    let held = periods(&registry, FILER, KIND, &facts);
+    assert_eq!(held.len(), 32);
+
+    let mut silence = 0;
+    let mut unknown = 0;
+    for period in &held {
+        for concept in Concept::ALL {
+            let stood = stands(&registry, FILER, KIND, *concept, period, &facts)
+                .expect("a filing answers every period Rule 1 admits");
+            match &stood {
+                Stands::Value(value) if is_silence(value) => {
+                    assert!(own_shape(*concept, period), "{concept:?} {period:?}");
+                    silence += 1;
+                }
+                Stands::Unknown(_) => unknown += 1,
+                _ => {}
+            }
+        }
+    }
+    assert_eq!((silence, unknown), (51, 576));
 }

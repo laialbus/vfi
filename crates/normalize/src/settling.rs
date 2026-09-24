@@ -37,7 +37,7 @@
 //!    undecided — including two survivors that agree, because a value records
 //!    the rule that set it, singular, and a rule picked among equals is a choice
 //!    nothing could replay. None is the silence reading the vocabulary publishes
-//!    for the concept.
+//!    for the concept, read as [`supplies`] has it.
 //!
 //! No step is skipped and nothing is added between them. There is no tie-break:
 //! not the larger, not the more common, not the one that agrees with a
@@ -71,7 +71,9 @@
 
 mod figure;
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Declined, Kind, Resolution, Silence};
+use vfi_contracts::canonical_concepts::{
+    Attempt, Concept, Declined, Kind, Measure, Resolution, Silence,
+};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
 use crate::answering::Admits;
@@ -644,7 +646,7 @@ fn silent<'r, 'f>(question: Asked<'_, 'r, 'f>, declined: Vec<Declined>) -> Ran<'
     let reading = question.concept.definition().silence;
     let attempted = Attempt::that_ran(declined);
 
-    match supplies(question.concept, reading, |other| {
+    match supplies(question.concept, reading, question.period, |other| {
         silent_on(question, other)
     }) {
         true => Ran {
@@ -681,27 +683,65 @@ pub(crate) fn supplied<'r, 'f>(
     version: Version,
     kind: Option<Kind>,
     concept: Concept,
+    period: &Period,
     reached: impl FnOnce(Concept) -> bool,
 ) -> Option<Value<'r, 'f>> {
     let reading = concept.definition().silence;
-    supplies(concept, reading, |other| {
+    supplies(concept, reading, period, |other| {
         applicability::ask(other, kind) == applicability::Answer::Proceeds && !reached(other)
     })
     .then(|| zero(reading, version))
 }
 
-/// Whether the vocabulary's reading supplies its zero, given what the concept
-/// its condition names came to where it publishes one.
+/// Whether the vocabulary's reading supplies its zero, given the period it is
+/// read at and what the concept its condition names came to where it publishes
+/// one.
 ///
 /// The three readings branch here and nowhere else, so the reading made inside
 /// one filing and the reading made over the period cannot come apart on which
 /// of them a zero is under.
-fn supplies(concept: Concept, reading: Silence, paired: impl FnOnce(Concept) -> bool) -> bool {
+///
+/// **At a period of the other shape there is no zero to supply.**
+/// `docs/adr/silence-zero-only-at-the-concepts-own-shape.md`: the silence test
+/// licenses a zero because silence inside a filing is ambiguous between the
+/// filer having none of the thing and the registry not recognising the element,
+/// and it picks the safe wrong answer between those two. At a period of the
+/// wrong shape "neither cause is in play: no fact of that shape can answer the
+/// concept, so the silence says nothing about the filer and nothing about the
+/// registry. A zero there is not a reading of ambiguous silence; it is a number
+/// with no support." So the zero is supplied only where [`own_shape`] holds,
+/// and the concept is `Unknown` at the other, carrying what each answering
+/// filing attempted. A conditional reading's condition is not asked there at
+/// all:
+/// both members of the published pair are flows, so at an instant neither has a
+/// zero for the other's silence to condition.
+fn supplies(
+    concept: Concept,
+    reading: Silence,
+    period: &Period,
+    paired: impl FnOnce(Concept) -> bool,
+) -> bool {
+    if !own_shape(concept, period) {
+        return false;
+    }
     match reading {
         Silence::Unknown => false,
         Silence::Zero => true,
         Silence::Conditional => conditioned_on(concept).is_some_and(paired),
     }
+}
+
+/// Whether `period` is of `concept`'s own shape: an instant for a balance, a
+/// duration for a flow.
+///
+/// The vocabulary's measure, read here as [`crate::answering`] reads it of a
+/// fact — "neither shape is built from the other" — which is what makes a
+/// period of the other shape one no fact could ever answer.
+fn own_shape(concept: Concept, period: &Period) -> bool {
+    matches!(
+        (concept.definition().measure, period),
+        (Measure::Flow, Period::Duration { .. }) | (Measure::Balance, Period::Instant { .. })
+    )
 }
 
 /// The zero a silence reading supplies, as the value it is: the vocabulary's

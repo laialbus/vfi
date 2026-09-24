@@ -21,7 +21,7 @@
 
 mod fixture;
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution, Silence};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Measure, Resolution, Silence};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 use vfi_normalize::answering::Admits;
 use vfi_normalize::registry::Registry;
@@ -528,7 +528,11 @@ fn a_concept_the_kind_excludes_is_answered_before_anything_is_looked_up() {
 }
 
 /// Where nothing matched, every concept takes the silence reading the published
-/// vocabulary gives it — read off that surface here rather than restated.
+/// vocabulary gives it — read off that surface here rather than restated — and
+/// takes it only at a period of its own shape, which
+/// `docs/adr/silence-zero-only-at-the-concepts-own-shape.md` rules. At the other
+/// shape no fact could answer the concept, so the silence is evidence about
+/// neither the filer nor the registry and the reading supplies no zero.
 ///
 /// The question is asked of a filing carrying no fact, because that is the one
 /// way to ask it of every concept at once: the cover-page entry answers whatever
@@ -544,25 +548,24 @@ fn every_concept_takes_the_silence_reading_the_published_vocabulary_gives_it() {
 
     for concept in Concept::ALL {
         let read = concept.definition();
-        let settled = settle(
-            &registry,
-            FILER,
-            KIND,
-            *concept,
-            &duration(YEAR.0, YEAR.1),
-            &nothing,
-        );
+        for (shape, period) in [
+            (Measure::Flow, duration(YEAR.0, YEAR.1)),
+            (Measure::Balance, instant(YEAR.1)),
+        ] {
+            let settled = settle(&registry, FILER, KIND, *concept, &period, &nothing);
 
-        let expected = match read.applies_to.admits(Kind::Operating) {
-            false => "not applicable".to_owned(),
-            true => match read.silence {
-                Silence::Unknown => "unknown".to_owned(),
-                Silence::Zero | Silence::Conditional => {
-                    "0 by the published silence reading".to_owned()
+            let expected = if !read.applies_to.admits(Kind::Operating) {
+                "not applicable"
+            } else if read.measure != shape {
+                "unknown"
+            } else {
+                match read.silence {
+                    Silence::Unknown => "unknown",
+                    Silence::Zero | Silence::Conditional => "0 by the published silence reading",
                 }
-            },
-        };
-        assert_eq!(came_to(&settled), expected, "{concept:?}");
+            };
+            assert_eq!(came_to(&settled), expected, "{concept:?} {period:?}");
+        }
     }
 }
 
