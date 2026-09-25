@@ -26,6 +26,14 @@
 //! every answering filing's first step has run before any of them keeps a
 //! zero, whatever order the filings arrive in.
 //!
+//! **The zero is reached only at a period of the concept's own shape.**
+//! `docs/adr/silence-zero-only-at-the-concepts-own-shape.md`: an instant for a
+//! balance, a duration for a flow, "and at the other shape the concept is
+//! `Unknown`, carrying each answering filing's attempt as any other `Unknown`
+//! does". The condition is one more on when the vocabulary supplies its zero,
+//! made where the other two are made, so the reading over the period and the
+//! reading inside one filing cannot reach a zero the other refuses.
+//!
 //! **The zero is supplied once, and never enters the contest.**
 //! `docs/adr/silence-zero-supplied-once-per-period.md`: where the reading above
 //! supplies it, the vocabulary supplies it once for the period. It carries its
@@ -170,7 +178,7 @@ pub(crate) fn standing<'r, 'f>(
         filings::attempted_within(registry, filer, kind, concept, period, &answering, within);
 
     if !attempted.iter().any(Attempted::reached) {
-        let supplied = settling::supplied(registry.version(), kind, concept, |other| {
+        let supplied = settling::supplied(registry.version(), kind, concept, period, |other| {
             filings::attempted_within(registry, filer, kind, other, period, &answering, within)
                 .iter()
                 .any(Attempted::reached)
