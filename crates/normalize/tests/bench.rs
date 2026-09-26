@@ -2,7 +2,10 @@
 //!
 //! The workload and the numbers it must stay inside live under
 //! `benchmarks/normalize/`, as data: `input` is what the stage runs over and
-//! `baseline` is what it cost when the baseline was taken. The thresholds are
+//! `baseline` is what it cost when the baseline was taken, and at how many
+//! passes over `input`. The measurement runs at the pass count read from there
+//! rather than one held here, so it is stated once, beside the numbers taken at
+//! it. The thresholds are
 //! `benchmarks/thresholds`, shared by every stage. This file is the code that
 //! measures; it writes none of those, for the reason the golden harness beside
 //! it gives — a number the subject produced proves only that the subject agrees
@@ -75,13 +78,6 @@ use std::time::{Duration, Instant};
 /// with no harness to match is a workload nobody runs, so the gate goes red
 /// there rather than here.
 const STAGE: &str = "normalize";
-
-/// How many times one measurement runs the stage over the workload. Enough that
-/// the timing sits far above the clock's resolution, and enough that an
-/// allocation made once per call reads as five hundred times the baseline rather
-/// than a rounding difference. The baseline is taken at this number, so changing
-/// it restates what the baseline describes.
-const PASSES: usize = 512;
 
 /// A timing is the smallest of this many runs, on both halves of the ratio.
 /// Noise only ever adds time — a descheduled thread, a neighbouring job, a cold
@@ -169,8 +165,8 @@ fn counting(body: impl FnOnce()) -> (u64, u64) {
 ///
 /// `black_box` on both ends of the call is what stops the optimizer from
 /// noticing that every pass computes the same thing and keeping one of them.
-fn subject(input: &str, out: &mut String) {
-    for _ in 0..PASSES {
+fn subject(input: &str, passes: usize, out: &mut String) {
+    for _ in 0..passes {
         out.clear();
         vfi_normalize::normalize(black_box(input), black_box(&mut *out));
     }
@@ -182,34 +178,34 @@ fn subject(input: &str, out: &mut String) {
 /// above the copy it cannot avoid. Today the stage is that copy and the ratio is
 /// about one; when the stage does real work the ratio rises and the baseline
 /// restates it.
-fn reference(input: &str, out: &mut String) {
-    for _ in 0..PASSES {
+fn reference(input: &str, passes: usize, out: &mut String) {
+    for _ in 0..passes {
         out.clear();
         out.push_str(black_box(input));
         black_box(&mut *out);
     }
 }
 
-fn measure(input: &str) -> Measured {
+fn measure(input: &str, passes: usize) -> Measured {
     let mut out = String::new();
-    let (allocations, bytes) = counting(|| subject(input, &mut out));
+    let (allocations, bytes) = counting(|| subject(input, passes, &mut out));
     black_box(&out);
 
     Measured {
         allocations,
         bytes,
-        cost: measure_cost(input),
+        cost: measure_cost(input, passes),
     }
 }
 
-fn measure_cost(input: &str) -> f64 {
+fn measure_cost(input: &str, passes: usize) -> f64 {
     let mut out = String::new();
     let mut copied = String::new();
 
     // Both buffers reach their full capacity before the clock starts, so the
     // repetition that pays for the allocation is not one of the timed ones.
-    subject(input, &mut out);
-    reference(input, &mut copied);
+    subject(input, passes, &mut out);
+    reference(input, passes, &mut copied);
 
     let mut stage = Duration::MAX;
     let mut copy = Duration::MAX;
@@ -217,11 +213,11 @@ fn measure_cost(input: &str) -> f64 {
         // Interleaved rather than run in two blocks: whatever the machine is
         // doing to one of them for a moment, it is doing to the other.
         let start = Instant::now();
-        subject(input, &mut out);
+        subject(input, passes, &mut out);
         stage = stage.min(start.elapsed());
 
         let start = Instant::now();
-        reference(input, &mut copied);
+        reference(input, passes, &mut copied);
         copy = copy.min(start.elapsed());
     }
 
@@ -340,6 +336,16 @@ fn read_numbers<const N: usize>(path: &Path, wanted: [&str; N]) -> [f64; N] {
     numbers
 }
 
+/// The recorded pass count as a count. Anything but a whole number above zero
+/// is a baseline that does not say what it was taken at, and the measurement
+/// refuses it rather than rounding it into one.
+fn whole_passes(path: &Path, passes: f64) -> usize {
+    if passes < 1.0 || passes.fract() != 0.0 || passes > usize::MAX as f64 {
+        panic!("{}: records passes {passes}, which is not a number of passes", path.display());
+    }
+    passes as usize
+}
+
 // ---------------------------------------------------------------------------
 
 #[test]
@@ -351,8 +357,10 @@ fn the_stage_stays_inside_its_committed_baseline() {
     let [work, cost] = read_numbers(&root.join("thresholds"), ["work", "cost"]);
 
     let stage = root.join(STAGE);
-    let [allocations, bytes, baseline_cost] =
-        read_numbers(&stage.join("baseline"), ["allocations", "bytes", "cost"]);
+    let baseline = stage.join("baseline");
+    let [allocations, bytes, baseline_cost, passes] =
+        read_numbers(&baseline, ["allocations", "bytes", "cost", "passes"]);
+    let passes = whole_passes(&baseline, passes);
 
     let input = fs::read_to_string(stage.join("input")).unwrap_or_else(|e| {
         panic!("{}: the stage runs over this workload ({e})", stage.join("input").display())
@@ -363,7 +371,7 @@ fn the_stage_stays_inside_its_committed_baseline() {
         stage.join("input").display()
     );
 
-    let measured = measure(&input);
+    let measured = measure(&input, passes);
 
     let mut failures = String::new();
     let mut check = |name: &str, measured: f64, baseline: f64, threshold: f64| {

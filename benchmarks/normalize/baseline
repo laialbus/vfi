@@ -3,10 +3,14 @@
 # against the multiples in benchmarks/thresholds.
 #
 # allocations and bytes are counted, not timed: the stage asks for its output
-# buffer once and reuses it across all 512 passes, and 11836 is the workload
+# buffer once and reuses it across every pass, and 11836 is the workload
 # itself. Both numbers are the same on every machine.
 allocations 1
 bytes 11836
+
+# How many times one measurement runs the stage over the workload: the count
+# every number in this file was taken at, so changing it restates them all.
+passes 512
 
 # The stage's time as a multiple of a plain copy of the same bytes, measured in
 # the same run — the machine's own speed is in both halves and divides out, which
