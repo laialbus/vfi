@@ -3667,6 +3667,30 @@ violate_registry() {
 	return 1
 }
 
+# The bytes one call of the slowdown asks for: a tenth of what the baseline
+# records per pass, ceil(bytes / passes / 10), and one at least. Over the
+# measurement that adds a tenth to the counted bytes, twice what the work
+# threshold allows, whatever the stage's size — a fixed size that doubles a
+# stub's bytes is invisible beside a stage that allocates megabytes
+# (docs/adr/benchmark-proof-scales-to-the-baseline.md). Fails when the baseline
+# does not state both numbers exactly once, as whole numbers, passes above zero.
+slowdown_bytes() {
+	awk '
+		{ sub(/#.*/, "") }
+		$1 == "bytes" || $1 == "passes" {
+			if (NF != 2 || $2 !~ /^[0-9]+$/ || ($1 in seen)) bad = 1
+			seen[$1] = $2 + 0
+		}
+		END {
+			if (bad || !("bytes" in seen) || !("passes" in seen) || seen["passes"] == 0) exit 1
+			per = seen["passes"] * 10
+			size = int((seen["bytes"] + per - 1) / per)
+			if (size < 1) size = 1
+			printf "%d\n", size
+		}
+	' "$1"
+}
+
 # Work the stage did not do before, on every call: the slowdown a benchmark gate
 # exists to catch. It leaves the output exactly as it was, because fixtures runs
 # first and a violation that changed what the stage produces would go red there
@@ -3679,7 +3703,7 @@ violate_registry() {
 # not be made, which is a different answer from a gate that failed to catch, and
 # it says so instead of leaving a copy that was never slowed down.
 violate_benchmark() {
-	local dir stage source slowed
+	local dir stage source slowed size
 	for dir in "$1"/benchmarks/*/; do
 		[ -d "$dir" ] || continue
 		dir="${dir%/}"
@@ -3687,11 +3711,16 @@ violate_benchmark() {
 		source="$1/crates/${stage}/src/lib.rs"
 		[ -f "$source" ] || continue
 
+		if ! size="$(slowdown_bytes "$dir/baseline")"; then
+			echo "$prog: $stage's baseline does not record, once each and as whole numbers, the bytes and the passes they were taken at, so there is no size to slow it down by" >&2
+			return 1
+		fi
+
 		slowed="$source.slowed"
-		awk '
+		awk -v size="$size" '
 			!slowed && /^pub fn / && /\{$/ {
 				print
-				print "    std::hint::black_box(String::from(\"a deliberate slowdown\"));"
+				print "    std::hint::black_box(vec![0u8; " size "]);"
 				slowed = 1
 				next
 			}
