@@ -262,10 +262,18 @@ pub fn settle<'r, 'f>(
 /// period may withhold that zero, and this is the `Unknown` the filing comes to
 /// where it does — kept beside the value because the zero names no filing and
 /// carries no filing's attempt.
+///
+/// `declined` is what the four steps declined on the way to the one survivor,
+/// and it is filled only where a rule settled the attempt to a value. Rule 3
+/// may leave that value undecided in a tie, and
+/// `docs/adr/tie-and-undated-cross-into-v2.md` has the tied filing's attempt
+/// cross carrying what candidate choice declined inside it — never the
+/// survivor, which was not declined.
 pub(crate) struct Ran<'r, 'f> {
     pub settled: Settled<'r, 'f>,
     pub reached: bool,
     pub withheld: Option<Attempt>,
+    pub declined: Vec<Declined>,
 }
 
 /// What [`settle`] answers, with the two things beside it a reading over the
@@ -300,6 +308,7 @@ fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Ran<'r, 'f> {
         settled,
         reached,
         withheld: None,
+        declined: Vec::new(),
     };
 
     if let applicability::Answer::Excluded(state) =
@@ -309,7 +318,10 @@ fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Ran<'r, 'f> {
     }
 
     match matched(question) {
-        Matched::Value(value) => ran(Settled::Value(value), true),
+        Matched::Value(value, declined) => Ran {
+            declined,
+            ..ran(Settled::Value(value), true)
+        },
         Matched::Undecided(declined) => ran(Settled::Unknown(Attempt::that_ran(declined)), true),
         Matched::Nothing(declined) => silent(question, declined),
     }
@@ -322,7 +334,9 @@ fn attempt<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Ran<'r, 'f> {
 /// reading, which names this one back. A question about facts terminates; two
 /// conditions reading each other would not.
 enum Matched<'r, 'f> {
-    Value(Value<'r, 'f>),
+    /// One survivor, or an assertion, and every candidate declined on the way
+    /// to it.
+    Value(Value<'r, 'f>, Vec<Declined>),
     /// More than one survivor, and every candidate with its reason.
     Undecided(Vec<Declined>),
     /// No candidate at all, and every eligible rule with the reason it was not
@@ -342,10 +356,13 @@ fn matched<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Matched<'r, 'f> {
 
     let eligible = match answer.outcome {
         Outcome::Asserted(assertion) => {
-            return Matched::Value(Value {
-                amount: assertion.value().into(),
-                set_by: SetBy::Assertion { version, assertion },
-            });
+            return Matched::Value(
+                Value {
+                    amount: assertion.value().into(),
+                    set_by: SetBy::Assertion { version, assertion },
+                },
+                Vec::new(),
+            );
         }
         Outcome::Eligible(eligible) => eligible,
     };
@@ -365,14 +382,17 @@ fn matched<'r, 'f>(question: Asked<'_, 'r, 'f>) -> Matched<'r, 'f> {
 
     if candidates.len() == 1 {
         let held = candidates.remove(0);
-        return Matched::Value(Value {
-            amount: held.amount,
-            set_by: SetBy::Rule {
-                version,
-                rule: held.rule,
-                facts: held.facts,
+        return Matched::Value(
+            Value {
+                amount: held.amount,
+                set_by: SetBy::Rule {
+                    version,
+                    rule: held.rule,
+                    facts: held.facts,
+                },
             },
-        });
+            declined,
+        );
     }
 
     for (at, candidate) in candidates.iter().enumerate() {
@@ -653,11 +673,13 @@ fn silent<'r, 'f>(question: Asked<'_, 'r, 'f>, declined: Vec<Declined>) -> Ran<'
             settled: Settled::Value(zero(reading, question.registry.version())),
             reached: false,
             withheld: Some(attempted),
+            declined: Vec::new(),
         },
         false => Ran {
             settled: Settled::Unknown(attempted),
             reached: false,
             withheld: None,
+            declined: Vec::new(),
         },
     }
 }

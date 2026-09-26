@@ -23,7 +23,7 @@
 use std::fs;
 use std::path::{Path, PathBuf};
 
-use vfi_contracts::fetch_normalize::{Fact, Period};
+use vfi_contracts::fetch_normalize::{Fact, Filer, Period};
 use vfi_normalize::registry::Registry;
 
 /// The fixture case, and the filer it recorded.
@@ -122,14 +122,36 @@ pub fn reported() -> Vec<Fact> {
     reported_in(CASE)
 }
 
-/// Every fact another merged fetch fixture records, read the same way.
-pub fn reported_in(case: &str) -> Vec<Fact> {
+/// Everything a merged fetch fixture records for its filer: the filer as the
+/// fixture names it, where it was retrieved from, and every fact.
+pub fn recorded_in(case: &str) -> Filer {
+    let (path, text) = expected(case);
+    let stated = |key: &str| -> Box<str> {
+        text.lines()
+            .find_map(|line| line.strip_prefix(key))
+            .unwrap_or_else(|| panic!("{}: states no `{key}`", path.display()))
+            .into()
+    };
+    Filer {
+        cik: stated("filer "),
+        retrieved_from: stated("  retrieved from "),
+        facts: reported_in(case),
+    }
+}
+
+fn expected(case: &str) -> (PathBuf, String) {
     let path = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("../../fixtures/fetch")
         .join(case)
         .join("expected");
     let text = fs::read_to_string(&path)
         .unwrap_or_else(|e| panic!("{}: cannot be read ({e})", path.display()));
+    (path, text)
+}
+
+/// Every fact another merged fetch fixture records, read the same way.
+pub fn reported_in(case: &str) -> Vec<Fact> {
+    let (path, text) = expected(case);
 
     let mut stated = None;
     let mut facts = Vec::new();

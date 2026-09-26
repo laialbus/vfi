@@ -325,7 +325,41 @@ fn a_same_day_tie_no_form_breaks_is_unknown_carrying_both_accessions_whatever_th
         unsettled.undecided(),
         Some(&Undecided::Tie(vec![FIRST_BY_ACCESSION, LATER]))
     );
-    assert!(unsettled.attempted().is_empty());
+
+    // Each tied filing's attempt, carrying the three stand-ins it had no fact
+    // for and not the exact reading that settled; the earlier filing, which
+    // lost on `filed` alone, is not carried.
+    let declined: Vec<(String, String)> = STAND_INS
+        .iter()
+        .map(|id| {
+            (
+                settling::named(registry.version(), id),
+                "no fact answering the period asked for".to_owned(),
+            )
+        })
+        .collect();
+    assert_eq!(
+        accessions(unsettled.attempted()),
+        [FIRST_BY_ACCESSION, LATER]
+    );
+    for (accession, attempt) in unsettled.attempted() {
+        assert_eq!(reasons(attempt), declined, "{accession}");
+    }
+}
+
+/// The three entries that stand in for `short_term_investments`, as their ids.
+const STAND_INS: [&str; 3] = [
+    "short_term_investments|*|tag|element:us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent",
+    "short_term_investments|*|tag|element:us-gaap:MarketableSecuritiesCurrent",
+    "short_term_investments|*|tag|element:us-gaap:OtherShortTermInvestments",
+];
+
+fn reasons(attempt: &Attempt) -> Vec<(String, String)> {
+    attempt
+        .declined()
+        .iter()
+        .map(|held| (held.candidate.to_string(), held.rule.to_string()))
+        .collect()
 }
 
 #[test]

@@ -55,7 +55,7 @@
 
 use std::collections::BTreeMap;
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Declined, Kind};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
 use crate::answering::Admits;
@@ -110,6 +110,7 @@ pub struct Attempted<'r, 'f> {
     settled: Settled<'r, 'f>,
     reached: bool,
     withheld: Option<Attempt>,
+    declined: Vec<Declined>,
 }
 
 impl<'r, 'f> Attempted<'r, 'f> {
@@ -140,8 +141,10 @@ impl<'r, 'f> Attempted<'r, 'f> {
         }
     }
 
-    pub(crate) fn into_settled(self) -> Settled<'r, 'f> {
-        self.settled
+    /// What the attempt settled to, and what candidate choice declined on the
+    /// way where a rule settled it to a value.
+    pub(crate) fn into_settled(self) -> (Settled<'r, 'f>, Vec<Declined>) {
+        (self.settled, self.declined)
     }
 }
 
@@ -225,6 +228,7 @@ pub(crate) fn attempted_within<'r, 'f>(
             settled: ran.settled,
             reached: ran.reached,
             withheld: ran.withheld,
+            declined: ran.declined,
         });
     }
     attempted

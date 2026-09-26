@@ -1,6 +1,6 @@
 //! Normalize stage: resolves filing tags to canonical facts.
 //!
-//! Seven modules, in the order the records fix between them.
+//! Eight modules, in the order the records fix between them.
 //! [`applicability`] is asked first, of the published clauses alone, and a
 //! concept the filer's kind excludes stops there. [`registry`] is the one way
 //! to the tag mapping, which is data rather than code, and a concept reaches it
@@ -15,13 +15,17 @@
 //! [`standing`] weighs those attempts: the silence reading over the period, and
 //! then Rule 3, which of several answering filings sets the value. [`periods`]
 //! is Rule 1, which canonical periods a filer has, asked of what stands.
+//! [`history`] runs the two over one filer's history end to end and hands over
+//! what `canonical-concepts` v2 publishes: the filer, its periods, and every
+//! concept at each.
 //!
-//! The crate carries the alignment ruleset whole. Nothing runs over a filer's
-//! history end to end through it yet.
+//! [`normalize`] is not on it yet. The golden fixture and the benchmark still
+//! measure the stage as it stood before any of the above.
 
 pub mod answering;
 pub mod applicability;
 pub mod filings;
+pub mod history;
 pub mod periods;
 pub mod registry;
 pub mod settling;
