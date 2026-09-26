@@ -154,6 +154,11 @@ read_frontmatter() {
 # escalations/README.md — and the id is matched whole, against the queue's own
 # ids, so a name carrying a subject slug instead parks nothing and nothing here
 # has to work out what an id looks like.
+#
+# A file reaches main only when a sweep folds it, and a stop is pushed as an
+# escalated/<id>-… ref the moment it happens, so the ref parks the task too —
+# docs/adr/escalated-refs-park-their-task.md. It is read from the branches
+# already read for claims, so both answers come from one moment of origin.
 parked() {
 	for escalation in escalations/*.md; do
 		[ -e "$escalation" ] || continue
@@ -162,6 +167,12 @@ parked() {
 		[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]-"$1".md) return 0 ;;
 		esac
 	done
+
+	while IFS= read -r ref; do
+		case "$ref" in
+		refs/heads/escalated/"$1"-*) return 0 ;;
+		esac
+	done <<<"$branches"
 	return 1
 }
 
