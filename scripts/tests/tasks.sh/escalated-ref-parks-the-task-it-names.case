@@ -1,0 +1,28 @@
+# A run that stops pushes its escalation to an escalated/ ref, and the file
+# reaches main only when a sweep folds it. The ref alone parks the task from the
+# moment it is pushed. The id is matched whole: the ref names M1-01, not M1-0,
+# and M1-02 is offered as it was.
+run available
+exit 0
+claims escalated/M1-01-stopped-on-a-wall
+file tasks/M1-0.md
+	---
+	id: M1-0
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-0
+	M1-02

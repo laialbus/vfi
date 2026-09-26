@@ -1,0 +1,29 @@
+# The file on main parks its task whether or not the ref it was folded from is
+# still on origin: M1-01 has both, M1-02 has the file alone.
+run available
+exit 0
+claims escalated/M1-01-stopped-on-a-wall
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-02.md
+	---
+	id: M1-02
+	depends_on: []
+	exclusive: no
+	---
+file tasks/M1-03.md
+	---
+	id: M1-03
+	depends_on: []
+	exclusive: no
+	---
+file escalations/2026-08-01-M1-01.md
+	The run stopped on a wall that retrying reproduces.
+file escalations/2026-08-01-M1-02.md
+	The run stopped on a wall that retrying reproduces.
+stdout
+	M1-03

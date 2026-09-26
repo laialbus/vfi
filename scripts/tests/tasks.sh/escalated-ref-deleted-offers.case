@@ -1,0 +1,12 @@
+# The same queue once a sweep has deleted the ref, with no file on main.
+# Deleting the ref is the whole of restoring the task, as deleting the file is.
+run available
+exit 0
+file tasks/M1-01.md
+	---
+	id: M1-01
+	depends_on: []
+	exclusive: no
+	---
+stdout
+	M1-01
