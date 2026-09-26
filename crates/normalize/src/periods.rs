@@ -37,6 +37,8 @@
 //! The question is asked concept-first: the registry is never asked about a
 //! tag.
 
+use std::collections::BTreeSet;
+
 use vfi_contracts::canonical_concepts::{Concept, Kind};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
@@ -44,7 +46,7 @@ use crate::answering::Admits;
 use crate::applicability;
 use crate::registry::{Answers, Registry};
 use crate::settling::SetBy;
-use crate::standing::{self, Stands};
+use crate::standing::{self, Stands, Undecided};
 
 /// Every canonical period this filer has, each once.
 ///
@@ -60,6 +62,23 @@ pub fn periods<'f>(
     kind: Option<Kind>,
     facts: &'f [Fact],
 ) -> Vec<&'f Period> {
+    admitted(registry, filer, kind, facts, &mut BTreeSet::new())
+}
+
+/// [`periods`], adding to `undated` every filing Rule 3 met on the way whose
+/// `filed` does not read as a date.
+///
+/// Such a filing leaves the value it produced standing nowhere, so a period it
+/// alone would have admitted is not admitted, and the run over the filer's
+/// history would never meet it again. `docs/adr/tie-and-undated-cross-into-v2.md`
+/// makes it a stop wherever it is met, so what this question meets is kept.
+pub(crate) fn admitted<'f>(
+    registry: &Registry,
+    filer: &str,
+    kind: Option<Kind>,
+    facts: &'f [Fact],
+    undated: &mut BTreeSet<&'f str>,
+) -> Vec<&'f Period> {
     let Some(kind) = kind else {
         return Vec::new();
     };
@@ -74,25 +93,26 @@ pub fn periods<'f>(
     candidates.retain(|period| {
         Concept::ALL
             .iter()
-            .any(|concept| resolves(registry, filer, kind, *concept, period, facts))
+            .any(|concept| resolves(registry, filer, kind, *concept, period, facts, undated))
     });
     candidates
 }
 
 /// Whether `concept`, which `kind` admits, stands at `period` as a `Value` set
 /// through an entry that answers the period asked for.
-fn resolves(
+fn resolves<'f>(
     registry: &Registry,
     filer: &str,
     kind: Kind,
     concept: Concept,
     period: &Period,
-    facts: &[Fact],
+    facts: &'f [Fact],
+    undated: &mut BTreeSet<&'f str>,
 ) -> bool {
     if applicability::ask(concept, Some(kind)) != applicability::Answer::Proceeds {
         return false;
     }
-    let Some(Stands::Value(value)) = standing::standing(
+    let value = match standing::standing(
         registry,
         filer,
         Some(kind),
@@ -100,8 +120,15 @@ fn resolves(
         period,
         facts,
         Admits::OnlyThePeriodAskedFor,
-    ) else {
-        return false;
+    ) {
+        Some(Stands::Value(value)) => value,
+        Some(Stands::Unknown(unsettled)) => {
+            if let Some(Undecided::Undated(accessions)) = unsettled.undecided() {
+                undated.extend(accessions);
+            }
+            return false;
+        }
+        Some(Stands::NotApplicable(_)) | None => return false,
     };
     match value.set_by() {
         SetBy::Rule { rule, .. } => rule.answers() == Answers::PeriodAskedFor,

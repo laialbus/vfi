@@ -66,7 +66,7 @@
 //! puts the parse. Which periods a filer has is Rule 1, [`crate::periods`],
 //! which asks this.
 
-use vfi_contracts::canonical_concepts::{Attempt, Concept, Kind, Resolution};
+use vfi_contracts::canonical_concepts::{Attempt, Concept, Declined, Kind, Resolution};
 use vfi_contracts::fetch_normalize::{Fact, Period};
 
 use crate::answering::Admits;
@@ -105,6 +105,13 @@ impl<'f> Unsettled<'f> {
     /// Every answering filing whose attempt came to `Unknown`, with what it
     /// attempted, in the order the filings arrived in. A withheld silence zero
     /// is here, carrying what its four steps found.
+    ///
+    /// At a tie each tied filing is here too, carrying what candidate choice
+    /// declined inside it on the way to the value it produced, as
+    /// `docs/adr/tie-and-undated-cross-into-v2.md` rules: an accession the tie
+    /// names produced a value, and one it does not name came to nothing. So a
+    /// filing whose value Rule 3 left behind — on `filed`, or on `form` beneath
+    /// a tie on `filed` — is not here: it neither failed nor is undecided.
     pub fn attempted(&self) -> &[(&'f str, Attempt)] {
         &self.attempted
     }
@@ -194,6 +201,17 @@ pub(crate) fn standing<'r, 'f>(
     Some(latest(&answering, attempted))
 }
 
+/// One answering filing whose attempt produced a value, with what Rule 3 reads
+/// of it and where it arrived.
+struct Contender<'r, 'f> {
+    on: Date,
+    form: Option<&'f str>,
+    accession: &'f str,
+    value: Value<'r, 'f>,
+    declined: Vec<Declined>,
+    arrived: usize,
+}
+
 /// Rule 3 over the attempts, the silence reading already applied.
 fn latest<'r, 'f>(
     answering: &[filings::Filing<'f>],
@@ -202,40 +220,52 @@ fn latest<'r, 'f>(
     let mut unknown = Vec::new();
     let mut valued = Vec::new();
     let mut undated = Vec::new();
-    for (filing, held) in answering.iter().zip(attempted) {
+    for (arrived, (filing, held)) in answering.iter().zip(attempted).enumerate() {
         let accession = held.accession();
         match held.into_settled() {
-            Settled::Value(value) => match filed(filing.facts()) {
-                Some(on) => valued.push((on, form(filing.facts()), accession, value)),
+            (Settled::Value(value), declined) => match filed(filing.facts()) {
+                Some(on) => valued.push(Contender {
+                    on,
+                    form: form(filing.facts()),
+                    accession,
+                    value,
+                    declined,
+                    arrived,
+                }),
                 None => undated.push(accession),
             },
-            Settled::Unknown(attempt) => unknown.push((accession, attempt)),
-            Settled::NotApplicable(state) => return Stands::NotApplicable(state),
+            (Settled::Unknown(attempt), _) => unknown.push((arrived, accession, attempt)),
+            (Settled::NotApplicable(state), _) => return Stands::NotApplicable(state),
         }
     }
 
+    let unsettled = |mut unknown: Vec<(usize, &'f str, Attempt)>, undecided| {
+        unknown.sort_by_key(|(arrived, ..)| *arrived);
+        Stands::Unknown(Unsettled {
+            attempted: unknown
+                .into_iter()
+                .map(|(_, accession, attempt)| (accession, attempt))
+                .collect(),
+            undecided,
+        })
+    };
+
     if !undated.is_empty() {
-        return Stands::Unknown(Unsettled {
-            attempted: unknown,
-            undecided: Some(Undecided::Undated(undated)),
-        });
+        return unsettled(unknown, Some(Undecided::Undated(undated)));
     }
 
-    let Some(greatest) = valued.iter().map(|(on, ..)| *on).max() else {
-        return Stands::Unknown(Unsettled {
-            attempted: unknown,
-            undecided: None,
-        });
+    let Some(greatest) = valued.iter().map(|held| held.on).max() else {
+        return unsettled(unknown, None);
     };
-    valued.retain(|(on, ..)| *on == greatest);
+    valued.retain(|held| held.on == greatest);
 
     let amended: Vec<bool> = valued
         .iter()
-        .map(|(_, form, ..)| {
-            form.is_some_and(|form| {
+        .map(|held| {
+            held.form.is_some_and(|form| {
                 valued
                     .iter()
-                    .any(|(_, other, ..)| other.is_some_and(|other| amends(other, form)))
+                    .any(|other| other.form.is_some_and(|other| amends(other, form)))
             })
         })
         .collect();
@@ -246,18 +276,17 @@ fn latest<'r, 'f>(
     });
 
     if valued.len() == 1 {
-        let (.., value) = valued.remove(0);
-        return Stands::Value(value);
+        return Stands::Value(valued.remove(0).value);
     }
-    Stands::Unknown(Unsettled {
-        attempted: unknown,
-        undecided: Some(Undecided::Tie(
-            valued
-                .into_iter()
-                .map(|(_, _, accession, _)| accession)
-                .collect(),
-        )),
-    })
+    let tie = Undecided::Tie(valued.iter().map(|held| held.accession).collect());
+    unknown.extend(valued.into_iter().map(|held| {
+        (
+            held.arrived,
+            held.accession,
+            Attempt::that_ran(held.declined),
+        )
+    }));
+    unsettled(unknown, Some(tie))
 }
 
 /// Whether `form` is `amended` with `/A` appended.
