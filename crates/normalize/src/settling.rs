@@ -87,7 +87,7 @@ const ZERO: &str = "0";
 
 /// What separates the two halves of a rule's name. The version is sixty-four
 /// hexadecimal characters, so the pair reads apart wherever it is printed.
-const PAIR: char = '|';
+pub(crate) const PAIR: char = '|';
 
 /// What one concept settles to: one of the three states the vocabulary
 /// publishes, never two of them and never none.

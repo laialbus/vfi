@@ -14,8 +14,9 @@
 //! changed where it does not. A copy is per case, because cargo runs these at
 //! the same time.
 //!
-//! Both test binaries beside this read it, and each uses some of it. An item one
-//! of them does not reach is not dead, so the lint that would say so is off
+//! Several test binaries beside this read it — the golden and benchmark
+//! harnesses among them, for their input — and each uses some of it. An item
+//! one of them does not reach is not dead, so the lint that would say so is off
 //! here and nowhere else.
 
 #![allow(dead_code)]

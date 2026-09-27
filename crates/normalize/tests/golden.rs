@@ -1,10 +1,23 @@
 //! The golden fixture harness for the normalize stage.
 //!
-//! A fixture is a directory under `fixtures/normalize/`. `input` is what goes
-//! into the stage and `expected` is what must come out; both are data, and
-//! neither is ever written by the code it checks — an expected result the
-//! subject generated proves only that the subject agrees with itself. The
-//! directory's name says what the case pins.
+//! A fixture is a directory under `fixtures/normalize/`, named for the merged
+//! fetch fixture whose facts it reads. Its input is that fixture's filer,
+//! whole, read out of `fixtures/fetch/<name>/expected` rather than copied here,
+//! so the two cannot part, and a name with no fetch fixture behind it fails.
+//! It runs through the stage under the committed registry, and `expected` is
+//! what must come out, byte for byte. A later fixture is added by adding its
+//! directory and nothing else.
+//!
+//! Beside `expected` sits `claims`: what the accepted records and the facts
+//! say the rendering must hold, derived by hand, as
+//! `docs/adr/golden-claims-and-baseline-re-recording.md` has it. The claims
+//! are the proof and `expected` is the guard over every other line, recorded
+//! from the stage only once every claim held against it. Nothing here reads
+//! `claims` yet: checking them is a gate change of its own, and until it lands
+//! they are re-derived by hand.
+//!
+//! `expected` is never written by the code it checks — an expected result the
+//! subject generated proves only that the subject agrees with itself.
 //!
 //! `cargo test` does not select this target (`test = false` in the manifest);
 //! `scripts/gates.sh` runs it by name. AGENTS.md counts "all tests pass" and
@@ -14,8 +27,12 @@
 //! a name that can never go red on its own — which is the thing a proof of
 //! catch exists to rule out.
 
+mod fixture;
+
 use std::fs;
 use std::path::{Path, PathBuf};
+
+use fixture::{committed, read as registry, recorded_in};
 
 /// `fixtures/<stage>/` is this harness's half of `fixtures/`, and it is what
 /// scripts/gates.sh reads to decide which harnesses to run. A stage directory
@@ -49,11 +66,10 @@ fn cases(dir: &Path) -> Vec<PathBuf> {
     cases
 }
 
-fn read(case: &Path, name: &str) -> String {
-    let path = case.join(name);
-    fs::read_to_string(&path).unwrap_or_else(|e| {
-        panic!("{}: a fixture holds an input and an expected ({e})", path.display())
-    })
+fn expected(case: &Path) -> String {
+    let path = case.join("expected");
+    fs::read_to_string(&path)
+        .unwrap_or_else(|e| panic!("{}: a fixture holds an expected ({e})", path.display()))
 }
 
 /// The first line the two disagree on, rather than both files whole. A golden
@@ -105,22 +121,23 @@ fn every_fixture_produces_its_expected_result() {
         dir.display()
     );
 
+    let registry = registry(&committed());
     let mut produced = String::new();
     let mut failures = String::new();
 
     for case in &cases {
-        let input = read(case, "input");
-        let expected = read(case, "expected");
+        let name = case.file_name().unwrap_or_default().to_string_lossy();
+        let filer = recorded_in(&name);
+        let expected = expected(case);
 
         produced.clear();
-        vfi_normalize::normalize(&input, &mut produced);
-
-        if produced != expected {
-            let name = case.file_name().unwrap_or_default().to_string_lossy();
-            failures.push_str(&format!(
-                "    fixtures/{STAGE}/{name}: {}\n",
-                difference(&expected, &produced)
-            ));
+        let failure = match vfi_normalize::normalize(&registry, &filer, &mut produced) {
+            Err(undated) => Some(format!("the stage stopped: {undated}")),
+            Ok(()) if produced != expected => Some(difference(&expected, &produced)),
+            Ok(()) => None,
+        };
+        if let Some(failure) = failure {
+            failures.push_str(&format!("    fixtures/{STAGE}/{name}: {failure}\n"));
         }
     }
 

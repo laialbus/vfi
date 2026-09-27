@@ -649,7 +649,9 @@ impl Vocabulary {
     }
 }
 
-fn spelled(declared: &str) -> String {
+/// A name the vocabulary declares, spelled the way its published bytes write
+/// it: `InvestmentCompany` is `investment_company`.
+pub(crate) fn spelled(declared: &str) -> String {
     let mut spelling = String::with_capacity(declared.len() + 2);
     for (at, letter) in declared.char_indices() {
         if at > 0 && letter.is_ascii_uppercase() {

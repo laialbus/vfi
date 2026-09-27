@@ -1,0 +1,5 @@
+# The merged fetch fixture whose filer benchmarks/normalize/baseline was taken
+# over: every fact it records, as the fetch boundary publishes them, run through
+# the stage under the committed registry. Read by crates/normalize/tests/bench.rs
+# out of fixtures/fetch/<name>/expected, so the workload has no copy here.
+every-fact-a-filer-reported
