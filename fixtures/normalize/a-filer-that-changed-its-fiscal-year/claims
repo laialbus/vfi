@@ -1,0 +1,747 @@
+# What normalize must write for CIK 0001859199, derived by hand before
+# `expected` was recorded and never from it, as
+# docs/adr/golden-claims-and-baseline-re-recording.md asks. The input is the
+# filer fixtures/fetch/a-filer-that-changed-its-fiscal-year records, whole:
+# 4,232 facts in fourteen filings, no two filed the same day, each with one
+# `form` and one `filed` across its facts. The registry is the committed one,
+# under which this filer is `operating`, and filers/0001859199.toml includes,
+# excludes and asserts nothing.
+#
+# Each claim says what it is derived from: an accepted record under docs/adr/,
+# the facts of the fetch fixture, or registry/. A line beginning `| ` is a
+# line of `expected` exactly as written after those two characters; lines
+# given together are consecutive there. The word `registry` in a rendered line
+# stands for the registry the fixture runs under, as
+# docs/adr/what-normalize-emits.md has a version render.
+#
+# This one fixture serves two of the cases GOALS.md's M4 names. Each section
+# says which it serves: [fiscal year] for the fiscal-year change, [tags] for
+# the company that changed tags mid-history, which
+# docs/adr/which-filing-sets-the-value.md says this filer already holds.
+# A section marked neither is a claim another record makes about this filer.
+
+## The filer
+
+| filer 0001859199
+
+from: the fetch fixture's `filer 0001859199`, the padded key
+fetch-normalize-v2.md names for it and what-normalize-emits.md carries.
+
+## The periods: 43, 28 durations and 15 instants [fiscal year]
+
+The periods, in the order `expected` writes them, which reads the dates'
+characters alone, the first date and then the second:
+
+| from 2021-05-01 to 2022-04-30
+| at 2022-04-30
+| from 2022-05-01 to 2022-10-31
+| from 2022-05-01 to 2023-04-30
+| from 2022-08-01 to 2022-10-31
+| from 2023-01-01 to 2023-03-31
+| from 2023-01-01 to 2023-06-30
+| from 2023-01-01 to 2023-09-30
+| from 2023-01-01 to 2023-12-31
+| from 2023-04-01 to 2023-06-30
+| at 2023-04-30
+| from 2023-05-01 to 2023-10-31
+| from 2023-05-01 to 2023-12-31
+| from 2023-07-01 to 2023-09-30
+| from 2023-08-01 to 2023-10-31
+| at 2023-10-31
+| at 2023-12-31
+| from 2024-01-01 to 2024-03-31
+| from 2024-01-01 to 2024-06-30
+| from 2024-01-01 to 2024-09-30
+| from 2024-01-01 to 2024-12-31
+| at 2024-03-31
+| from 2024-04-01 to 2024-06-30
+| at 2024-06-30
+| from 2024-07-01 to 2024-09-30
+| at 2024-09-30
+| at 2024-12-31
+| from 2025-01-01 to 2025-03-31
+| from 2025-01-01 to 2025-06-30
+| from 2025-01-01 to 2025-09-30
+| from 2025-01-01 to 2025-12-31
+| at 2025-03-31
+| from 2025-04-01 to 2025-06-30
+| at 2025-06-30
+| from 2025-07-01 to 2025-09-30
+| at 2025-09-30
+| at 2025-12-31
+| from 2026-01-01 to 2026-03-31
+| from 2026-01-01 to 2026-06-30
+| at 2026-03-31
+| from 2026-04-01 to 2026-06-30
+| at 2026-04-30
+| at 2026-06-30
+
+These are the only lines of `expected` that begin `at ` or `from `, and each
+is written once. They are not consecutive there: each is followed by its
+twenty-eight concept lines.
+
+from: period-alignment.md, Rule 1 — a period is one a fact of the filer
+carries, and it is the filer's when a concept its kind admits resolves to a
+`Value` there through entries that answer the period asked for. Read off the
+facts: the 4,232 facts carry 60 instants and 37 durations. At each of the 43
+above, a fact of the right shape stands under an element a registry `tag`
+rule names, in the unit the concept is counted in, and at every one of them
+at least one such rule is the only candidate for its concept in its filing,
+so that concept resolves. At 2026-04-30 that is `CommonStockSharesOutstanding` 25 alone, in
+the 10-Q `0001213900-26-090106`; over 2023-01-01 to 2023-12-31 it is
+`IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest`
+-1,046,973, the transition period's own figure, stated against the calendar
+year by the 10-K `0001213900-25-027581` and the 10-K/A
+`0001213900-25-042783`. Both are dates the filer stated, and Rule 1 does not
+correct a filer's dates (period-alignment.md, "declining to correct the
+filer").
+
+The other 54 carry nothing such a rule reads. Twelve are cover dates, one or
+two filings each, carrying only `dei:EntityCommonStockSharesOutstanding`,
+whose entry answers the period of the filing it was reported in and not the
+period asked for. 2023-06-30 and 2024-06-28 carry `dei:EntityPublicFloat`,
+and 2023-06-30 unmapped cash and equity lines beside it. Eight durations and
+30 instants carry only elements no registry rule names —
+`StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest`,
+`ProfitLoss`, warrant and option prices, acquisition lines, loss
+contingencies and the like. Over the ninth duration, 2025-06-01 to
+2025-06-30, the one fact is `CostOfGoodsAndServicesSold`, an operand of a
+`gross_profit` difference whose `revenue` resolves to nothing there. At the
+last instant, 2026-03-09, the one figure is `DividendsCash` 122,500, stated
+by the 10-Qs `0001213900-26-048242` and `0001213900-26-090106`: an instant,
+which answers no flow. A silence zero
+admits no period (PR #209, in the ADR index), so `short_term_investments`
+reading zero at those instants makes none of them a period.
+
+## The fiscal-year change, by its dates alone [fiscal year]
+
+The facts stand on two calendars: years ending 30 April through 2023-04-30,
+the transition period 2023-05-01 to 2023-12-31 the 10-KT
+`0001213900-24-021553` filed 2024-03-12 reports, and years ending 31 December
+from 2024. Among the period lines above:
+
+- The transition period is present at its own two dates:
+
+| from 2023-05-01 to 2023-12-31
+
+- The years either side are present at theirs, the April years and the first
+  December year:
+
+| from 2021-05-01 to 2022-04-30
+
+| from 2022-05-01 to 2023-04-30
+
+| from 2024-01-01 to 2024-12-31
+
+- Nothing is synthesised between them. Every period line is one of the 97
+  periods the facts carry, so there is no `from 2023-05-01 to 2024-04-30`, the
+  April year the change cut short; no `from 2023-11-01 to 2024-01-31`, its
+  third quarter; and no `from 2023-11-01 to 2023-12-31`, the two months the
+  transition period holds past its last old-calendar quarter. None of those
+  dates is carried by a fact.
+- The quarters on the two calendars do not collide. The old calendar's
+  quarters `from 2022-08-01 to 2022-10-31` and `from 2023-08-01 to
+  2023-10-31`, and the new calendar's `from 2023-01-01 to 2023-03-31`,
+  `from 2023-04-01 to 2023-06-30` and `from 2023-07-01 to 2023-09-30`, are
+  five lines of their own. The last new-calendar quarter overlaps the last
+  old-calendar one by two months and each keeps its own value, naming its own
+  filing: under `from 2023-07-01 to 2023-09-30`
+
+|   earnings_per_share_diluted Value -0.02 read us-gaap:EarningsPerShareDiluted in 0001213900-24-096140 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
+
+  and under `from 2023-08-01 to 2023-10-31`
+
+|   earnings_per_share_diluted Value -0.1 read us-gaap:EarningsPerShareDiluted in 0001213900-23-096276 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
+
+  each before the next period line.
+
+from: period-alignment.md, "What a fiscal-year change does" — "Nothing, and
+that is the decision" — and its Enforcement paragraph on the fiscal-year
+change: "the transition period present at its own length with its own two
+dates, the years either side present at theirs, no period synthesised to fill
+the gap between them, and the quarters before and after the change not
+colliding." The facts: `EarningsPerShareDiluted` stands over 2023-07-01 to
+2023-09-30 only in the 10-Q filed 2024-11-12, at -0.02, and over 2023-08-01
+to 2023-10-31 only in the 10-Q filed 2023-12-18, at -0.1; neither filing
+states `IncomeLossFromContinuingOperationsPerDilutedShare` there. No clause
+for the change is needed for any line of this file: every claim here is
+Rules 1 to 3, candidate choice and the silence readings, as the records
+state them.
+
+## The transition period and its six values [fiscal year] [tags]
+
+Three filings answer 2023-05-01 to 2023-12-31: the 10-KT
+`0001213900-24-021553` filed 2024-03-12, the 10-K `0001213900-25-027581`
+filed 2025-04-02 and the 10-K/A `0001213900-25-042783` filed 2025-05-13.
+The six values the Rule 3 record names, each naming the 10-K/A:
+
+|   revenue Value 121690 read us-gaap:Revenues in 0001213900-25-042783 rule registry|revenue|operating|tag|element:us-gaap:Revenues
+
+|   operating_income Value -6032735 read us-gaap:OperatingIncomeLoss in 0001213900-25-042783 rule registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss
+|   pretax_income Value -1046973 read us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest in 0001213900-25-042783 rule registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+
+|   net_income Value -949130 read us-gaap:IncomeLossFromContinuingOperations in 0001213900-25-042783 rule registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations
+
+|   depreciation_and_amortization Value 30029 read us-gaap:DepreciationAndAmortization in 0001213900-25-042783 rule registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization
+
+|   operating_cash_flow Value -2828634 read us-gaap:NetCashProvidedByUsedInOperatingActivities in 0001213900-25-042783 rule registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities
+
+each under the period's line, as the full period below places them.
+
+from: which-filing-sets-the-value.md, "The fiscal-year change": "answered by
+three filings — the 10-KT filed 2024-03-12, the 10-K filed 2025-04-02 and the
+10-K/A filed 2025-05-13 — ... `operating_income` −6,338,622 restated to
+−6,032,735, `depreciation_and_amortization` 289,067 to 30,029, `net_income`
+−1,251,723 to −949,130 under a tag that also moved, and `revenue` 121,690,
+`pretax_income` −1,046,973 and `operating_cash_flow` −2,828,634 unmoved,
+every one of them naming the 10-K/A filed 2025-05-13 because it was filed
+last." The facts: the 10-KT states `OperatingIncomeLoss` -6,338,622,
+`DepreciationAndAmortization` 289,067 and `NetIncomeLoss` -1,251,723 and no
+`IncomeLossFromContinuingOperations`; the 10-K and 10-K/A state -6,032,735,
+30,029 beside `DepreciationDepletionAndAmortization` 289,067, and
+`IncomeLossFromContinuingOperations` -949,130 beside `NetIncomeLoss`
+-1,251,723. The exact entries win inside each filing
+(`DepreciationAndAmortization` and `IncomeLossFromContinuingOperations` are
+`exact`, the other two `stand_in`), and the 10-K/A wins on `filed`.
+
+## The tag moves and the figure does not, at six periods [tags]
+
+At each of the six, the later filings state
+`IncomeLossFromContinuingOperationsPerDilutedShare`, which the registry reads
+as exact, beside `EarningsPerShareDiluted` at the same figure; the earlier
+filings state `EarningsPerShareDiluted` alone. Each line names the latest
+filing whose attempt produced a value there, its exact tag, and the exact
+entry's rule id; a later filing answering the period without the element
+displaces nothing (Rule 3's first clause).
+
+Under `from 2022-05-01 to 2023-04-30`, where the 10-KT stated -0.13 under
+`EarningsPerShareDiluted`:
+
+|   earnings_per_share_diluted Value -0.13 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-042783 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Under `from 2024-01-01 to 2024-03-31`, where the 10-Q filed 2024-04-19 stated
+-0.03:
+
+|   earnings_per_share_diluted Value -0.03 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-044587 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Under `from 2024-04-01 to 2024-06-30`, where the 10-Q filed 2024-08-14 stated
+-0.03:
+
+|   earnings_per_share_diluted Value -0.03 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0002008589-25-000033 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Under `from 2024-07-01 to 2024-09-30`, where the 10-Q filed 2024-11-12 stated
+-0.05:
+
+|   earnings_per_share_diluted Value -0.05 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-108695 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Under `from 2024-01-01 to 2024-06-30`, where the 10-Q filed 2024-08-14 stated
+-0.07:
+
+|   earnings_per_share_diluted Value -0.07 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0002008589-25-000033 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Under `from 2024-01-01 to 2024-09-30`, where the 10-Q filed 2024-11-12 stated
+-0.11:
+
+|   earnings_per_share_diluted Value -0.11 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-108695 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+
+Each line sits under its period line, before the next.
+
+from: which-filing-sets-the-value.md, "The company that changed tags
+mid-history": "At six periods the tag moves and the figure does not:
+2022-05-01 to 2023-04-30 (−0.13), 2024-01-01 to 2024-03-31 (−0.03),
+2024-04-01 to 2024-06-30 (−0.03), 2024-07-01 to 2024-09-30 (−0.05),
+2024-01-01 to 2024-06-30 (−0.07) and 2024-01-01 to 2024-09-30 (−0.11)", each
+showing "the later accession, the later tag, and the rule id of the entry
+that reads the concept exactly"; and period-alignment.md, "a source tag that
+moves while the value stands still". The latest filings are the facts':
+the 10-K/A filed 2025-05-13 over the April year, the 10-Q filed 2025-05-16
+over the first quarter of 2024, the 10-Q/A filed 2025-08-15 over the second
+quarter and the half-year, and the 10-Q filed 2025-11-12 over the third
+quarter and the nine months — each the latest filing to state the figure,
+the 10-Q filed 2025-11-12 also answering the first and second quarters of
+2024 and stating no per-share figure there.
+
+## The move is not one-way [tags]
+
+In the 10-Q `0001213900-26-090106` filed 2026-08-14 the filer tags
+`EarningsPerShareDiluted` alone again, beside a restatement: -2.37 over
+2025-04-01 to 2025-06-30 and -3.98 over 2025-01-01 to 2025-06-30, where the
+10-Q and 10-Q/A of August 2025 stated -0.08 and -0.14 under both tags. That
+filing is the latest to answer either period, so under
+`from 2025-04-01 to 2025-06-30`
+
+|   earnings_per_share_diluted Value -2.37 read us-gaap:EarningsPerShareDiluted in 0001213900-26-090106 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
+
+and under `from 2025-01-01 to 2025-06-30`
+
+|   earnings_per_share_diluted Value -3.98 read us-gaap:EarningsPerShareDiluted in 0001213900-26-090106 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
+
+each before the next period line.
+
+from: which-filing-sets-the-value.md, "in the filings of 2026 the filer tags
+`EarningsPerShareDiluted` again, at 2025-04-01 to 2025-06-30 and 2025-01-01
+to 2025-06-30, alongside a restatement, so a fixture that expected a monotone
+drift toward the exact entry would be recording a habit rather than a rule";
+and the facts above.
+
+## A value that changes and changes back
+
+Under `at 2023-12-31`:
+
+|   current_liabilities Value 2062834 read us-gaap:LiabilitiesCurrent in 0001213900-25-042783 rule registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent
+
+from: which-filing-sets-the-value.md, under Alternatives: "`current_liabilities`
+at 2023-12-31 on CIK 0001859199 is stated 2,062,834 by the 10-KT filed
+2024-03-12, then 1,469,084 by three 10-Qs, then 2,062,834 again by the 10-K
+filed 2025-04-02 and the 10-K/A filed 2025-05-13" — which the facts bear out,
+the three 10-Qs being those filed 2024-04-19, 2024-08-14 and 2024-11-12.
+Eleven filings answer the instant and the five filed after the 10-K/A do not
+state `LiabilitiesCurrent` there, so under Rule 3 the 10-K/A's figure stands
+and it names the 10-K/A, the latest filing to state it, not the first.
+
+## A read zero beside a silence zero at 2024-12-31
+
+Under `at 2024-12-31`:
+
+|   short_term_investments Value 0 silence zero under registry
+
+|   preferred_equity Value 0 read us-gaap:PreferredStockValue in 0002008589-25-000033 rule registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue
+
+from: what-normalize-emits.md, "At 2024-12-31, `preferred_equity` renders as a
+`read` 0 naming `0002008589-25-000033`, and `short_term_investments` as a
+`silence` 0. Nine filings answer that instant, two state
+`PreferredStockValue` there, and the four filed after the 10-Q/A are silent
+on it." The facts: the nine are the 10-K and 10-K/A of 2025, the 10-Qs filed
+2025-05-16 and 2025-11-12, the 10-Q `0002008589-25-000020` filed 2025-08-14
+and its 10-Q/A `0002008589-25-000033` filed the next day, and the three 2026
+filings; the two August 2025 filings each state `PreferredStockValue` 0 at
+2024-12-31, and the four filed later state nothing under it. No fact in the
+fixture stands under any element the registry names for
+`short_term_investments`, so no filing reaches it and its zero is supplied at
+the instant, its own shape (silence-zero-only-at-the-concepts-own-shape.md).
+
+## Preferred dividends over 2025
+
+Under `from 2025-01-01 to 2025-12-31`:
+
+|   preferred_dividends Value 122877 read us-gaap:DividendsPreferredStock in 0001213900-26-026653 rule registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock
+
+|   dividends_paid Value 0 silence conditional under registry
+
+from: declared-cash-dividends-stand-in.md, "On CIK 0001859199: the year 2025
+reads `preferred_dividends` 122,877 from `DividendsPreferredStock` in
+`0001213900-26-026653`, and `dividends_paid` is unchanged at every period."
+The facts: the 10-K filed 2026-03-12 is the one filing answering the year and
+states `DividendsPreferredStock` 122,877 there, and no other
+`preferred_dividends` element. `dividends_paid` is unchanged because the one
+new element this filer states, `DividendsCash`, stands only at 2026-03-09, an
+instant, which is no period and answers no flow; the record's Context calls
+it "one `DividendsCash` fact", and the fixture holds that one figure twice,
+once in each of the two 2026 10-Qs, at the same instant. So the pair below
+holds at every period.
+
+## The counts
+
+- 28 concept lines under every period line, in the order canonical-concepts
+  v2 publishes them, `revenue` first and `dividends_paid` last: 1,204 in all
+  (what-normalize-emits.md, "every concept at every period ... no concept
+  missing from a period and none twice").
+- 71 values `silence`: `short_term_investments Value 0 silence zero under
+  registry` at each of the 15 instants, and `dividends_declared_per_share` and
+  `dividends_paid` `Value 0 silence conditional under registry` at each of
+  the 28 durations, 15 + 56. At the other shape each of the three is
+  `Unknown`: `short_term_investments` at the 28 durations and both dividend
+  concepts at the 15 instants.
+- No value `asserted`, no `NotApplicable`, and no line beginning `    tie`.
+
+from: silence-zero-only-at-the-concepts-own-shape.md, a zero "supplied only
+at a period of the concept's own shape"; silence-zero-supplied-once-per-period.md,
+a zero "supplied once for the period" that "never enters Rule 3", so it names
+no filing; and the facts: no fact under any of the four
+`short_term_investments` elements, under `CommonStockDividendsPerShareDeclared`,
+or under any `dividends_paid` element at a duration, so no filing reaches any
+of the three at any period and the pair is silent alike wherever it is asked.
+No assertion: filers/0001859199.toml asserts nothing. No `NotApplicable`: the
+filer is `operating`, which every concept's clause admits. No tie: the
+fourteen filings carry fourteen `filed` dates, the nearest pair being the
+10-Q filed 2025-08-14 and its 10-Q/A filed 2025-08-15, which `filed` orders
+(which-filing-sets-the-value.md, "The tie clause is unexercised";
+tie-and-undated-cross-into-v2.md). Every filing's `filed` reads as a date,
+so the stage does not stop.
+
+## What the ADR index's rows come to here
+
+Of the rows in docs/adr/README.md's table, these bear on this filer and are
+applied above: Rule 3 as `which-filing-sets-the-value.md` states it, the
+latest filing setting every value, agreeing ones included (the six values,
+the six tag moves); a silence zero supplied once per period and never in
+Rule 3 (the counts); PR #209's ruling that a silence value makes no period
+(the 54); the tie record, with the owner's reading of a filing that lost on
+`form` beneath a tie on `filed` — no tie arises here; and the silence zero
+only at the concept's own shape (the counts, and the full periods below).
+The rows on CIK 0001778784, CIK 0002003750, the benchmark proof, the
+fetch-normalize v2 wording and the escalated refs name no line of this
+fixture.
+
+## Every line of one instant: 2023-10-31 [fiscal year]
+
+The last balance sheet on the old calendar. One filing answers it, the 10-Q
+`0001213900-23-096276` filed 2023-12-18, the one filing made on that
+calendar. Its facts at 2023-10-31 under an element a registry rule names are
+`Assets` 16488906, `AssetsCurrent` 2156297,
+`CashAndCashEquivalentsAtCarryingValue` 605337,
+`CommonStockSharesOutstanding` 42522091, `Liabilities` 2733077,
+`LiabilitiesCurrent` 2486077, `OtherShortTermBorrowings` 13891,
+`RetainedEarningsAccumulatedDeficit` -10396034, `ShortTermBorrowings` 13891
+and `StockholdersEquity` 13753086, and nothing else. Every flow concept is
+`Unknown`, since no instant fact answers a flow: a `tag` declines with no
+fact, a `sum` names its first operand unanswered, and each `difference` for
+`gross_profit` declines on `revenue`, which resolves to no value here. The
+balances with a fact read it; `short_term_investments` is the zero; the other
+balances decline every rule. `short_term_debt` has two survivors, both
+`stand_in`, neither containing the other, and is `Unknown` with each naming
+the other. The filing's period of report is 2023-10-31, so the cover-page
+count `dei:EntityCommonStockSharesOutstanding` 44122091 is a candidate for
+`shares_outstanding` here, and it is a stand-in dropped behind the exact
+`CommonStockSharesOutstanding`. Every rule, in the order the registry sorts
+ids.
+
+from: the facts of `0001213900-23-096276`; registry/ for the rules, their
+forms, readings and the ids they render; candidate-choice.md for the four
+steps and the reasons; period-alignment.md's cover-page condition; and
+silence-zero-only-at-the-concepts-own-shape.md for the three silence
+concepts. All the lines of the period, consecutive, beginning at its period
+line and ending before the next:
+
+| at 2023-10-31
+|   revenue Unknown
+|     in 0001213900-23-096276
+|       registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax declined: no fact answering the period asked for
+|       registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax declined: no fact answering the period asked for
+|       registry|revenue|operating|tag|element:us-gaap:Revenues declined: no fact answering the period asked for
+|       registry|revenue|operating|tag|element:us-gaap:SalesRevenueGoodsNet declined: no fact answering the period asked for
+|       registry|revenue|operating|tag|element:us-gaap:SalesRevenueNet declined: no fact answering the period asked for
+|       registry|revenue|operating|tag|element:us-gaap:SalesRevenueServicesNet declined: no fact answering the period asked for
+|   gross_profit Unknown
+|     in 0001213900-23-096276
+|       registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsAndServicesSold declined: an operand concept that did not resolve to a value
+|       registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsSold declined: an operand concept that did not resolve to a value
+|       registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfRevenue declined: an operand concept that did not resolve to a value
+|       registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfServices declined: an operand concept that did not resolve to a value
+|       registry|gross_profit|*|tag|element:us-gaap:GrossProfit declined: no fact answering the period asked for
+|   operating_income Unknown
+|     in 0001213900-23-096276
+|       registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss declined: no fact answering the period asked for
+|   pretax_income Unknown
+|     in 0001213900-23-096276
+|       registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest declined: no fact answering the period asked for
+|       registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments declined: no fact answering the period asked for
+|   income_tax_expense Unknown
+|     in 0001213900-23-096276
+|       registry|income_tax_expense|*|sum|element:us-gaap:CurrentIncomeTaxExpenseBenefit+element:us-gaap:DeferredIncomeTaxExpenseBenefit declined: an operand with no fact answering it, so the composition was partial: us-gaap:CurrentIncomeTaxExpenseBenefit
+|       registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit declined: no fact answering the period asked for
+|   net_income Unknown
+|     in 0001213900-23-096276
+|       registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations declined: no fact answering the period asked for
+|       registry|net_income|*|tag|element:us-gaap:NetIncomeLoss declined: no fact answering the period asked for
+|   interest_expense Unknown
+|     in 0001213900-23-096276
+|       registry|interest_expense|*|tag|element:us-gaap:InterestAndDebtExpense declined: no fact answering the period asked for
+|       registry|interest_expense|*|tag|element:us-gaap:InterestExpense declined: no fact answering the period asked for
+|       registry|interest_expense|*|tag|element:us-gaap:InterestExpenseBorrowings declined: no fact answering the period asked for
+|       registry|interest_expense|*|tag|element:us-gaap:InterestExpenseDebt declined: no fact answering the period asked for
+|   depreciation_and_amortization Unknown
+|     in 0001213900-23-096276
+|       registry|depreciation_and_amortization|*|sum|element:us-gaap:Depreciation+element:us-gaap:AmortizationOfIntangibleAssets declined: an operand with no fact answering it, so the composition was partial: us-gaap:Depreciation
+|       registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAmortizationAndAccretionNet declined: no fact answering the period asked for
+|       registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization declined: no fact answering the period asked for
+|       registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationDepletionAndAmortization declined: no fact answering the period asked for
+|   preferred_dividends Unknown
+|     in 0001213900-23-096276
+|       registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+|   earnings_per_share_diluted Unknown
+|     in 0001213900-23-096276
+|       registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted declined: no fact answering the period asked for
+|       registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare declined: no fact answering the period asked for
+|   diluted_shares_weighted_average Unknown
+|     in 0001213900-23-096276
+|       registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding declined: no fact answering the period asked for
+|   shares_outstanding Value 42522091 read us-gaap:CommonStockSharesOutstanding in 0001213900-23-096276 rule registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding
+|   dividends_declared_per_share Unknown
+|     in 0001213900-23-096276
+|       registry|dividends_declared_per_share|*|tag|element:us-gaap:CommonStockDividendsPerShareDeclared declined: no fact answering the period asked for
+|   total_assets Value 16488906 read us-gaap:Assets in 0001213900-23-096276 rule registry|total_assets|*|tag|element:us-gaap:Assets
+|   current_assets Value 2156297 read us-gaap:AssetsCurrent in 0001213900-23-096276 rule registry|current_assets|*|tag|element:us-gaap:AssetsCurrent
+|   inventory Unknown
+|     in 0001213900-23-096276
+|       registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+|   cash_and_equivalents Value 605337 read us-gaap:CashAndCashEquivalentsAtCarryingValue in 0001213900-23-096276 rule registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue
+|   short_term_investments Value 0 silence zero under registry
+|   total_liabilities Value 2733077 read us-gaap:Liabilities in 0001213900-23-096276 rule registry|total_liabilities|*|tag|element:us-gaap:Liabilities
+|   current_liabilities Value 2486077 read us-gaap:LiabilitiesCurrent in 0001213900-23-096276 rule registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent
+|   short_term_debt Unknown
+|     in 0001213900-23-096276
+|       registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+|       registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: undecided among survivors, which names the others: registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings
+|       registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: undecided among survivors, which names the others: registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings
+|   long_term_debt Unknown
+|     in 0001213900-23-096276
+|       registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+|       registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+|       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+|   shareholders_equity Value 13753086 read us-gaap:StockholdersEquity in 0001213900-23-096276 rule registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity
+|   preferred_equity Unknown
+|     in 0001213900-23-096276
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+|   retained_earnings Value -10396034 read us-gaap:RetainedEarningsAccumulatedDeficit in 0001213900-23-096276 rule registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit
+|   operating_cash_flow Unknown
+|     in 0001213900-23-096276
+|       registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities declined: no fact answering the period asked for
+|       registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations declined: no fact answering the period asked for
+|   capital_expenditure Unknown
+|     in 0001213900-23-096276
+|       registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+|   dividends_paid Unknown
+|     in 0001213900-23-096276
+|       registry|dividends_paid|*|sum|element:us-gaap:PaymentsOfDividendsCommonStock+element:us-gaap:PaymentsOfDividendsPreferredStockAndPreferenceStock declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsOfDividendsCommonStock
+|       registry|dividends_paid|*|tag|element:us-gaap:DividendsCash declined: no fact answering the period asked for
+|       registry|dividends_paid|*|tag|element:us-gaap:DividendsCommonStockCash declined: no fact answering the period asked for
+|       registry|dividends_paid|*|tag|element:us-gaap:PaymentsOfDividends declined: no fact answering the period asked for
+
+## Every line of one duration: the transition period [fiscal year] [tags]
+
+The three filings above answer 2023-05-01 to 2023-12-31. The facts over the
+period under an element a registry rule names:
+
+- all three: `Revenues` 121690, `CostOfRevenue` 94665, `GrossProfit` 27025,
+  `IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest`
+  -1046973, `IncomeTaxExpenseBenefit` 204286,
+  `CurrentIncomeTaxExpenseBenefit` 204286, `NetIncomeLoss` -1251723,
+  `DepreciationDepletionAndAmortization` 289067, `EarningsPerShareDiluted`
+  -0.03, `WeightedAverageNumberOfDilutedSharesOutstanding` 42688666 and
+  `NetCashProvidedByUsedInOperatingActivities` -2828634;
+- the 10-KT alone: `OperatingIncomeLoss` -6338622,
+  `DepreciationAndAmortization` 289067 and `InterestExpense` 70676;
+- the 10-K and the 10-K/A: `OperatingIncomeLoss` -6032735,
+  `DepreciationAndAmortization` 30029, `IncomeLossFromContinuingOperations`
+  -949130 and `IncomeLossFromContinuingOperationsPerDilutedShare` -0.02.
+
+Each flow that one of them reaches is read from the 10-K/A, the latest to
+reach it, but for `interest_expense`: only the 10-KT states it, and the
+later two filings' silence does not displace it (Rule 3's first clause), so
+it names the 10-KT. In the 10-K/A the exact entries drop the stand-ins —
+`GrossProfit` the difference over `CostOfRevenue`,
+`IncomeLossFromContinuingOperations` `NetIncomeLoss`,
+`DepreciationAndAmortization` `DepreciationDepletionAndAmortization`, and
+`IncomeLossFromContinuingOperationsPerDilutedShare` -0.02
+`EarningsPerShareDiluted` -0.03. That last is the tag and the figure moving
+together: the 10-KT's -0.03 read under the stand-in becomes -0.02 under the
+exact entry, beside `net_income`'s own move. `IncomeTaxExpenseBenefit` is
+the one tax candidate: the sum beside it has no
+`DeferredIncomeTaxExpenseBenefit` to add. The dividend pair, which no rule
+reaches, is the conditional zero. Every balance is `Unknown`, since no
+duration fact answers a balance, and so are `preferred_dividends` and
+`capital_expenditure`, whose elements no answering filing carries there; each
+`Unknown` carries all three filings' attempts, in the order their accessions
+sort.
+
+from: the facts of the three filings; registry/; candidate-choice.md;
+which-filing-sets-the-value.md; silence-zero-only-at-the-concepts-own-shape.md.
+All the lines of the period, consecutive, beginning at its period line and
+ending before the next:
+
+| from 2023-05-01 to 2023-12-31
+|   revenue Value 121690 read us-gaap:Revenues in 0001213900-25-042783 rule registry|revenue|operating|tag|element:us-gaap:Revenues
+|   gross_profit Value 27025 read us-gaap:GrossProfit in 0001213900-25-042783 rule registry|gross_profit|*|tag|element:us-gaap:GrossProfit
+|   operating_income Value -6032735 read us-gaap:OperatingIncomeLoss in 0001213900-25-042783 rule registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss
+|   pretax_income Value -1046973 read us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest in 0001213900-25-042783 rule registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest
+|   income_tax_expense Value 204286 read us-gaap:IncomeTaxExpenseBenefit in 0001213900-25-042783 rule registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit
+|   net_income Value -949130 read us-gaap:IncomeLossFromContinuingOperations in 0001213900-25-042783 rule registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations
+|   interest_expense Value 70676 read us-gaap:InterestExpense in 0001213900-24-021553 rule registry|interest_expense|*|tag|element:us-gaap:InterestExpense
+|   depreciation_and_amortization Value 30029 read us-gaap:DepreciationAndAmortization in 0001213900-25-042783 rule registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization
+|   preferred_dividends Unknown
+|     in 0001213900-24-021553
+|       registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+|       registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+|   earnings_per_share_diluted Value -0.02 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-042783 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
+|   diluted_shares_weighted_average Value 42688666 read us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding in 0001213900-25-042783 rule registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding
+|   shares_outstanding Unknown
+|     in 0001213900-24-021553
+|       registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+|       registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+|       registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+|       registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+|   dividends_declared_per_share Value 0 silence conditional under registry
+|   total_assets Unknown
+|     in 0001213900-24-021553
+|       registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+|   current_assets Unknown
+|     in 0001213900-24-021553
+|       registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+|   inventory Unknown
+|     in 0001213900-24-021553
+|       registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+|   cash_and_equivalents Unknown
+|     in 0001213900-24-021553
+|       registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+|   short_term_investments Unknown
+|     in 0001213900-24-021553
+|       registry|short_term_investments|*|tag|element:us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:MarketableSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:OtherShortTermInvestments declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:ShortTermInvestments declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|short_term_investments|*|tag|element:us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:MarketableSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:OtherShortTermInvestments declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:ShortTermInvestments declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|short_term_investments|*|tag|element:us-gaap:AvailableForSaleSecuritiesDebtSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:MarketableSecuritiesCurrent declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:OtherShortTermInvestments declined: no fact answering the period asked for
+|       registry|short_term_investments|*|tag|element:us-gaap:ShortTermInvestments declined: no fact answering the period asked for
+|   total_liabilities Unknown
+|     in 0001213900-24-021553
+|       registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+|   current_liabilities Unknown
+|     in 0001213900-24-021553
+|       registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+|   short_term_debt Unknown
+|     in 0001213900-24-021553
+|       registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+|       registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+|       registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+|       registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+|       registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+|   long_term_debt Unknown
+|     in 0001213900-24-021553
+|       registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+|       registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+|       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+|       registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+|       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+|       registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+|       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+|   shareholders_equity Unknown
+|     in 0001213900-24-021553
+|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
+|   preferred_equity Unknown
+|     in 0001213900-24-021553
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+|       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+|   retained_earnings Unknown
+|     in 0001213900-24-021553
+|       registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+|   operating_cash_flow Value -2828634 read us-gaap:NetCashProvidedByUsedInOperatingActivities in 0001213900-25-042783 rule registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities
+|   capital_expenditure Unknown
+|     in 0001213900-24-021553
+|       registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+|     in 0001213900-25-027581
+|       registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+|     in 0001213900-25-042783
+|       registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+|       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+|   dividends_paid Value 0 silence conditional under registry
