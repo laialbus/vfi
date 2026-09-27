@@ -1,24 +1,29 @@
-# What one measurement of benchmarks/normalize/input costs the normalize stage.
+# What one measurement of the workload benchmarks/normalize/workload names costs
+# the normalize stage: one filer's facts, run into the history the stage writes.
 # Recorded deliberately, read by crates/normalize/tests/bench.rs, and compared
 # against the multiples in benchmarks/thresholds.
 #
-# allocations and bytes are counted, not timed: the stage asks for its output
-# buffer once and reuses it across every pass, and 11836 is the workload
-# itself. Both numbers are the same on every machine.
-allocations 1
-bytes 11836
+# allocations and bytes are counted, not timed, over the passes below, the
+# output buffer growing to its size once and reused after that. Both numbers
+# are the same on every machine.
+allocations 283488
+bytes 77204336
 
 # How many times one measurement runs the stage over the workload: the count
-# every number in this file was taken at, so changing it restates them all.
-passes 512
+# every number in this file was taken at, so changing it restates them all. One
+# pass of the whole filer is about a tenth of a second in release, and the
+# counted numbers are exact at any count, so one is enough to measure and few
+# enough that the gate runner, which measures this once per proof, stays short.
+passes 1
 
-# The stage's time as a multiple of a plain copy of the same bytes, measured in
-# the same run — the machine's own speed is in both halves and divides out, which
-# is what lets a number recorded on one machine mean anything on another. Above
-# one because the stage is a call the copy is not.
+# The stage's time as a multiple of a plain copy of the workload's published
+# bytes, measured in the same run — the machine's own speed is in both halves
+# and divides out, which is what lets a number recorded on one machine mean
+# anything on another. Far above one because the stage resolves every concept at
+# every period, where the copy only moves the characters.
 #
-# Near the middle of what the machine that recorded it measured: about two
-# hundred runs, ranging from 0.92 to 1.47. A third decimal here would be
+# Near the middle of what the machine that recorded it measured: sixteen runs,
+# ranging from 12,902 to 13,382. A third significant figure here would be
 # recording that noise, and it is the threshold beside it that decides anything,
 # never this last digit.
-cost 1.2
+cost 13000

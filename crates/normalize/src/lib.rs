@@ -1,6 +1,12 @@
-//! Normalize stage: resolves filing tags to canonical facts.
+//! Normalize stage: resolves one filer's facts into its canonical history.
 //!
-//! Eight modules, in the order the records fix between them.
+//! [`normalize`] is the stage. Given one filer's facts as the fetch boundary
+//! publishes them and a registry, it writes the filer's history as
+//! `canonical-concepts` v2 publishes it — the filer, the periods Rule 1 admits,
+//! and every concept at each — in the spelling [`rendering`] fixes. The golden
+//! fixtures and the benchmark measure it there.
+//!
+//! Nine modules, in the order the records fix between them.
 //! [`applicability`] is asked first, of the published clauses alone, and a
 //! concept the filer's kind excludes stops there. [`registry`] is the one way
 //! to the tag mapping, which is data rather than code, and a concept reaches it
@@ -17,10 +23,7 @@
 //! is Rule 1, which canonical periods a filer has, asked of what stands.
 //! [`history`] runs the two over one filer's history end to end and hands over
 //! what `canonical-concepts` v2 publishes: the filer, its periods, and every
-//! concept at each.
-//!
-//! [`normalize`] is not on it yet. The golden fixture and the benchmark still
-//! measure the stage as it stood before any of the above.
+//! concept at each. [`rendering`] writes that out.
 
 pub mod answering;
 pub mod applicability;
@@ -28,19 +31,23 @@ pub mod filings;
 pub mod history;
 pub mod periods;
 pub mod registry;
+pub mod rendering;
 pub mod settling;
 pub mod standing;
 
-/// Resolves one filing's facts into the canonical facts the later stages read,
-/// appending them to `out`.
+use vfi_contracts::fetch_normalize::Filer;
+
+use history::Undated;
+use registry::Registry;
+
+/// Writes `filer`'s history under `registry` onto `out`, as [`rendering`]
+/// spells it, or stops on the filings whose `filed` does not read as a date and
+/// writes nothing.
 ///
-/// Nothing resolves yet, so the filing reaches `out` as it was given. What
-/// would change it is a versioned tag registry with per-company overrides —
-/// data, not branching code — and that is M4's to build; a rule invented here
-/// to give the stage something to do is the guess that looks right and
-/// corrupts results quietly. The golden fixture beside this pins the doing of
-/// nothing, so the change that lands the first mapping rule is the change that
-/// states a new expected result for it.
-pub fn normalize(filing: &str, out: &mut String) {
-    out.push_str(filing);
+/// The benchmark's proof of catch slows the first public function this file
+/// states on one line, which is this one, so its signature stays on one line.
+pub fn normalize(registry: &Registry, filer: &Filer, out: &mut String) -> Result<(), Undated> {
+    let history = history::history(registry, filer)?;
+    rendering::history(&history, registry.version(), out);
+    Ok(())
 }

@@ -1,11 +1,14 @@
 //! The benchmark harness for the normalize stage.
 //!
 //! The workload and the numbers it must stay inside live under
-//! `benchmarks/normalize/`, as data: `input` is what the stage runs over and
-//! `baseline` is what it cost when the baseline was taken, and at how many
-//! passes over `input`. The measurement runs at the pass count read from there
-//! rather than one held here, so it is stated once, beside the numbers taken at
-//! it. The thresholds are
+//! `benchmarks/normalize/`, as data: `workload` names the merged fetch fixture
+//! whose filer the stage runs over, and `baseline` is what it cost when the
+//! baseline was taken, and at how many passes. The filer is read out of
+//! `fixtures/fetch/<name>/expected` the way the golden harness reads its input,
+//! so the workload is one filer's facts as the fetch boundary publishes them,
+//! a fixed size in the tree, with no copy of it to drift. The measurement runs
+//! at the pass count read from the baseline rather than one held here, so it is
+//! stated once, beside the numbers taken at it. The thresholds are
 //! `benchmarks/thresholds`, shared by every stage. This file is the code that
 //! measures; it writes none of those, for the reason the golden harness beside
 //! it gives — a number the subject produced proves only that the subject agrees
@@ -31,7 +34,8 @@
 //!   regression in it is a regression in the stated terms.
 //!
 //! - **Cost** — the stage's time divided by the time of the plainest copy of
-//!   the same bytes, measured in the same run on the same machine. The division
+//!   the bytes its workload was published as, measured in the same run on the
+//!   same machine. The division
 //!   is what makes the number portable: the machine's speed is in both halves
 //!   and cancels. What is left is how much the stage costs above moving its
 //!   input, which is a unit that stays meaningful as the stage grows real work
@@ -72,6 +76,11 @@ use std::fs;
 use std::hint::black_box;
 use std::path::{Path, PathBuf};
 use std::time::{Duration, Instant};
+
+use vfi_contracts::fetch_normalize::Filer;
+use vfi_normalize::registry::Registry;
+
+mod fixture;
 
 /// `benchmarks/<stage>/` is this harness's half of `benchmarks/`, and it is what
 /// scripts/gates.sh reads to decide which harnesses to run. A stage directory
@@ -165,47 +174,53 @@ fn counting(body: impl FnOnce()) -> (u64, u64) {
 ///
 /// `black_box` on both ends of the call is what stops the optimizer from
 /// noticing that every pass computes the same thing and keeping one of them.
-fn subject(input: &str, passes: usize, out: &mut String) {
+fn subject(workload: &Workload, passes: usize, out: &mut String) {
     for _ in 0..passes {
         out.clear();
-        vfi_normalize::normalize(black_box(input), black_box(&mut *out));
+        let run = vfi_normalize::normalize(
+            black_box(&workload.registry),
+            black_box(&workload.filer),
+            black_box(&mut *out),
+        );
+        if let Err(undated) = run {
+            panic!("the workload does not run through the stage: {undated}");
+        }
     }
 }
 
-/// The same bytes moved by the plainest thing that could move them. This is the
-/// denominator of `cost`, and it is deliberately the floor rather than a
-/// synthetic workload: what the ratio then says is how much the stage costs
-/// above the copy it cannot avoid. Today the stage is that copy and the ratio is
-/// about one; when the stage does real work the ratio rises and the baseline
-/// restates it.
-fn reference(input: &str, passes: usize, out: &mut String) {
+/// The workload's published bytes moved by the plainest thing that could move
+/// them. This is the denominator of `cost`, and it is deliberately the floor
+/// rather than a synthetic workload: the machine's speed is in it as it is in
+/// the stage, and what the ratio then says is how much the stage costs above
+/// moving what it was handed.
+fn reference(workload: &Workload, passes: usize, out: &mut String) {
     for _ in 0..passes {
         out.clear();
-        out.push_str(black_box(input));
+        out.push_str(black_box(&workload.published));
         black_box(&mut *out);
     }
 }
 
-fn measure(input: &str, passes: usize) -> Measured {
+fn measure(workload: &Workload, passes: usize) -> Measured {
     let mut out = String::new();
-    let (allocations, bytes) = counting(|| subject(input, passes, &mut out));
+    let (allocations, bytes) = counting(|| subject(workload, passes, &mut out));
     black_box(&out);
 
     Measured {
         allocations,
         bytes,
-        cost: measure_cost(input, passes),
+        cost: measure_cost(workload, passes),
     }
 }
 
-fn measure_cost(input: &str, passes: usize) -> f64 {
+fn measure_cost(workload: &Workload, passes: usize) -> f64 {
     let mut out = String::new();
     let mut copied = String::new();
 
     // Both buffers reach their full capacity before the clock starts, so the
     // repetition that pays for the allocation is not one of the timed ones.
-    subject(input, passes, &mut out);
-    reference(input, passes, &mut copied);
+    subject(workload, passes, &mut out);
+    reference(workload, passes, &mut copied);
 
     let mut stage = Duration::MAX;
     let mut copy = Duration::MAX;
@@ -213,11 +228,11 @@ fn measure_cost(input: &str, passes: usize) -> f64 {
         // Interleaved rather than run in two blocks: whatever the machine is
         // doing to one of them for a moment, it is doing to the other.
         let start = Instant::now();
-        subject(input, passes, &mut out);
+        subject(workload, passes, &mut out);
         stage = stage.min(start.elapsed());
 
         let start = Instant::now();
-        reference(input, passes, &mut copied);
+        reference(workload, passes, &mut copied);
         copy = copy.min(start.elapsed());
     }
 
@@ -336,6 +351,48 @@ fn read_numbers<const N: usize>(path: &Path, wanted: [&str; N]) -> [f64; N] {
     numbers
 }
 
+/// What the stage runs over: the filer and the registry it is read under, and
+/// the characters the filer's facts were published as, which the reference
+/// copies.
+struct Workload {
+    registry: Registry,
+    filer: Filer,
+    published: String,
+}
+
+/// The merged fetch fixture a `workload` file names, read into what the stage
+/// runs over. The file names one fixture on a line of its own, and anything
+/// else is refused rather than read around: a workload that quietly became a
+/// different filer would restate every number in the baseline.
+fn workload(path: &Path) -> Workload {
+    let text = fs::read_to_string(path)
+        .unwrap_or_else(|e| panic!("{}: the benchmark reads this file ({e})", path.display()));
+    let named: Vec<&str> = text
+        .lines()
+        .map(|line| line.split('#').next().unwrap_or_default().trim())
+        .filter(|line| !line.is_empty())
+        .collect();
+    let [case] = named[..] else {
+        panic!("{}: names {named:?}, and a workload is one fetch fixture", path.display());
+    };
+
+    let filer = fixture::recorded_in(case);
+    assert!(
+        !filer.facts.is_empty(),
+        "fixtures/fetch/{case}: records no fact, so the measurement is of nothing"
+    );
+    let published = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .join("../../fixtures/fetch")
+        .join(case)
+        .join("expected");
+    Workload {
+        registry: fixture::read(&fixture::committed()),
+        filer,
+        published: fs::read_to_string(&published)
+            .unwrap_or_else(|e| panic!("{}: cannot be read ({e})", published.display())),
+    }
+}
+
 /// The recorded pass count as a count. Anything but a whole number above zero
 /// is a baseline that does not say what it was taken at, and the measurement
 /// refuses it rather than rounding it into one.
@@ -362,16 +419,8 @@ fn the_stage_stays_inside_its_committed_baseline() {
         read_numbers(&baseline, ["allocations", "bytes", "cost", "passes"]);
     let passes = whole_passes(&baseline, passes);
 
-    let input = fs::read_to_string(stage.join("input")).unwrap_or_else(|e| {
-        panic!("{}: the stage runs over this workload ({e})", stage.join("input").display())
-    });
-    assert!(
-        !input.is_empty(),
-        "{}: is empty, so the measurement is of nothing",
-        stage.join("input").display()
-    );
-
-    let measured = measure(&input, passes);
+    let workload = workload(&stage.join("workload"));
+    let measured = measure(&workload, passes);
 
     let mut failures = String::new();
     let mut check = |name: &str, measured: f64, baseline: f64, threshold: f64| {
