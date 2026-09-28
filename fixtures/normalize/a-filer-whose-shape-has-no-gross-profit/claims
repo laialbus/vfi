@@ -108,10 +108,15 @@ Under every one of the 32 period lines, before the next, each of these six
 lines stands once:
 
 |   gross_profit NotApplicable kind bank admits operating
+
 |   operating_income NotApplicable kind bank admits operating reit
+
 |   current_assets NotApplicable kind bank admits operating
+
 |   inventory NotApplicable kind bank admits operating
+
 |   short_term_investments NotApplicable kind bank admits operating
+
 |   current_liabilities NotApplicable kind bank admits operating
 
 That is 192 `NotApplicable` lines, and no other concept is `NotApplicable`
