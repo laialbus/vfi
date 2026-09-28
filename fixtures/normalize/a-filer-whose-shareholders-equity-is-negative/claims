@@ -9,12 +9,8 @@
 # filers/0002011954.toml includes, excludes and asserts nothing.
 #
 # Each claim says what it is derived from: an accepted record under docs/adr/,
-# the facts of the fetch fixture, or registry/. A line beginning `| ` is a
-# line of `expected` exactly as written after those two characters; lines
-# given together are consecutive there, but for the period lines, which are
-# given in the order `expected` writes them. The word `registry` in a rendered
-# line stands for the registry the fixture runs under, as
-# docs/adr/what-normalize-emits.md has a version render.
+# the facts of the fetch fixture, or registry/. A line beginning `| ` is read
+# as docs/adr/the-harness-checks-the-claims.md decides.
 
 ## The filer
 

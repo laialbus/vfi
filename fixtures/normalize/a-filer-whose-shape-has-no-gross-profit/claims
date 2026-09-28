@@ -12,10 +12,8 @@
 #
 # Each claim says what it is derived from: an accepted record under docs/adr/,
 # the facts of the fetch fixture, the published vocabulary canonical-concepts
-# v2, or registry/. A line beginning `| ` is a line of `expected` exactly as
-# written after those two characters; lines given together are consecutive
-# there. The word `registry` in a rendered line stands for the registry the
-# fixture runs under, as docs/adr/what-normalize-emits.md has a version render.
+# v2, or registry/. A line beginning `| ` is read as
+# docs/adr/the-harness-checks-the-claims.md decides.
 #
 # The eight filings, all 0000927089-: 25-000009 the 10-Q/A filed 2025-01-03
 # (period of report 2024-09-30), 25-000061 the 10-K filed 2025-03-28

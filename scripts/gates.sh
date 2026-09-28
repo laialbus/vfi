@@ -2717,6 +2717,37 @@ violate_fixtures() {
 	return 1
 }
 
+# The gate's second violation, in a copy of its own: a claim made false with
+# expected untouched (docs/adr/the-harness-checks-the-claims.md). The copy
+# builds, passes the test gate and still produces every expected byte for byte,
+# so the claims check is the only thing left that can object. The first
+# committed claims will do, for the reason violate_fixtures gives; characters
+# appended to its first claimed line put that line in no line of expected.
+#
+# Going red under fixtures is not enough on its own, because the byte comparison
+# answers to the same name. So the proof also asks that the output name this
+# file at this line, which only the claims check prints.
+violate_fixtures_claims() {
+	local claims number rewritten
+	for claims in "$1"/fixtures/*/*/claims; do
+		[ -f "$claims" ] || continue
+		number="$(awk '/^\| / { print NR; exit }' "$claims")"
+		if [ -z "$number" ]; then
+			echo "$prog: ${claims#"$1"/} holds no claimed line to make false" >&2
+			return 1
+		fi
+		rewritten="$1.claims"
+		awk -v n="$number" 'NR == n { $0 = $0 " and a claim expected does not hold" } { print }' \
+			"$claims" >"$rewritten"
+		cat "$rewritten" >"$claims"
+		rm -f "$rewritten"
+		must_name="${claims#"$1"/}:$number:"
+		return 0
+	done
+	echo "$prog: no committed claims to make a claim false in" >&2
+	return 1
+}
+
 # The last stage reaching back to an earlier one. The forward edge this reverses
 # is absent from the tree, so the two do not form a cycle, the copy still builds
 # and tests clean, and the deps gate is the only thing left that can object —
@@ -3932,17 +3963,42 @@ accepts() {
 # all. Running the rest was the multiplier that made this suite cost what it did:
 # every gate, once per gate, for a verdict about one of them.
 prove() {
-	local name copy output started
+	local name violation
 	name="$1"
-	copy="$scratch/$name"
 	if declare -F "accept_$name" >/dev/null; then
 		# The accepted copy runs first, so a red below is the violation and not
 		# something about the fixture the violation is made from.
 		accepts "$name" || return 1
 	fi
+	for violation in $(violations "$name"); do
+		caught "$name" "$violation" || return 1
+	done
+}
+
+# The violations a gate is proved against, each in a copy of its own. One apiece,
+# named for the gate, but for fixtures: its harness holds the stage to expected
+# and the claims to expected, and either check could stop while the other still
+# turned the gate red.
+violations() {
+	case "$1" in
+	fixtures) echo fixtures fixtures_claims ;;
+	*) echo "$1" ;;
+	esac
+}
+
+# A violation that has to be told apart from another under the same gate sets
+# must_name to what only its own failure prints.
+must_name=""
+
+caught() {
+	local name violation copy output started
+	name="$1"
+	violation="$2"
+	copy="$scratch/$violation"
 	started=$SECONDS
 	copy_tree "$copy"
-	"violate_$name" "$copy" || return 1
+	must_name=""
+	"violate_$violation" "$copy" || return 1
 
 	if output="$("$copy/scripts/gates.sh" --gates-only "$name" 2>&1)"; then
 		echo "$prog: $name passed a tree carrying the violation it exists to catch" >&2
@@ -3954,7 +4010,12 @@ prove() {
 		printf '%s\n' "$output" >&2
 		return 1
 	fi
-	echo "$name: proof caught it, in $(since "$started")"
+	if [ -n "$must_name" ] && ! grep -Fq "$must_name" <<<"$output"; then
+		echo "$prog: $name went red on violate_$violation without naming $must_name" >&2
+		printf '%s\n' "$output" >&2
+		return 1
+	fi
+	echo "$name: proof caught violate_$violation, in $(since "$started")"
 }
 
 scratch=""
