@@ -177,7 +177,7 @@ parked() {
 }
 
 claimed() {
-	printf '%s\n' "$branches" | grep -Fxq "refs/heads/$1"
+	grep -Fxq "refs/heads/$1" <<<"$branches"
 }
 
 # One read of origin, kept whole as well as by name: the sweep releases a ref at
@@ -191,7 +191,7 @@ read_branches() {
 }
 
 claim_head() {
-	printf '%s\n' "$branch_refs" | awk -v ref="refs/heads/$1" '$2 == ref { print $1; exit }'
+	awk -v ref="refs/heads/$1" '$2 == ref { print $1; exit }' <<<"$branch_refs"
 }
 
 # What the queue must be for two agents to work in it at once. Each task is
@@ -684,7 +684,7 @@ release_claim() {
 		echo "$(basename "$0"): released $1 but cannot read back $archive" >&2
 		return 2
 	fi
-	archived="$(printf '%s\n' "$archived" | awk '{ print $1; exit }')"
+	archived="$(awk '{ print $1; exit }' <<<"$archived")"
 	if [ "$archived" != "$2" ]; then
 		echo "$(basename "$0"): $archive holds $archived, not the $2 the claim on $1 held" >&2
 		return 2
