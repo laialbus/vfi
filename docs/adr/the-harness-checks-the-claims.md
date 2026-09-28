@@ -1,13 +1,13 @@
 # The normalize golden harness checks a fixture's `| ` lines against `expected`: each group consecutive, each listing in order, each group under the period line it follows
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural. It adds a check to the fixtures gate and a proof to
   the gate runner. It loosens nothing and changes no anchor, contract or schema.
   The runner is a protected path, so the implementing task needs the
   `human-approved` label on its pull request, as
   `protect-paths-owns-grant.md` sets out.
 - **Proposed:** 2026-09-27, by M4-51
-- **Decided:**
+- **Decided:** 2026-09-27, by the decider
 - **Touches:** what the normalize golden harness checks (the fixtures gate) and
   that gate's proof of catch in `scripts/gates.sh`. Also the way a `claims`
   file states placement: a period line put before the claims it places. This is
@@ -288,7 +288,30 @@ re-derivation, and this record says so rather than implying it is covered.
 
 By the decider, not the proposer.
 
-- **Authority:**
-- **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+- **Authority:** Structural, and within reach. It adds a check and a proof to
+  an existing gate, weakens none, and changes no anchor, contract, schema or
+  protected path. The runner edit waits for the implementing task and its
+  human label. Flagged for later human review, as the tier requires.
+- **Checked:** `golden-claims-and-baseline-re-recording.md`, which this carries
+  out without editing; `golden.rs`'s rule that the fixtures gate goes red apart
+  from the tests gate; `violate_fixtures`, `prove()` and `rendering::REGISTRY`
+  as described. On main at `2eeead1` I used a reader of my own, written from
+  this Decision, with nothing shared with the proposer's. The three `claims`
+  hold 1,694 lines, 877 of them `| `, and every one is in `expected`. As
+  written, fiscal-year is red at exactly lines 150 and 154, and the other two
+  files hold. With the sixteen anchors of step 2, each a line the file's listing
+  claims and once in `expected`, all three hold. A group moved to the wrong
+  anchor goes red. The alternatives as argued: a structured form rebuilds the
+  rendering's grammar in the check, and the bare `| ` lines pass a line
+  written 28 times wherever it is moved.
+- **Verdict and why:** accepted. The check reads only what a line of
+  `expected` can prove, and it lists the rest as the decider's work. That keeps
+  the check from claiming to verify more than it does. Anchoring adds no syntax.
+  It gives the check the one position two of the three files already write,
+  and it converts a placement that was already asserted rather than adding one.
+- **What would have changed it:** a claim that the check reads differently
+  after anchoring than the prose asserts, or an anchor period written more than
+  once in `expected`. Either would have forced a red that does not follow
+  from the claims. Neither occurs. Context's three repeated lines leave out a
+  fourth, the transition period's `pretax_income` written twice, which does not
+  bear on the decision.
