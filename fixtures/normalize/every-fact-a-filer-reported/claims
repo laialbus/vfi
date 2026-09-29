@@ -6,11 +6,8 @@
 # filers/0002003750.toml includes, excludes and asserts nothing.
 #
 # Each claim says what it is derived from: an accepted record under docs/adr/,
-# the facts of the fetch fixture, or registry/. A line beginning `| ` is a
-# line of `expected` exactly as written after those two characters; lines
-# given together are consecutive there. The word `registry` in a rendered line
-# stands for the registry the fixture runs under, as
-# docs/adr/what-normalize-emits.md has a version render.
+# the facts of the fetch fixture, or registry/. A line beginning `| ` is read
+# as docs/adr/the-harness-checks-the-claims.md decides.
 
 ## The filer
 
@@ -226,9 +223,13 @@ filings; the seven other elements only in `0001213900-24-040632` and
 
 ## The restated diluted loss per share
 
+| from 2023-10-01 to 2024-03-31
+
 |   earnings_per_share_diluted Value -0.0015 read us-gaap:EarningsPerShareDiluted in 0001213900-25-042964 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 
 under the half-year, and
+
+| from 2024-01-01 to 2024-03-31
 
 |   earnings_per_share_diluted Value -0.0004 read us-gaap:EarningsPerShareDiluted in 0001213900-25-042964 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 

@@ -12,9 +12,11 @@
 //! say the rendering must hold, derived by hand, as
 //! `docs/adr/golden-claims-and-baseline-re-recording.md` has it. The claims
 //! are the proof and `expected` is the guard over every other line, recorded
-//! from the stage only once every claim held against it. Nothing here reads
-//! `claims` yet: checking them is a gate change of its own, and until it lands
-//! they are re-derived by hand.
+//! from the stage only once every claim held against it. The `| ` lines of
+//! `claims` are checked against `expected` here, as
+//! `docs/adr/the-harness-checks-the-claims.md` decides, by the `claims` module
+//! that only this target declares; the prose around them is still re-derived
+//! by hand.
 //!
 //! `expected` is never written by the code it checks — an expected result the
 //! subject generated proves only that the subject agrees with itself.
@@ -27,9 +29,11 @@
 //! a name that can never go red on its own — which is the thing a proof of
 //! catch exists to rule out.
 
+mod claims;
 mod fixture;
 
 use std::fs;
+use std::io::ErrorKind;
 use std::path::{Path, PathBuf};
 
 use fixture::{committed, read as registry, recorded_in};
@@ -107,19 +111,23 @@ fn show(line: Option<&str>) -> String {
     }
 }
 
-#[test]
-fn every_fixture_produces_its_expected_result() {
+/// Every fixture directory, and never none: the baseline is committed, so no
+/// case here means the baseline was deleted, and a gate that passes over
+/// nothing reads exactly like one that is holding.
+fn every_case() -> Vec<PathBuf> {
     let dir = stage_fixtures();
     let cases = cases(&dir);
-
-    // An empty sweep is not an absence: the baseline is committed, so no case
-    // here means the baseline was deleted, and a gate that passes over nothing
-    // reads exactly like one that is holding.
     assert!(
         !cases.is_empty(),
         "{}: holds no fixture, so this gate checks nothing",
         dir.display()
     );
+    cases
+}
+
+#[test]
+fn every_fixture_produces_its_expected_result() {
+    let cases = every_case();
 
     let registry = registry(&committed());
     let mut produced = String::new();
@@ -144,5 +152,42 @@ fn every_fixture_produces_its_expected_result() {
     assert!(
         failures.is_empty(),
         "the stage no longer produces what these fixtures expect:\n{failures}"
+    );
+}
+
+/// A test of its own, so that it runs and reports whether or not the stage
+/// still produces `expected`: the two failures say different things are wrong.
+#[test]
+fn every_fixture_holds_its_claims() {
+    let mut failures = String::new();
+
+    for case in &every_case() {
+        let name = case.file_name().unwrap_or_default().to_string_lossy();
+        let at = format!("fixtures/{STAGE}/{name}/claims");
+        let expected = expected(case);
+
+        let claims = match fs::read_to_string(case.join("claims")) {
+            Ok(claims) => Some(claims),
+            Err(e) if e.kind() == ErrorKind::NotFound => None,
+            Err(e) => {
+                failures.push_str(&format!("    {at}: cannot be read ({e})\n"));
+                continue;
+            }
+        };
+
+        for failure in claims::check(claims.as_deref(), &expected) {
+            match failure.line {
+                Some(line) => failures.push_str(&format!(
+                    "    {at}:{line}: {}\n      {:?}\n",
+                    failure.reason, failure.text
+                )),
+                None => failures.push_str(&format!("    {at}: {}\n", failure.reason)),
+            }
+        }
+    }
+
+    assert!(
+        failures.is_empty(),
+        "these claims do not hold against their expected:\n{failures}"
     );
 }

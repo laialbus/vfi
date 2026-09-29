@@ -8,11 +8,8 @@
 # excludes and asserts nothing.
 #
 # Each claim says what it is derived from: an accepted record under docs/adr/,
-# the facts of the fetch fixture, or registry/. A line beginning `| ` is a
-# line of `expected` exactly as written after those two characters; lines
-# given together are consecutive there. The word `registry` in a rendered line
-# stands for the registry the fixture runs under, as
-# docs/adr/what-normalize-emits.md has a version render.
+# the facts of the fetch fixture, or registry/. A line beginning `| ` is read
+# as docs/adr/the-harness-checks-the-claims.md decides.
 #
 # This one fixture serves two of the cases GOALS.md's M4 names. Each section
 # says which it serves: [fiscal year] for the fiscal-year change, [tags] for
@@ -147,9 +144,13 @@ from 2024. Among the period lines above:
   old-calendar one by two months and each keeps its own value, naming its own
   filing: under `from 2023-07-01 to 2023-09-30`
 
+| from 2023-07-01 to 2023-09-30
+
 |   earnings_per_share_diluted Value -0.02 read us-gaap:EarningsPerShareDiluted in 0001213900-24-096140 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 
   and under `from 2023-08-01 to 2023-10-31`
+
+| from 2023-08-01 to 2023-10-31
 
 |   earnings_per_share_diluted Value -0.1 read us-gaap:EarningsPerShareDiluted in 0001213900-23-096276 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 
@@ -174,6 +175,8 @@ Three filings answer 2023-05-01 to 2023-12-31: the 10-KT
 `0001213900-24-021553` filed 2024-03-12, the 10-K `0001213900-25-027581`
 filed 2025-04-02 and the 10-K/A `0001213900-25-042783` filed 2025-05-13.
 The six values the Rule 3 record names, each naming the 10-K/A:
+
+| from 2023-05-01 to 2023-12-31
 
 |   revenue Value 121690 read us-gaap:Revenues in 0001213900-25-042783 rule registry|revenue|operating|tag|element:us-gaap:Revenues
 
@@ -217,30 +220,42 @@ displaces nothing (Rule 3's first clause).
 Under `from 2022-05-01 to 2023-04-30`, where the 10-KT stated -0.13 under
 `EarningsPerShareDiluted`:
 
+| from 2022-05-01 to 2023-04-30
+
 |   earnings_per_share_diluted Value -0.13 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-042783 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
 Under `from 2024-01-01 to 2024-03-31`, where the 10-Q filed 2024-04-19 stated
 -0.03:
+
+| from 2024-01-01 to 2024-03-31
 
 |   earnings_per_share_diluted Value -0.03 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-044587 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
 Under `from 2024-04-01 to 2024-06-30`, where the 10-Q filed 2024-08-14 stated
 -0.03:
 
+| from 2024-04-01 to 2024-06-30
+
 |   earnings_per_share_diluted Value -0.03 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0002008589-25-000033 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
 Under `from 2024-07-01 to 2024-09-30`, where the 10-Q filed 2024-11-12 stated
 -0.05:
+
+| from 2024-07-01 to 2024-09-30
 
 |   earnings_per_share_diluted Value -0.05 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-108695 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
 Under `from 2024-01-01 to 2024-06-30`, where the 10-Q filed 2024-08-14 stated
 -0.07:
 
+| from 2024-01-01 to 2024-06-30
+
 |   earnings_per_share_diluted Value -0.07 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0002008589-25-000033 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
 Under `from 2024-01-01 to 2024-09-30`, where the 10-Q filed 2024-11-12 stated
 -0.11:
+
+| from 2024-01-01 to 2024-09-30
 
 |   earnings_per_share_diluted Value -0.11 read us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare in 0001213900-25-108695 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare
 
@@ -270,9 +285,13 @@ In the 10-Q `0001213900-26-090106` filed 2026-08-14 the filer tags
 filing is the latest to answer either period, so under
 `from 2025-04-01 to 2025-06-30`
 
+| from 2025-04-01 to 2025-06-30
+
 |   earnings_per_share_diluted Value -2.37 read us-gaap:EarningsPerShareDiluted in 0001213900-26-090106 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 
 and under `from 2025-01-01 to 2025-06-30`
+
+| from 2025-01-01 to 2025-06-30
 
 |   earnings_per_share_diluted Value -3.98 read us-gaap:EarningsPerShareDiluted in 0001213900-26-090106 rule registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted
 
@@ -288,6 +307,8 @@ and the facts above.
 
 Under `at 2023-12-31`:
 
+| at 2023-12-31
+
 |   current_liabilities Value 2062834 read us-gaap:LiabilitiesCurrent in 0001213900-25-042783 rule registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent
 
 from: which-filing-sets-the-value.md, under Alternatives: "`current_liabilities`
@@ -302,6 +323,8 @@ and it names the 10-K/A, the latest filing to state it, not the first.
 ## A read zero beside a silence zero at 2024-12-31
 
 Under `at 2024-12-31`:
+
+| at 2024-12-31
 
 |   short_term_investments Value 0 silence zero under registry
 
@@ -323,6 +346,8 @@ the instant, its own shape (silence-zero-only-at-the-concepts-own-shape.md).
 ## Preferred dividends over 2025
 
 Under `from 2025-01-01 to 2025-12-31`:
+
+| from 2025-01-01 to 2025-12-31
 
 |   preferred_dividends Value 122877 read us-gaap:DividendsPreferredStock in 0001213900-26-026653 rule registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock
 
