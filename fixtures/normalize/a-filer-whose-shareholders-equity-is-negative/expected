@@ -1,4 +1,126 @@
 filer 0002011954
+at 2022-12-25
+  revenue Unknown
+    in 0001628280-25-009131
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:Revenues declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueGoodsNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueServicesNet declined: no fact answering the period asked for
+  gross_profit Unknown
+    in 0001628280-25-009131
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsAndServicesSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfRevenue declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfServices declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|tag|element:us-gaap:GrossProfit declined: no fact answering the period asked for
+  operating_income Unknown
+    in 0001628280-25-009131
+      registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss declined: no fact answering the period asked for
+  pretax_income Unknown
+    in 0001628280-25-009131
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest declined: no fact answering the period asked for
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments declined: no fact answering the period asked for
+  income_tax_expense Unknown
+    in 0001628280-25-009131
+      registry|income_tax_expense|*|sum|element:us-gaap:CurrentIncomeTaxExpenseBenefit+element:us-gaap:DeferredIncomeTaxExpenseBenefit declined: an operand with no fact answering it, so the composition was partial: us-gaap:CurrentIncomeTaxExpenseBenefit
+      registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit declined: no fact answering the period asked for
+  net_income Unknown
+    in 0001628280-25-009131
+      registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations declined: no fact answering the period asked for
+      registry|net_income|*|tag|element:us-gaap:NetIncomeLoss declined: no fact answering the period asked for
+  interest_expense Unknown
+    in 0001628280-25-009131
+      registry|interest_expense|*|tag|element:us-gaap:InterestAndDebtExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseBorrowings declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseDebt declined: no fact answering the period asked for
+  depreciation_and_amortization Unknown
+    in 0001628280-25-009131
+      registry|depreciation_and_amortization|*|sum|element:us-gaap:Depreciation+element:us-gaap:AmortizationOfIntangibleAssets declined: an operand with no fact answering it, so the composition was partial: us-gaap:Depreciation
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAmortizationAndAccretionNet declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationDepletionAndAmortization declined: no fact answering the period asked for
+  preferred_dividends Unknown
+    in 0001628280-25-009131
+      registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+  earnings_per_share_diluted Unknown
+    in 0001628280-25-009131
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted declined: no fact answering the period asked for
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare declined: no fact answering the period asked for
+  diluted_shares_weighted_average Unknown
+    in 0001628280-25-009131
+      registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding declined: no fact answering the period asked for
+  shares_outstanding Unknown
+    in 0001628280-25-009131
+      registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+      registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+  dividends_declared_per_share Unknown
+    in 0001628280-25-009131
+      registry|dividends_declared_per_share|*|tag|element:us-gaap:CommonStockDividendsPerShareDeclared declined: no fact answering the period asked for
+  total_assets Unknown
+    in 0001628280-25-009131
+      registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+  current_assets Unknown
+    in 0001628280-25-009131
+      registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+  inventory Unknown
+    in 0001628280-25-009131
+      registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+  cash_and_equivalents Unknown
+    in 0001628280-25-009131
+      registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+  short_term_investments Value 0 silence zero under registry
+  total_liabilities Unknown
+    in 0001628280-25-009131
+      registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+  current_liabilities Unknown
+    in 0001628280-25-009131
+      registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+  short_term_debt Unknown
+    in 0001628280-25-009131
+      registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+      registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+  long_term_debt Unknown
+    in 0001628280-25-009131
+      registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+      registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+      registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+  shareholders_equity Value 60176000 read us-gaap:MembersEquity in 0001628280-25-009131 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+  preferred_equity Unknown
+    in 0001628280-25-009131
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+  retained_earnings Unknown
+    in 0001628280-25-009131
+      registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+  operating_cash_flow Unknown
+    in 0001628280-25-009131
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities declined: no fact answering the period asked for
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations declined: no fact answering the period asked for
+  capital_expenditure Unknown
+    in 0001628280-25-009131
+      registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+  dividends_paid Unknown
+    in 0001628280-25-009131
+      registry|dividends_paid|*|sum|element:us-gaap:PaymentsOfDividendsCommonStock+element:us-gaap:PaymentsOfDividendsPreferredStockAndPreferenceStock declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsOfDividendsCommonStock
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCommonStockCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:PaymentsOfDividends declined: no fact answering the period asked for
 from 2022-12-26 to 2023-12-31
   revenue Value 230867000 read us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax in 0001628280-25-009131 rule registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax
   gross_profit Unknown
@@ -77,6 +199,7 @@ from 2022-12-26 to 2023-12-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-009131
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-009131
@@ -307,15 +430,7 @@ at 2023-12-31
   current_liabilities Value 70728000 read us-gaap:LiabilitiesCurrent in 0001628280-25-009131 rule registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent
   short_term_debt Value 9861000 read us-gaap:LongTermDebtCurrent in 0001628280-25-009131 rule registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent
   long_term_debt Value 334020000 read us-gaap:LongTermDebtNoncurrent in 0001628280-25-009131 rule registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent
-  shareholders_equity Unknown
-    in 0001628280-25-009131
-      registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-    in 0001628280-25-024370
-      registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-    in 0001628280-25-037025
-      registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-    in 0001628280-25-051679
-      registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
+  shareholders_equity Value -15511000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
   preferred_equity Unknown
     in 0001628280-25-009131
       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
@@ -471,6 +586,7 @@ from 2024-01-01 to 2024-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-024370
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-024370
@@ -560,6 +676,7 @@ from 2024-01-01 to 2024-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-037025
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-037025
@@ -644,6 +761,7 @@ from 2024-01-01 to 2024-09-29
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-051679
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-051679
@@ -733,6 +851,7 @@ from 2024-01-01 to 2024-12-29
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-009131
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-009131
@@ -913,7 +1032,7 @@ at 2024-03-31
       registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
       registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
-  shareholders_equity Value -69600000 read us-gaap:StockholdersEquity in 0001628280-25-024370 rule registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity
+  shareholders_equity Value -69600000 read us-gaap:MembersEquity in 0001628280-25-037025 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
   preferred_equity Unknown
     in 0001628280-25-024370
       registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
@@ -1042,6 +1161,7 @@ from 2024-04-01 to 2024-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-037025
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-037025
@@ -1063,6 +1183,221 @@ from 2024-04-01 to 2024-06-30
       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
   dividends_paid Value 0 silence conditional under registry
+at 2024-06-30
+  revenue Unknown
+    in 0001628280-25-037025
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:Revenues declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueGoodsNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueServicesNet declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:Revenues declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueGoodsNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueServicesNet declined: no fact answering the period asked for
+  gross_profit Unknown
+    in 0001628280-25-037025
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsAndServicesSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfRevenue declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfServices declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|tag|element:us-gaap:GrossProfit declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsAndServicesSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfRevenue declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfServices declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|tag|element:us-gaap:GrossProfit declined: no fact answering the period asked for
+  operating_income Unknown
+    in 0001628280-25-037025
+      registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss declined: no fact answering the period asked for
+  pretax_income Unknown
+    in 0001628280-25-037025
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest declined: no fact answering the period asked for
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest declined: no fact answering the period asked for
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments declined: no fact answering the period asked for
+  income_tax_expense Unknown
+    in 0001628280-25-037025
+      registry|income_tax_expense|*|sum|element:us-gaap:CurrentIncomeTaxExpenseBenefit+element:us-gaap:DeferredIncomeTaxExpenseBenefit declined: an operand with no fact answering it, so the composition was partial: us-gaap:CurrentIncomeTaxExpenseBenefit
+      registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|income_tax_expense|*|sum|element:us-gaap:CurrentIncomeTaxExpenseBenefit+element:us-gaap:DeferredIncomeTaxExpenseBenefit declined: an operand with no fact answering it, so the composition was partial: us-gaap:CurrentIncomeTaxExpenseBenefit
+      registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit declined: no fact answering the period asked for
+  net_income Unknown
+    in 0001628280-25-037025
+      registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations declined: no fact answering the period asked for
+      registry|net_income|*|tag|element:us-gaap:NetIncomeLoss declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations declined: no fact answering the period asked for
+      registry|net_income|*|tag|element:us-gaap:NetIncomeLoss declined: no fact answering the period asked for
+  interest_expense Unknown
+    in 0001628280-25-037025
+      registry|interest_expense|*|tag|element:us-gaap:InterestAndDebtExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseBorrowings declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseDebt declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|interest_expense|*|tag|element:us-gaap:InterestAndDebtExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseBorrowings declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseDebt declined: no fact answering the period asked for
+  depreciation_and_amortization Unknown
+    in 0001628280-25-037025
+      registry|depreciation_and_amortization|*|sum|element:us-gaap:Depreciation+element:us-gaap:AmortizationOfIntangibleAssets declined: an operand with no fact answering it, so the composition was partial: us-gaap:Depreciation
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAmortizationAndAccretionNet declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationDepletionAndAmortization declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|depreciation_and_amortization|*|sum|element:us-gaap:Depreciation+element:us-gaap:AmortizationOfIntangibleAssets declined: an operand with no fact answering it, so the composition was partial: us-gaap:Depreciation
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAmortizationAndAccretionNet declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationDepletionAndAmortization declined: no fact answering the period asked for
+  preferred_dividends Unknown
+    in 0001628280-25-037025
+      registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+  earnings_per_share_diluted Unknown
+    in 0001628280-25-037025
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted declined: no fact answering the period asked for
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted declined: no fact answering the period asked for
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare declined: no fact answering the period asked for
+  diluted_shares_weighted_average Unknown
+    in 0001628280-25-037025
+      registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding declined: no fact answering the period asked for
+  shares_outstanding Unknown
+    in 0001628280-25-037025
+      registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+      registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+      registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+  dividends_declared_per_share Unknown
+    in 0001628280-25-037025
+      registry|dividends_declared_per_share|*|tag|element:us-gaap:CommonStockDividendsPerShareDeclared declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|dividends_declared_per_share|*|tag|element:us-gaap:CommonStockDividendsPerShareDeclared declined: no fact answering the period asked for
+  total_assets Unknown
+    in 0001628280-25-037025
+      registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+  current_assets Unknown
+    in 0001628280-25-037025
+      registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+  inventory Unknown
+    in 0001628280-25-037025
+      registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+  cash_and_equivalents Unknown
+    in 0001628280-25-037025
+      registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+  short_term_investments Value 0 silence zero under registry
+  total_liabilities Unknown
+    in 0001628280-25-037025
+      registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+  current_liabilities Unknown
+    in 0001628280-25-037025
+      registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+  short_term_debt Unknown
+    in 0001628280-25-037025
+      registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+      registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+      registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+  long_term_debt Unknown
+    in 0001628280-25-037025
+      registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+      registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+      registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+      registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+      registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+  shareholders_equity Value -79666000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+  preferred_equity Unknown
+    in 0001628280-25-037025
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+  retained_earnings Unknown
+    in 0001628280-25-037025
+      registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+  operating_cash_flow Unknown
+    in 0001628280-25-037025
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities declined: no fact answering the period asked for
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities declined: no fact answering the period asked for
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations declined: no fact answering the period asked for
+  capital_expenditure Unknown
+    in 0001628280-25-037025
+      registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+  dividends_paid Unknown
+    in 0001628280-25-037025
+      registry|dividends_paid|*|sum|element:us-gaap:PaymentsOfDividendsCommonStock+element:us-gaap:PaymentsOfDividendsPreferredStockAndPreferenceStock declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsOfDividendsCommonStock
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCommonStockCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:PaymentsOfDividends declined: no fact answering the period asked for
+    in 0001628280-25-051679
+      registry|dividends_paid|*|sum|element:us-gaap:PaymentsOfDividendsCommonStock+element:us-gaap:PaymentsOfDividendsPreferredStockAndPreferenceStock declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsOfDividendsCommonStock
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCommonStockCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:PaymentsOfDividends declined: no fact answering the period asked for
 from 2024-07-01 to 2024-09-29
   revenue Value 83665000 read us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax in 0001628280-25-051679 rule registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax
   gross_profit Unknown
@@ -1141,6 +1476,7 @@ from 2024-07-01 to 2024-09-29
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-051679
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-051679
@@ -1162,6 +1498,128 @@ from 2024-07-01 to 2024-09-29
       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
       registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
   dividends_paid Value 0 silence conditional under registry
+at 2024-09-29
+  revenue Unknown
+    in 0001628280-25-051679
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerExcludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:RevenueFromContractWithCustomerIncludingAssessedTax declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:Revenues declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueGoodsNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueNet declined: no fact answering the period asked for
+      registry|revenue|operating|tag|element:us-gaap:SalesRevenueServicesNet declined: no fact answering the period asked for
+  gross_profit Unknown
+    in 0001628280-25-051679
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsAndServicesSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfGoodsSold declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfRevenue declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|difference|concept:revenue+element:us-gaap:CostOfServices declined: an operand concept that did not resolve to a value
+      registry|gross_profit|*|tag|element:us-gaap:GrossProfit declined: no fact answering the period asked for
+  operating_income Unknown
+    in 0001628280-25-051679
+      registry|operating_income|*|tag|element:us-gaap:OperatingIncomeLoss declined: no fact answering the period asked for
+  pretax_income Unknown
+    in 0001628280-25-051679
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesExtraordinaryItemsNoncontrollingInterest declined: no fact answering the period asked for
+      registry|pretax_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsBeforeIncomeTaxesMinorityInterestAndIncomeLossFromEquityMethodInvestments declined: no fact answering the period asked for
+  income_tax_expense Unknown
+    in 0001628280-25-051679
+      registry|income_tax_expense|*|sum|element:us-gaap:CurrentIncomeTaxExpenseBenefit+element:us-gaap:DeferredIncomeTaxExpenseBenefit declined: an operand with no fact answering it, so the composition was partial: us-gaap:CurrentIncomeTaxExpenseBenefit
+      registry|income_tax_expense|*|tag|element:us-gaap:IncomeTaxExpenseBenefit declined: no fact answering the period asked for
+  net_income Unknown
+    in 0001628280-25-051679
+      registry|net_income|*|tag|element:us-gaap:IncomeLossFromContinuingOperations declined: no fact answering the period asked for
+      registry|net_income|*|tag|element:us-gaap:NetIncomeLoss declined: no fact answering the period asked for
+  interest_expense Unknown
+    in 0001628280-25-051679
+      registry|interest_expense|*|tag|element:us-gaap:InterestAndDebtExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpense declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseBorrowings declined: no fact answering the period asked for
+      registry|interest_expense|*|tag|element:us-gaap:InterestExpenseDebt declined: no fact answering the period asked for
+  depreciation_and_amortization Unknown
+    in 0001628280-25-051679
+      registry|depreciation_and_amortization|*|sum|element:us-gaap:Depreciation+element:us-gaap:AmortizationOfIntangibleAssets declined: an operand with no fact answering it, so the composition was partial: us-gaap:Depreciation
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAmortizationAndAccretionNet declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationAndAmortization declined: no fact answering the period asked for
+      registry|depreciation_and_amortization|*|tag|element:us-gaap:DepreciationDepletionAndAmortization declined: no fact answering the period asked for
+  preferred_dividends Unknown
+    in 0001628280-25-051679
+      registry|preferred_dividends|*|tag|element:us-gaap:DividendsPreferredStock declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsAndOtherAdjustments declined: no fact answering the period asked for
+      registry|preferred_dividends|*|tag|element:us-gaap:PreferredStockDividendsIncomeStatementImpact declined: no fact answering the period asked for
+  earnings_per_share_diluted Unknown
+    in 0001628280-25-051679
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:EarningsPerShareDiluted declined: no fact answering the period asked for
+      registry|earnings_per_share_diluted|*|tag|element:us-gaap:IncomeLossFromContinuingOperationsPerDilutedShare declined: no fact answering the period asked for
+  diluted_shares_weighted_average Unknown
+    in 0001628280-25-051679
+      registry|diluted_shares_weighted_average|*|tag|element:us-gaap:WeightedAverageNumberOfDilutedSharesOutstanding declined: no fact answering the period asked for
+  shares_outstanding Unknown
+    in 0001628280-25-051679
+      registry|shares_outstanding|*|tag|element:dei:EntityCommonStockSharesOutstanding declined: no fact answering the period asked for
+      registry|shares_outstanding|*|tag|element:us-gaap:CommonStockSharesOutstanding declined: no fact answering the period asked for
+  dividends_declared_per_share Unknown
+    in 0001628280-25-051679
+      registry|dividends_declared_per_share|*|tag|element:us-gaap:CommonStockDividendsPerShareDeclared declined: no fact answering the period asked for
+  total_assets Unknown
+    in 0001628280-25-051679
+      registry|total_assets|*|tag|element:us-gaap:Assets declined: no fact answering the period asked for
+  current_assets Unknown
+    in 0001628280-25-051679
+      registry|current_assets|*|tag|element:us-gaap:AssetsCurrent declined: no fact answering the period asked for
+  inventory Unknown
+    in 0001628280-25-051679
+      registry|inventory|*|tag|element:us-gaap:InventoryNet declined: no fact answering the period asked for
+  cash_and_equivalents Unknown
+    in 0001628280-25-051679
+      registry|cash_and_equivalents|*|tag|element:us-gaap:CashAndCashEquivalentsAtCarryingValue declined: no fact answering the period asked for
+  short_term_investments Value 0 silence zero under registry
+  total_liabilities Unknown
+    in 0001628280-25-051679
+      registry|total_liabilities|*|tag|element:us-gaap:Liabilities declined: no fact answering the period asked for
+  current_liabilities Unknown
+    in 0001628280-25-051679
+      registry|current_liabilities|*|tag|element:us-gaap:LiabilitiesCurrent declined: no fact answering the period asked for
+  short_term_debt Unknown
+    in 0001628280-25-051679
+      registry|short_term_debt|*|sum|element:us-gaap:LongTermDebtCurrent+element:us-gaap:ShortTermBorrowings+element:us-gaap:OtherShortTermBorrowings+element:us-gaap:CommercialPaper+element:us-gaap:NotesPayableCurrent+element:us-gaap:FinanceLeaseLiabilityCurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtCurrent
+      registry|short_term_debt|*|tag|element:us-gaap:CommercialPaper declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:DebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:LongTermDebtCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:NotesPayableCurrent declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:OtherShortTermBorrowings declined: no fact answering the period asked for
+      registry|short_term_debt|*|tag|element:us-gaap:ShortTermBorrowings declined: no fact answering the period asked for
+  long_term_debt Unknown
+    in 0001628280-25-051679
+      registry|long_term_debt|*|sum|element:us-gaap:LongTermDebtNoncurrent+element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: an operand with no fact answering it, so the composition was partial: us-gaap:LongTermDebtNoncurrent
+      registry|long_term_debt|*|tag|element:us-gaap:FinanceLeaseLiabilityNoncurrent declined: no fact answering the period asked for
+      registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
+  shareholders_equity Value -95883000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+  preferred_equity Unknown
+    in 0001628280-25-051679
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValue declined: no fact answering the period asked for
+      registry|preferred_equity|*|tag|element:us-gaap:PreferredStockValueOutstanding declined: no fact answering the period asked for
+  retained_earnings Unknown
+    in 0001628280-25-051679
+      registry|retained_earnings|*|tag|element:us-gaap:RetainedEarningsAccumulatedDeficit declined: no fact answering the period asked for
+  operating_cash_flow Unknown
+    in 0001628280-25-051679
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivities declined: no fact answering the period asked for
+      registry|operating_cash_flow|*|tag|element:us-gaap:NetCashProvidedByUsedInOperatingActivitiesContinuingOperations declined: no fact answering the period asked for
+  capital_expenditure Unknown
+    in 0001628280-25-051679
+      registry|capital_expenditure|*|sum|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment+element:us-gaap:PaymentsToDevelopSoftware declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsToAcquirePropertyPlantAndEquipment
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsForCapitalImprovements declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireOtherPropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquireProductiveAssets declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToAcquirePropertyPlantAndEquipment declined: no fact answering the period asked for
+      registry|capital_expenditure|*|tag|element:us-gaap:PaymentsToDevelopSoftware declined: no fact answering the period asked for
+  dividends_paid Unknown
+    in 0001628280-25-051679
+      registry|dividends_paid|*|sum|element:us-gaap:PaymentsOfDividendsCommonStock+element:us-gaap:PaymentsOfDividendsPreferredStockAndPreferenceStock declined: an operand with no fact answering it, so the composition was partial: us-gaap:PaymentsOfDividendsCommonStock
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:DividendsCommonStockCash declined: no fact answering the period asked for
+      registry|dividends_paid|*|tag|element:us-gaap:PaymentsOfDividends declined: no fact answering the period asked for
 at 2024-12-29
   revenue Unknown
     in 0001628280-25-009131
@@ -1628,10 +2086,13 @@ from 2024-12-30 to 2025-03-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-024370
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001628280-25-037025
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001628280-25-051679
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-024370
@@ -1726,6 +2187,7 @@ from 2024-12-30 to 2025-06-29
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-037025
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-037025
@@ -1810,6 +2272,7 @@ from 2024-12-30 to 2025-09-28
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-051679
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-051679
@@ -2062,6 +2525,7 @@ from 2025-03-31 to 2025-06-29
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-037025
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-037025
@@ -2324,6 +2788,7 @@ from 2025-06-30 to 2025-09-28
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001628280-25-051679
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001628280-25-051679
