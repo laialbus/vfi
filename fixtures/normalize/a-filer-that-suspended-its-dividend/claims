@@ -1012,14 +1012,19 @@ period line and ending before the next:
 |       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
 |   shareholders_equity Unknown
 |     in 0001437749-24-025587
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |     in 0001437749-24-034935
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |     in 0001437749-25-010234
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |     in 0001778784-24-000006
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |     in 0001778784-24-000019
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |   preferred_equity Unknown
 |     in 0001437749-24-025587
