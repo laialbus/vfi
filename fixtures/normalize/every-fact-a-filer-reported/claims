@@ -484,6 +484,7 @@ consecutive, beginning at its period line and ending before the next:
 |       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
 |   shareholders_equity Unknown
 |     in 0001213900-26-002691
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |   preferred_equity Unknown
 |     in 0001213900-26-002691

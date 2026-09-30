@@ -219,6 +219,7 @@ from 2022-10-01 to 2023-09-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-101777
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-101777
@@ -317,6 +318,7 @@ from 2023-09-07 to 2023-09-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-101777
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-101777
@@ -1137,14 +1139,19 @@ from 2023-10-01 to 2023-12-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-040632
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-24-067900
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-013785
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-040632
@@ -1275,8 +1282,10 @@ from 2023-10-01 to 2024-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-040632
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-040632
@@ -1392,8 +1401,10 @@ from 2023-10-01 to 2024-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-067900
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-067900
@@ -1509,8 +1520,10 @@ from 2023-10-01 to 2024-09-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-101777
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-002691
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-101777
@@ -2234,12 +2247,16 @@ from 2024-01-01 to 2024-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-040632
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-24-067900
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-040632
@@ -2844,8 +2861,10 @@ from 2024-04-01 to 2024-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-24-067900
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-24-067900
@@ -3971,16 +3990,22 @@ from 2024-10-01 to 2024-12-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-25-013785
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-018584
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-25-013785
@@ -4158,8 +4183,10 @@ from 2024-10-01 to 2025-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-25-042964
@@ -4295,8 +4322,10 @@ from 2024-10-01 to 2025-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-25-078735
@@ -4389,6 +4418,7 @@ from 2024-10-01 to 2025-09-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-002691
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-002691
@@ -5129,12 +5159,16 @@ from 2025-01-01 to 2025-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-25-042964
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-25-042964
@@ -5735,8 +5769,10 @@ from 2025-04-01 to 2025-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-25-078735
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-25-078735
@@ -6423,10 +6459,13 @@ from 2025-10-01 to 2025-12-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-018584
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-018584
@@ -6531,6 +6570,7 @@ from 2025-10-01 to 2026-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-059248
@@ -6611,6 +6651,7 @@ from 2025-10-01 to 2026-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-088707
@@ -7005,8 +7046,10 @@ from 2026-01-01 to 2026-03-31
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-059248
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-059248
@@ -7309,6 +7352,7 @@ from 2026-04-01 to 2026-06-30
       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
   shareholders_equity Unknown
     in 0001213900-26-088707
+      registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
   preferred_equity Unknown
     in 0001213900-26-088707

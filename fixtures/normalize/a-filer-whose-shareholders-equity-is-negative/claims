@@ -19,11 +19,12 @@
 from: the fetch fixture's `filer 0002011954`, the key fetch-normalize v2
 carries ten digits left-padded (what-normalize-emits.md).
 
-## The periods: 18, 12 durations and 6 instants
+## The periods: 21, 12 durations and 9 instants
 
 The periods, in the order `expected` writes them, which reads the dates'
 characters alone, the first date and then the second:
 
+| at 2022-12-25
 | from 2022-12-26 to 2023-12-31
 | at 2023-12-31
 | from 2024-01-01 to 2024-03-31
@@ -32,7 +33,9 @@ characters alone, the first date and then the second:
 | from 2024-01-01 to 2024-12-29
 | at 2024-03-31
 | from 2024-04-01 to 2024-06-30
+| at 2024-06-30
 | from 2024-07-01 to 2024-09-29
+| at 2024-09-29
 | at 2024-12-29
 | from 2024-12-30 to 2025-03-30
 | from 2024-12-30 to 2025-06-29
@@ -51,31 +54,32 @@ carries, and it is the filer's when a concept its kind admits resolves to a
 `Value` there through entries that answer the period asked for. Read off the
 facts: the 1,157 facts, in four filings, carry 13 instants and 14 durations.
 At each period above, a fact of the right shape stands under an element a
-registry rule names, in the unit the concept is counted in —
-`StockholdersEquity` alone at 2024-03-31, in the 10-Q filed 2025-05-09. The
-other nine carry nothing such a rule reads:
+registry rule names, in the unit the concept is counted in. At three of them
+that fact is `MembersEquity` alone, which the `shareholders_equity` stand-in
+reads: 60176000 at 2022-12-25, in the 10-K filed 2025-02-28, beside goodwill,
+intangible, allowance and restricted-cash lines no rule names; -79666000 at
+2024-06-30, in the 10-Qs filed 2025-07-31 and 2025-11-12; and -95883000 at
+2024-09-29, in the 10-Q filed 2025-11-12, each beside a restricted-cash total no
+rule names. At 2024-03-31 it is `StockholdersEquity` in the 10-Q filed
+2025-05-09 and `MembersEquity` in the 10-Q filed 2025-07-31. The other six
+carry nothing such a rule reads:
 
 - 2021-11-16 carries only two option-grant elements;
-- 2022-12-25 carries `MembersEquity` 60176000 beside goodwill, intangible,
-  allowance and restricted-cash lines;
 - 2023-12-04 carries only `PaymentsToAcquireInterestInJointVenture`;
-- 2024-06-30 carries `MembersEquity` -79666000 and a restricted-cash total;
-- 2024-09-29 carries `MembersEquity` -95883000 and a restricted-cash total;
 - 2025-01-29 carries only `ClassOfWarrantOrRightUnissued`;
 - 2025-06-04 carries only `IncreaseDecreaseInDueToAffiliates`;
 - 2023-09-25 to 2023-12-31 and 2024-09-30 to 2024-12-29 carry only
   `SaleAndLeasebackTransactionGainLossNet`.
 
-No rule of `shareholders_equity` names `MembersEquity`, so two negative
-equities the filer stated, at 2024-06-30 and 2024-09-29, admit no period. No
-fact in the fixture stands under `dei:EntityCommonStockSharesOutstanding`, so
-the cover-page entry admits nothing anywhere. A silence zero admits no period.
+No fact in the fixture stands under `dei:EntityCommonStockSharesOutstanding`,
+so the cover-page entry admits nothing anywhere. A silence zero admits no
+period.
 
 ## Every period holds all twenty-eight concepts, in the vocabulary's order
 
 Under each period line, 28 lines begin with two spaces and a concept name, in
 the order canonical-concepts v2 publishes them, `revenue` first and
-`dividends_paid` last: 504 in all.
+`dividends_paid` last: 588 in all.
 
 from: what-normalize-emits.md, "every concept at every period ... no concept
 missing from a period and none twice", and its fixture rendering, "all
@@ -83,18 +87,24 @@ twenty-eight concepts in the order the vocabulary publishes them".
 
 ## The counts
 
-- 30 values `silence`: `short_term_investments Value 0 silence zero under
-  registry` at each of the 6 instants, and `dividends_declared_per_share` and
+- 33 values `silence`: `short_term_investments Value 0 silence zero under
+  registry` at each of the 9 instants, and `dividends_declared_per_share` and
   `dividends_paid` `Value 0 silence conditional under registry` at each of the
-  12 durations, 6 + 24. At the other shape each of the three is `Unknown`:
+  12 durations, 9 + 24. At the other shape each of the three is `Unknown`:
   `short_term_investments` at the 12 durations and both dividend concepts at
-  the 6 instants.
-- 331 `Unknown`.
-- 143 values `read`, the rest of 504: 504 - 30 - 331.
+  the 9 instants.
+- 408 `Unknown`.
+- 147 values `read`, the rest of 588: 588 - 33 - 408.
 - No value `asserted`, no `NotApplicable`, and no `tie`.
 
+Against the 143 `read` and 331 `Unknown` this fixture held before
+`MembersEquity` stood in: `shareholders_equity` at 2023-12-31 moves from
+`Unknown` to `read`, and each of the three instants it admits adds one `read`,
+`shareholders_equity`, one silence and 26 `Unknown`. So 143 + 1 + 3 = 147, and
+331 - 1 + 78 = 408. 2024-03-31 reads before and after.
+
 from: silence-zero-only-at-the-concepts-own-shape.md and
-silence-beside-a-read-figure.md for the 30. No fact in the fixture stands under
+silence-beside-a-read-figure.md for the 33. No fact in the fixture stands under
 any element the registry names for `short_term_investments`
 (`ShortTermInvestments`, `MarketableSecuritiesCurrent`,
 `AvailableForSaleSecuritiesDebtSecuritiesCurrent`, `OtherShortTermInvestments`)
@@ -112,13 +122,29 @@ different days.
 
 ## The negative equity
 
-`shareholders_equity` resolves at five of the six instants, and at each of the
-five it resolves below zero. Each line is under its period line, before the
-next period line:
+`shareholders_equity` resolves at all nine instants: at 2022-12-25 to
+60176000, and at each of the other eight below zero. Each line is under its
+period line, before the next period line:
+
+| at 2022-12-25
+
+|   shareholders_equity Value 60176000 read us-gaap:MembersEquity in 0001628280-25-009131 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+
+| at 2023-12-31
+
+|   shareholders_equity Value -15511000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
 
 | at 2024-03-31
 
-|   shareholders_equity Value -69600000 read us-gaap:StockholdersEquity in 0001628280-25-024370 rule registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity
+|   shareholders_equity Value -69600000 read us-gaap:MembersEquity in 0001628280-25-037025 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+
+| at 2024-06-30
+
+|   shareholders_equity Value -79666000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
+
+| at 2024-09-29
+
+|   shareholders_equity Value -95883000 read us-gaap:MembersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity
 
 | at 2024-12-29
 
@@ -137,49 +163,44 @@ next period line:
 |   shareholders_equity Value -92127000 read us-gaap:StockholdersEquity in 0001628280-25-051679 rule registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity
 
 from: the facts, registry/concepts/shareholders_equity.toml, and
-which-filing-sets-the-value.md's Rule 3. The concept has one rule, an `exact`
-`tag` over `us-gaap:StockholdersEquity`, and the figure is read as the filer
+which-filing-sets-the-value.md's Rule 3. The concept has two rules, an `exact`
+`tag` over `us-gaap:StockholdersEquity` and a `stand_in` `tag` over
+`us-gaap:MembersEquity`, the second the owner's ruling on the 2026-09-29
+planner stop, listed in docs/adr/README.md. No filing states both elements at
+one instant, so each attempt that reads a value reads it by the one rule that
+finds a fact, and nothing is dropped behind it. The figure is read as the filer
 states it: the vocabulary publishes that a negative amount is a value, and no
-rule changes a sign. Every filing stating the element at an instant states the
+rule changes a sign. Every filing stating an element at an instant states the
 same figure there, so what Rule 3 decides is only which accession is named,
-the one with the greatest `filed` among the attempts that read a value:
+the one with the greatest `filed` among the attempts that read a value, whichever
+rule each read by:
 
-- 2024-03-31: the 10-Q `0001628280-25-024370` filed 2025-05-09 states
-  -69600000. The 10-Q `0001628280-25-037025` filed 2025-07-31 also answers the
-  instant, stating the same figure under `MembersEquity`, which no rule names;
-  its attempt finds no fact and is `Unknown`, and Rule 3's first clause keeps
-  it from displacing the earlier read value. So the later filing is not the one
-  named.
-- 2024-12-29: all four filings state -84609000 — the 10-K
-  `0001628280-25-009131` filed 2025-02-28 and the three 10-Qs — and the latest,
-  `0001628280-25-051679` filed 2025-11-12, is named.
+- 2022-12-25: the 10-K `0001628280-25-009131` filed 2025-02-28 alone answers,
+  and states 60176000 under `MembersEquity`.
+- 2023-12-31: all four filings state -15511000 under `MembersEquity`, and none
+  states `StockholdersEquity`; the latest, `0001628280-25-051679` filed
+  2025-11-12, is named.
+- 2024-03-31: the 10-Q `0001628280-25-024370` filed 2025-05-09 states -69600000
+  under `StockholdersEquity`, and the 10-Q `0001628280-25-037025` filed
+  2025-07-31 states the same figure under `MembersEquity`. Both attempts read a
+  value, the first by the exact rule and the second by the stand-in, and the
+  second, filed later, is named.
+- 2024-06-30: `0001628280-25-037025` and `0001628280-25-051679` state -79666000
+  under `MembersEquity`; the second, filed 2025-11-12, is named.
+- 2024-09-29: `0001628280-25-051679` alone answers, and states -95883000 under
+  `MembersEquity`.
+- 2024-12-29: all four filings state -84609000 under `StockholdersEquity` — the
+  10-K `0001628280-25-009131` filed 2025-02-28 and the three 10-Qs — and the
+  latest, `0001628280-25-051679` filed 2025-11-12, is named.
 - 2025-03-30: `0001628280-25-024370` and `0001628280-25-037025` state
   -101854000; the second, filed 2025-07-31, is named.
 - 2025-06-29: `0001628280-25-037025` and `0001628280-25-051679` state -78636000;
   the second, filed 2025-11-12, is named.
 - 2025-09-28: `0001628280-25-051679` alone answers, and states -92127000.
 
-At the sixth instant, 2023-12-31, the filer states its equity under
-`MembersEquity`, -15511000, in all four filings. No filing states
-`StockholdersEquity` there, so `shareholders_equity` is `Unknown`, each
-filing's attempt declining the one rule, in the order the accessions sort in,
-under the period line and before the next:
-
-| at 2023-12-31
-
-|   shareholders_equity Unknown
-|     in 0001628280-25-009131
-|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-|     in 0001628280-25-024370
-|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-|     in 0001628280-25-037025
-|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-|     in 0001628280-25-051679
-|       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
-
-from: the facts at 2023-12-31; registry/; candidate-choice.md's first reason;
-what-normalize-emits.md's `Unknown`, "each attempt under that filing's
-accession".
+Where `shareholders_equity` is `Unknown`, which is at every duration, each
+attempt declines both rules, `MembersEquity` first in the order the registry
+sorts ids; the duration given in full below shows it.
 
 ## Every line of one instant: 2025-09-28
 
@@ -427,6 +448,7 @@ consecutive, beginning at its period line and ending before the next:
 |       registry|long_term_debt|*|tag|element:us-gaap:LongTermDebtNoncurrent declined: no fact answering the period asked for
 |   shareholders_equity Unknown
 |     in 0001628280-25-009131
+|       registry|shareholders_equity|*|tag|element:us-gaap:MembersEquity declined: no fact answering the period asked for
 |       registry|shareholders_equity|*|tag|element:us-gaap:StockholdersEquity declined: no fact answering the period asked for
 |   preferred_equity Unknown
 |     in 0001628280-25-009131

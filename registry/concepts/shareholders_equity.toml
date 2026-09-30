@@ -1,10 +1,23 @@
 # StockholdersEquityIncludingPortionAttributableToNoncontrollingInterest is not
-# this concept: the meaning removes that portion, and the element below already
-# excludes it.
+# this concept: the meaning removes that portion, and the elements below already
+# exclude it.
+#
+# A limited liability company's members' equity is the owners' residual claim,
+# and MembersEquity is defined as the portion attributable to the parent, so it
+# excludes what the meaning excludes. It stands in only for a filing that states
+# no StockholdersEquity for the period. PartnersCapital is not here: no fixture
+# attests it.
 
 [[entry]]
 form = "tag"
 reading = "exact"
 operands = [
   { taxonomy = "us-gaap", tag = "StockholdersEquity" },
+]
+
+[[entry]]
+form = "tag"
+reading = "stand_in"
+operands = [
+  { taxonomy = "us-gaap", tag = "MembersEquity" },
 ]
