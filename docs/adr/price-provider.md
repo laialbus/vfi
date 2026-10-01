@@ -1,9 +1,9 @@
 # Prices come from Tiingo's end-of-day close, unadjusted, one request per company, behind a provider in the fetch stage that answers every date with a price or an absence and its reason
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-09-30, by `M5-05`
-- **Decided:** —
+- **Decided:** 2026-09-30, by the decider
 - **Touches:** a new interface, the price provider ANCHORS.md names, and its
   first implementation. It also touches the fetch stage's host list and
   chokepoint, which gain a second source. ANCHORS.md's three price and key
@@ -327,7 +327,35 @@ added by the implementing task:
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: a new interface and a new
+  implementation inside one crate. No anchor is edited, no edge enters
+  `allowed_edges`, no gate moves, and the host it adds is the one GOALS.md's
+  M3 and M5 already name. Flagged for later human review.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The three price and key invariants in ANCHORS.md, and anchor 2: the
+    provider sits in fetch and nothing later is called.
+  - `filer-decision-ledger.md`, for what fetch may be handed, and
+    `canonical-concepts.md`, whose price consumers the list here matches.
+  - The five cited pages, fetched again on 2026-09-30. Every limit and every
+    quoted line reads as the record gives it.
+  - `hosts.rs`, `policy.rs`, the chokepoint and `Source`, which are as the
+    record describes them.
+  - The arithmetic, and the four alternatives as argued.
+- **Verdict and why:** accepted. The basis argument is the one that matters: a
+  filing's per-share figure is on its own filing's share basis, and only the
+  unadjusted close can be put beside it without a hidden ratio. The rest
+  follows the EDGAR precedents already on main. Three things are left for
+  later records and none is settled here:
+  - The split list covers only the range asked. A caller that asks the
+    valuation date alone gets a list that is silent about a split between the
+    figure's filing and that date, and an empty list reads as no split. The
+    record that carries a price to analyze must close this.
+  - The spent record has no home between sessions. Until it does, a restart
+    forgets the counts and the pace, and the limits hold only by the source
+    refusing. "Store's" is not accepted here as the answer; the ledger record
+    rejected store implementing what fetch is handed.
+  - The gap under Enforcement stands open, and no queued task holds it.
+- **What would have changed it:** a per-minute limit on the pricing page, or a
+  free tier that withheld `close` or `splitFactor`; either breaks the
+  arithmetic or the basis. So would an interface that could not be asked from
+  an earlier date, since the split gap above would then have no way to close.
