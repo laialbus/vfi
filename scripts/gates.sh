@@ -78,6 +78,11 @@ at_once="$(machine_lanes)"
 # mapping that record makes data; it runs after the gate above it because the
 # concepts and kinds it validates against are read out of a published contract.
 #
+# ambient is not a fifth: it is AGENTS.md's purity read the second way GOALS.md
+# asks for at M5 — "analyze's own source cannot name the filesystem, the
+# environment, the clock, a process, or a randomized hasher" — so it runs right
+# after purity, which is the half no dependency list can reach.
+#
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
 # it — the one that runs the gates and the one that proves them — so a name
@@ -93,6 +98,7 @@ expected_gates() {
 	fixtures
 	deps
 	purity
+	ambient
 	egress
 	contracts
 	registry
@@ -138,7 +144,8 @@ allowed_edges="
 # What the list cannot see is std: std::fs, std::net, std::time and std::env
 # arrive with every crate and no dependency list can deny them. This gate is the
 # mechanism anchor 4's enforcement clause asks for — analyze cannot acquire the
-# libraries — and it is not the whole of what anchor 4 says.
+# libraries — and it is not the whole of what anchor 4 says. The ambient gate
+# reads analyze's own source for the std half.
 denied_packages() {
 	sed 's/#.*//' <<-'EOF' | awk 'NF'
 	# Clients, async runtimes — sockets and timers both — and the TLS under them.
@@ -829,6 +836,144 @@ gate_purity() {
 		printf '%s' "$offenders" >&2
 		return 1
 	fi
+}
+
+# GOALS.md at M5: analyze's own source cannot name the filesystem, the
+# environment, the clock, a process or a randomized hasher, checked rather than
+# intended. purity cannot see std; this reads every Rust file under the crate —
+# its tests, benches and build script as much as its library, for the reason
+# purity counts build and dev edges — for the names that reach one of the five.
+#
+# A name is matched as text, case and all, wherever it stands: a comment or a
+# string naming std::fs goes red the same as a call, and is reworded. A name is
+# never matched as the middle of a longer identifier — prefs:: is not fs:: and
+# Instantaneous is not Instant. The network is not one of the five: it is
+# egress's, read over the whole workspace, and nothing here reads for it.
+#
+# What this cannot see, said here rather than left to be found: an alias
+# (`use std::{fs as f}`, `extern crate std as s`), since the name it reads is
+# then never written where it is used; a name spelled some other way, such as
+# with spaces around its ::; source pulled in from outside the crate by a
+# #[path] attribute or a manifest's build key, since it reads files by where
+# they sit; and a dependency's macro that expands to one of these, which is a
+# dependency and purity's question. None is the case it exists for — analysis
+# that reached outside itself because that was the shorter way — and each is
+# the kind of thing a reader sees in a diff. Nor does it read for what anchor 4
+# bans beyond the five, such as printing to the standard streams.
+ambient_crate="crates/analyze"
+
+# The names read, each beside which of the five it reaches; that word is what
+# the failure names. This is the only place the judgement is written down.
+#
+# A module is read both as std's path and as a segment, because a grouped
+# import (`use std::{fs, env}`) never writes the first and every use of it
+# writes the second. Clock is read through its types instead: std::time
+# reaches a clock only through Instant and SystemTime, and a segment time::
+# would also refuse core::time::Duration, which is a number and no clock.
+#
+# The compile-time forms, decided:
+#   env!, option_env!     in. They read the environment the build ran in, so
+#                         the same source built elsewhere is a different
+#                         result. A method version is a constant in source.
+#   include!, include_str!, include_bytes!
+#                         in, as the filesystem. They read whatever file their
+#                         path names, inside the crate or anywhere on the
+#                         machine, and what they bake in never appears here.
+#   file!, line!, column!, module_path!
+#                         out. They name the source's own place and nothing
+#                         around it.
+#
+# Naming a randomized hasher, decided: HashMap and HashSet are in whatever
+# their parameters. Both default to RandomState, which seeds afresh on every
+# run and so reorders every iteration, and text cannot tell HashMap<K, V> from
+# HashMap<K, V, S> with a fixed S without reading the type. BTreeMap and
+# BTreeSet order by key and are not refused. DefaultHasher is out: alone it is
+# keyed with constants, and it is RandomState that brings the seed.
+ambient_names() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	std::fs             filesystem
+	fs::                filesystem
+	# Path carries methods that read the disk: exists, metadata, read_dir.
+	std::path           filesystem
+	path::              filesystem
+	# The platform extensions: raw descriptors and fs on top of std's.
+	std::os             filesystem
+	os::                filesystem
+	include!            filesystem
+	include_str!        filesystem
+	include_bytes!      filesystem
+
+	std::env            environment
+	env::               environment
+	env!                environment
+	option_env!         environment
+
+	std::time           clock
+	Instant             clock
+	SystemTime          clock
+	UNIX_EPOCH          clock
+
+	# Spawning, exiting, aborting and the process's own id.
+	std::process        process
+	process::           process
+
+	HashMap             randomized-hasher
+	HashSet             randomized-hasher
+	RandomState         randomized-hasher
+	EOF
+}
+
+# Every line of every file named after the first, against the names in the
+# first. Each line reports each of the five it reaches once, as
+# <file>:<line>: <name> (<which>), by the first name listed for that one.
+ambient_reaches() {
+	awk '
+		function word(c) { return c ~ /[A-Za-z0-9_]/ }
+		FILENAME == ARGV[1] { count++; name[count] = $1; which[count] = $2; next }
+		{
+			split("", reached)
+			for (i = 1; i <= count; i++) {
+				if (which[i] in reached) continue
+				size = length(name[i])
+				open = !word(substr(name[i], size, 1))
+				from = 0
+				while ((at = index(substr($0, from + 1), name[i])) > 0) {
+					at += from
+					# Not substr at 0: one awk reads that as the first character.
+					before = at > 1 ? substr($0, at - 1, 1) : ""
+					if (!word(before) &&(open || !word(substr($0, at + size, 1)))) {
+						print FILENAME ":" FNR ": " name[i] " (" which[i] ")"
+						reached[which[i]] = 1
+						break
+					}
+					from = at
+				}
+			}
+		}
+	' "$@"
+}
+
+gate_ambient() {
+	local sources found
+
+	if [ ! -d "$ambient_crate" ]; then
+		echo "$prog: $ambient_crate is gone, so there is no analyze source to read" >&2
+		return 1
+	fi
+	sources="$(find "$ambient_crate" -name '*.rs' | sort)"
+	if [ -z "$sources" ]; then
+		echo "$prog: no Rust source under $ambient_crate, so this gate checks nothing" >&2
+		return 1
+	fi
+
+	found="$(ambient_reaches <(ambient_names) $sources)" || return 1
+	if [ -n "$found" ]; then
+		echo "$prog: $ambient_crate names what anchor 4 keeps out of analyze:" >&2
+		printf '%s\n' "$found" | sed 's/^/  /' >&2
+		return 1
+	fi
+
+	echo "ambient: $(printf '%s\n' "$sources" | awk 'END { print NR }') under $ambient_crate name none of the five"
 }
 
 # GOALS.md at M3: the fetcher cannot reach a host outside the allowed list, and
@@ -2788,6 +2933,75 @@ path = "$denied"
 EOF
 }
 
+# One line appended to $2, a path under the copy $1, and what the failure must
+# then name: that file, the line the plant landed on, and $3, the name and which
+# of the five it reaches. A file that is not there yet is made, which is how the
+# proofs below reach a build script and a test the crate does not yet have.
+plant_ambient() {
+	local file="$1/$2"
+	mkdir -p "$(dirname "$file")"
+	printf '\n%s\n' "$4" >>"$file"
+	must_name="$2:$(awk 'END { print NR }' "$file"): $3"
+}
+
+# Each of the five has a proof of its own, and they are spread over the library,
+# a build script and a test, because the gate claims to read all three. The
+# failure is pinned to the planted line and to which of the five it named, so
+# a plant that went red for some other line, or under some other of the five,
+# does not count.
+violate_ambient_filesystem() {
+	plant_ambient "$1" "$ambient_crate/src/lib.rs" "std::fs (filesystem)" \
+		'pub fn planted() -> std::io::Result<String> { std::fs::read_to_string("planted") }'
+}
+
+violate_ambient_environment() {
+	plant_ambient "$1" "$ambient_crate/build.rs" "std::env (environment)" \
+		'fn main() { let _ = std::env::var("PLANTED"); }'
+}
+
+violate_ambient_clock() {
+	plant_ambient "$1" "$ambient_crate/tests/planted.rs" "std::time (clock)" \
+		'#[test] fn planted() { let _ = std::time::Instant::now(); }'
+}
+
+violate_ambient_process() {
+	plant_ambient "$1" "$ambient_crate/src/lib.rs" "std::process (process)" \
+		'pub fn planted() -> u32 { std::process::id() }'
+}
+
+violate_ambient_hasher() {
+	plant_ambient "$1" "$ambient_crate/src/lib.rs" "HashMap (randomized-hasher)" \
+		'pub fn planted() -> std::collections::HashMap<u8, u8> { std::collections::HashMap::new() }'
+}
+
+# What sits beside the five and reaches none of them: each of the decisions
+# ambient_names writes down as out, and a word that holds one of its names
+# inside a longer one. A gate that refused these would catch every plant above
+# just as well while refusing analysis the anchor allows.
+accept_ambient() {
+	cat >>"$1/$ambient_crate/src/lib.rs" <<'EOF'
+
+/// Planted by the ambient proof. The process of discounting takes time, and
+/// Instantaneous is not a clock, so nothing here reaches outside the crate.
+pub mod planted {
+    use core::time::Duration;
+    use std::collections::{BTreeMap, BTreeSet};
+    use std::hash::{BuildHasherDefault, DefaultHasher};
+
+    pub mod prefs {
+        pub const WHERE: &str = file!();
+    }
+
+    pub type Fixed = BuildHasherDefault<DefaultHasher>;
+
+    pub fn ordered(span: Duration) -> (BTreeMap<u32, Duration>, BTreeSet<&'static str>) {
+        let at = (line!(), column!());
+        (BTreeMap::from([(at.0, span)]), BTreeSet::from([prefs::WHERE, module_path!()]))
+    }
+}
+EOF
+}
+
 # One call site that opens a connection of its own, appended to $1. Where it
 # lands is the whole difference between the two proofs below: the same lines are
 # what the chokepoint is for and what it exists to keep out, and a gate that
@@ -3978,10 +4192,12 @@ prove() {
 # The violations a gate is proved against, each in a copy of its own. One apiece,
 # named for the gate, but for fixtures: its harness holds the stage to expected
 # and the claims to expected, and either check could stop while the other still
-# turned the gate red.
+# turned the gate red. And for ambient, which reads for five things, and one
+# with no plant of its own would be one it was never shown to catch.
 violations() {
 	case "$1" in
 	fixtures) echo fixtures fixtures_claims ;;
+	ambient) echo ambient_filesystem ambient_environment ambient_clock ambient_process ambient_hasher ;;
 	*) echo "$1" ;;
 	esac
 }
