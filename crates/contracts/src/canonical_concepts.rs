@@ -4,8 +4,8 @@
 //! `contracts/canonical-concepts/v2.toml` is the surface and it is frozen. This
 //! is that surface as Rust — the two shapes a period takes, the three states a
 //! concept resolves to, the five filer kinds, and the twenty-eight concepts,
-//! each read on the four axes the file defines once and names once per concept.
-//! Why each concept is in the set and what each reading was argued against is
+//! each read on the four axes the file defines once and names once per concept,
+//! and the [`History`] of one filer that the boundary carries. Why each concept is in the set and what each reading was argued against is
 //! `docs/adr/canonical-concepts.md` and the open-questions record beside it,
 //! what v2 reshaped is `docs/adr/what-normalize-emits.md`, and none of that
 //! argument is repeated here.
@@ -558,6 +558,88 @@ impl Concept {
     }
 }
 
+holds! {
+    /// What normalize hands analyze for one filer: the filer, and a row per
+    /// period the period-alignment ruleset admits.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct History {
+        filer: Box<str> => [
+            "per filer",
+            "named by its CIK left-padded with zeros to ten digits",
+        ],
+        periods: Vec<Row> => [
+            "the periods the period-alignment ruleset admits",
+            "as a set whose order means nothing",
+        ],
+    }
+}
+
+impl History {
+    /// `filer`'s history, with one row per period the ruleset admits. Which
+    /// periods those are, and that each is there once, is the producer's.
+    pub fn of(filer: Box<str>, periods: Vec<Row>) -> Self {
+        History { filer, periods }
+    }
+
+    /// The filer, as the ten digits the fetch boundary carries.
+    pub fn filer(&self) -> &str {
+        &self.filer
+    }
+
+    /// Each period the ruleset admits, once. The order means nothing, and the
+    /// last is not the latest.
+    pub fn periods(&self) -> &[Row] {
+        &self.periods
+    }
+}
+
+holds! {
+    /// One period, named by its dates alone, and every concept at it.
+    #[derive(Clone, Debug, Eq, PartialEq)]
+    pub struct Row {
+        period: Period => [
+            "each named by its dates alone in one of the two shapes below",
+        ],
+        /// One per concept, in the order the vocabulary publishes them, which is
+        /// what makes every concept present exactly once.
+        resolutions: Vec<Resolution> => [
+            "and at each of them every concept below exactly once",
+            "in one of the three states below",
+        ],
+    }
+}
+
+impl Row {
+    /// `period`, with the state each concept takes at it in the order the
+    /// vocabulary publishes them. One per concept is the array's length, so a
+    /// row short of a concept cannot be built.
+    pub fn at(period: Period, resolutions: [Resolution; Concept::ALL.len()]) -> Self {
+        Row {
+            period,
+            resolutions: resolutions.into(),
+        }
+    }
+
+    pub fn period(&self) -> &Period {
+        &self.period
+    }
+
+    /// Every concept the vocabulary publishes, in the order it publishes them,
+    /// with the state it takes here.
+    pub fn concepts(&self) -> impl Iterator<Item = (Concept, &Resolution)> {
+        Concept::ALL.iter().copied().zip(&self.resolutions)
+    }
+
+    /// The state `concept` takes here.
+    pub fn of(&self, concept: Concept) -> &Resolution {
+        let at = Concept::ALL
+            .iter()
+            .position(|held| *held == concept)
+            .expect("every concept is a member of the set of all of them");
+        &self.resolutions[at]
+    }
+}
+
 /// The types above against the bytes they transcribe.
 ///
 /// The contracts gate digests `v2.toml` and never reads it, so a type that
@@ -567,7 +649,7 @@ impl Concept {
 /// failure prints both.
 #[cfg(test)]
 mod states_what_is_published {
-    use super::{Concept, Kind, Measure, Period, Resolution, Sign, Silence, Unit};
+    use super::{Concept, History, Kind, Measure, Period, Resolution, Row, Sign, Silence, Unit};
     use crate::published::Contract;
 
     /// The file this module states, relative to the repository root, named here
@@ -766,6 +848,39 @@ mod states_what_is_published {
                 "`{name}` is declared applicable to kinds {PATH} does not state for it"
             );
         }
+    }
+
+    /// The boundary states what one filer's history holds as one sentence, so
+    /// the comparison is over its clauses: every clause the line states is held
+    /// by exactly one field of `History` or `Row`, and no field holds a clause
+    /// the line does not state. Order is not compared, because the line names
+    /// the set of periods around the shape each one takes, and the type nests
+    /// the one inside the other.
+    #[test]
+    fn a_history_holds_what_the_published_boundary_carries() {
+        let published = published();
+        let boundary = published.keys_of("boundary");
+        let carries = published.unquoted(published.value_of(&boundary, "carries", "[boundary]"));
+        let mut stated: Vec<&str> = carries.split([':', ';', ',']).map(str::trim).collect();
+
+        let held: Vec<(String, &str)> = History::HOLDS
+            .iter()
+            .map(|(field, clause)| (format!("History.{field}"), *clause))
+            .chain(
+                Row::HOLDS
+                    .iter()
+                    .map(|(field, clause)| (format!("Row.{field}"), *clause)),
+            )
+            .collect();
+        let mut declared: Vec<&str> = held.iter().map(|(_, clause)| *clause).collect();
+
+        stated.sort_unstable();
+        declared.sort_unstable();
+        assert_eq!(
+            declared, stated,
+            "the clauses `History` and `Row` hold are not the clauses of [boundary] carries in \
+             {PATH}, which they hold as {held:#?}"
+        );
     }
 
     /// The enums close what the file closes. Nothing here compares a shape: it

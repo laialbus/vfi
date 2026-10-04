@@ -44,10 +44,9 @@
 use std::cmp::Ordering;
 
 use vfi_contracts::canonical_concepts::{
-    Attempted, Concept, Excluded, Period, Resolution, Rule, SetBy,
+    Attempted, Concept, Excluded, History, Period, Resolution, Row, Rule, SetBy,
 };
 
-use crate::history::{History, Row};
 use crate::registry::{Version, spelled};
 use crate::settling::PAIR;
 
