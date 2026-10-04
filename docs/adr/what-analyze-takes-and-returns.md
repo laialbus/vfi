@@ -1,9 +1,9 @@
 # Analyze is handed one filer's history, its price answers and its settings, and returns per period a value or an absence naming its input, under a method version and settings it records
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-02, by `M5-06`
-- **Decided:** —
+- **Decided:** 2026-10-03, by the decider
 - **Touches:** two new contracts, `fetch-analyze` and `analyze-store`. Two new
   entries in `allowed_edges`, `vfi-analyze>vfi-contracts` and
   `vfi-store>vfi-contracts`, both onto the leaf crate and neither between
@@ -565,7 +565,49 @@ held by the check below, or left visibly open.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: two new contracts and two
+  edges onto the leaf crate, which is the tier's own example of a new
+  interface. It edits no anchor, no protected path, no gate and no milestone
+  scope. The `allowed_edges` lines it needs land in a later task under the
+  `human-approved` label, where a human sees them. Flagged for later human
+  review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Anchors 2 to 5 and the per-user-state invariant, against the gate
+    script's `allowed_edges` and the two crates' manifests. `vfi-analyze` and
+    `vfi-contracts` depend on nothing, and the only `std::fs` in
+    `vfi-contracts` is under `#[cfg(test)]`, as the record says.
+  - The four points #270 named, each against the surface the record states.
+    The three `no_price` witnesses partition a crossing that holds one answer
+    per date asked. The valuation date is the one answer the surface holds
+    apart. The covered range is read off the prices answered, lies inside the
+    range the request covered, and so inherits `price-provider.md`'s complete
+    split list. The share-basis rule declines on any split dated on or after
+    the earlier of the two dates, and under v2's missing filed date nothing
+    narrower is safe. The CIK, ticker and valuation-date answer are the
+    caller's, so the provider's ask and answer are untouched.
+  - `price-provider.md`'s Decision review, whose split duty this closes;
+    `canonical-concepts-open-questions.md`'s composition rule, carried
+    unchanged; v2's `[boundary]` and `[elsewhere]` lines.
+  - `what-normalize-emits.md`, accepted, says "the stage on the far side reads
+    this contract and no other". This record narrows that sentence: analyze
+    now reads two input contracts, still neither of them `fetch-normalize`.
+    The record names the matching comment in `v2.toml` and not this sentence,
+    and its Touches says no accepted record is superseded. The decision the
+    sentence supported, that the CIK crosses in v2, stands, and this record
+    relies on it. The ADR README's table should gain a row; the README is
+    outside M5-06's owns, so that is a human's or a later task's.
+  - The eleven alternatives as argued.
+- **Verdict and why:** accepted. The argument that carries it is the
+  share-basis rule. With no filed date in the history, a figure's basis can
+  be any date on or after its period end, so declining on every split from
+  the earlier date forward is the only rule that never puts a number on the
+  wrong basis, and its cost is an absence, which the last M5 criterion
+  prefers to a wrong number. The rest gives every metric task one signature,
+  three places for a literal, and a closed set of ways to be absent, each
+  constructible only from its witness. The gaps under Enforcement are stated
+  rather than assumed.
+- **What would have changed it:** a fourth way to have no price that the
+  three witnesses do not cover, or a split the covered range can hold without
+  the list showing it. Either reopens a wrong number that looks right. So
+  would a filed date already in v2, which would make the wide rule
+  unjustified and a narrower one due.
