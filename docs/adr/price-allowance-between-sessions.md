@@ -1,9 +1,9 @@
 # The price provider's spent record is an append-only journal fetch keeps at a path it is handed, one entry per request, stamped with the wall-clock moment it left and read back for both trailing windows and the pace
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-03, by `M5-07`
-- **Decided:** —
+- **Decided:** 2026-10-04, by the decider
 - **Touches:** a new interface, `SpentRecord`, and the storage schema of the
   entries behind it. That is one more file the engine writes in its local data
   directory. The record answers the question `price-provider.md` left open by
@@ -338,7 +338,46 @@ added by the implementing task:
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: a new interface, `SpentRecord`,
+  and the schema of the entries behind it, both inside one crate. It edits no
+  anchor, no protected path, no gate and no milestone scope, and asks for no
+  `allowed_edges` entry. Flagged for later human review, as the tier
+  requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Anchor 2, against the five edges the gate script allows. `vfi-fetch`
+    gains no workspace dependency, the only reader of the record is the stage
+    that writes it, and both store edges the record names as closed are
+    absent from the list, as it says.
+  - The storage-behind-an-interface and per-user-state invariants. The path
+    is a constructor parameter, the record is `&mut` on every ask, and the
+    provider keeps no field of it: the shape `filer-decision-ledger.md`
+    accepted, in the same crate.
+  - `filer-decision-ledger.md`'s first two alternatives, which the store
+    question re-argues to the same end. `price-provider.md`'s Decision
+    review, whose refusal of "store's" this closes, and its Decision, left as
+    accepted: the three limits, the 72 s spacing, the seven reasons and the
+    unadjusted close.
+  - `pace.rs`: `Clock::now` returns a monotonic `Instant`, so the wall clock
+    the record adds is needed and the pace's clock cannot stand in for it.
+    `ledger/mod.rs`'s `Unkept::{Unwritten, Unread}` and the seconds-plus-
+    nanoseconds moment in `ledger/journal/written.rs` are as described.
+  - The task's acceptance, point by point. Each of the three handed cases
+    ends in no failed run and no wrong price. The ask order lands the entry
+    before the send. What is left to the source refusing is listed. The
+    seven alternatives as argued.
+- **Verdict and why:** accepted. What carries it is that every error the
+  record admits leans the safe way: an entry appended before the send
+  over-counts, two spellings of one ticker over-count, a refused request
+  stays counted, a clock set back only slows the provider, and an unreadable
+  record is refused where it is opened instead of being read as nothing
+  spent. The one lean the other way, sending when the entry cannot be kept,
+  is stated as such, and failing closed would need a reason outside
+  `price-provider.md`'s closed list, which is a change to an accepted record
+  and not this one's to make. That fail-open is the item flagged for the
+  human: whether it stands, or a later record adds the reason.
+- **What would have changed it:** an `allowed_edges` entry needed in either
+  direction, a path found anywhere but a parameter, or a reading under which
+  a missing or unreadable file counted as nothing spent without the caller
+  writing that choice out. So would a published statement that the source
+  does not count refused requests, which would make the over-count a cost
+  worth removing.
