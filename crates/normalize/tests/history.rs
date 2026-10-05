@@ -11,10 +11,10 @@
 mod fixture;
 
 use vfi_contracts::canonical_concepts::{
-    Attempted, Concept, Kind, Measure, Period, Resolution, SetBy, Silence, SourceTag,
+    Attempted, Concept, History, Kind, Measure, Period, Resolution, Row, SetBy, Silence, SourceTag,
 };
 use vfi_contracts::fetch_normalize::{self, Fact, Filer};
-use vfi_normalize::history::{History, Row, history};
+use vfi_normalize::history::history;
 use vfi_normalize::registry::{Outcome, Registry};
 use vfi_normalize::settling;
 

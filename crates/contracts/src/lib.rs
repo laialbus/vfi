@@ -12,9 +12,9 @@
 //!
 //! The published bytes stay the single source, and a transcription nothing
 //! compares is the unchecked duplication the one-source-of-truth invariant
-//! bans. So each module carries the comparison as its own test: the field names
-//! read off the type's own declaration by the macros below, the published names
-//! read out of the contract file, and both printed when they part. `cargo test`
+//! bans. So each module carries the comparison as its own test: what a type
+//! holds read off its own declaration by the macros below, what the contract
+//! states read out of the contract file, and both printed when they part. `cargo test`
 //! runs it, which is the tests gate — no gate was added for it.
 //!
 //! The macros, and the reading of TOML those tests share, sit here rather than
@@ -88,6 +88,41 @@ macro_rules! shapes {
         impl $name {
             const SHAPES: &'static [(&'static str, usize)] =
                 &[$( (stringify!($shape), [$(stringify!($carried)),+].len()), )+];
+        }
+    };
+}
+
+/// A type whose fields are its own, together with the clauses of a contract's
+/// prose that each field holds.
+///
+/// Some contracts state what a value holds as one sentence rather than as named
+/// fields, and the sentence is then what the type is compared against. Each
+/// field is declared with the clauses of it that it holds, word for word, so a
+/// field dropped leaves its clauses held by nothing and a field added holds one
+/// the sentence does not state.
+///
+/// The fields are private, unlike `carries!`'s, because what such a sentence
+/// states of the whole — each member once, every concept present — is held by
+/// how the type is built, and a public field is a way around that.
+macro_rules! holds {
+    (
+        $(#[$type_doc:meta])*
+        pub struct $name:ident {
+            $(
+                $(#[$field_doc:meta])*
+                $field:ident : $field_type:ty => [ $( $clause:literal ),+ $(,)? ],
+            )+
+        }
+    ) => {
+        $(#[$type_doc])*
+        pub struct $name {
+            $( $(#[$field_doc])* $field: $field_type, )+
+        }
+
+        #[cfg(test)]
+        impl $name {
+            const HOLDS: &'static [(&'static str, &'static str)] =
+                &[$( $( (stringify!($field), $clause), )+ )+];
         }
     };
 }

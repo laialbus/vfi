@@ -38,7 +38,7 @@ use std::collections::BTreeSet;
 use std::fmt;
 
 use vfi_contracts::canonical_concepts::{
-    self as v2, Attempted, Attempts, Concept, Resolution, SourceTag, Tie,
+    self as v2, Attempted, Attempts, Concept, History, Resolution, Row, SourceTag, Tie,
 };
 use vfi_contracts::fetch_normalize::{self, Filer};
 
@@ -46,57 +46,6 @@ use crate::periods;
 use crate::registry::Registry;
 use crate::settling::SetBy;
 use crate::standing::{self, Stands, Undecided};
-
-/// What the stage hands the next for one filer: the filer, and a row per
-/// period Rule 1 admits.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct History {
-    filer: Box<str>,
-    periods: Vec<Row>,
-}
-
-impl History {
-    /// The filer, as the ten digits the fetch boundary carries.
-    pub fn filer(&self) -> &str {
-        &self.filer
-    }
-
-    /// Each period Rule 1 admits, once. The order means nothing, and the last
-    /// is not the latest.
-    pub fn periods(&self) -> &[Row] {
-        &self.periods
-    }
-}
-
-/// One period, named by its dates alone, and every concept at it.
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct Row {
-    period: v2::Period,
-    /// One per concept, in the order the vocabulary publishes them, which is
-    /// what makes every concept present exactly once.
-    resolutions: Vec<Resolution>,
-}
-
-impl Row {
-    pub fn period(&self) -> &v2::Period {
-        &self.period
-    }
-
-    /// Every concept the vocabulary publishes, in the order it publishes them,
-    /// with the state it takes here.
-    pub fn concepts(&self) -> impl Iterator<Item = (Concept, &Resolution)> {
-        Concept::ALL.iter().copied().zip(&self.resolutions)
-    }
-
-    /// The state `concept` takes here.
-    pub fn of(&self, concept: Concept) -> &Resolution {
-        let at = Concept::ALL
-            .iter()
-            .position(|held| *held == concept)
-            .expect("every concept is a member of the set of all of them");
-        &self.resolutions[at]
-    }
-}
 
 /// Filings whose `filed` does not read as a date, which the boundary publishes
 /// no such thing as: the run stops on them rather than crossing a state.
@@ -144,10 +93,12 @@ pub fn history(registry: &Registry, filer: &Filer) -> Result<History, Undated> {
                 Err(accessions) => undated.extend(accessions),
             }
         }
-        rows.push(Row {
-            period: dated(period),
-            resolutions,
-        });
+        // A row short of a concept is one an undated filing stopped, which
+        // `undated` now names, so the history it would have joined is never
+        // handed over.
+        if let Ok(resolutions) = resolutions.try_into() {
+            rows.push(Row::at(dated(period), resolutions));
+        }
     }
 
     if !undated.is_empty() {
@@ -155,10 +106,7 @@ pub fn history(registry: &Registry, filer: &Filer) -> Result<History, Undated> {
             accessions: undated.into_iter().map(Into::into).collect(),
         });
     }
-    Ok(History {
-        filer: filer.cik.clone(),
-        periods: rows,
-    })
+    Ok(History::of(filer.cik.clone(), rows))
 }
 
 /// What stands, as the state v2 publishes, or the filings whose `filed` left
