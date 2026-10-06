@@ -157,7 +157,7 @@ mod states_what_is_published {
     fn a_period_takes_the_shapes_the_published_bytes_name() {
         let declared: Vec<(String, usize)> = Period::SHAPES
             .iter()
-            .map(|(shape, dates)| (shape.to_ascii_lowercase(), *dates))
+            .map(|(shape, dates)| (shape.to_ascii_lowercase(), dates.len()))
             .collect();
 
         let published = published();

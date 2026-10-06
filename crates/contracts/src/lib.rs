@@ -61,18 +61,21 @@ macro_rules! carries {
 }
 
 /// A type whose value takes one of several shapes, together with each shape's
-/// name and the number of fields it carries.
+/// name and the names of the fields it carries.
 ///
 /// The enum is what makes it one shape and never both and never neither: there
 /// is no state to check for at run time, because none can be constructed. What
 /// the comparison checks is that the shapes are the ones the contract names.
+///
+/// A shape may carry nothing, written `Shape {}`, where its name is the whole
+/// of what it says.
 macro_rules! shapes {
     (
         $(#[$type_doc:meta])*
         pub enum $name:ident {
             $(
                 $(#[$shape_doc:meta])*
-                $shape:ident { $( $carried:ident : $carried_type:ty ),+ $(,)? },
+                $shape:ident { $( $carried:ident : $carried_type:ty ),* $(,)? },
             )+
         }
     ) => {
@@ -80,14 +83,14 @@ macro_rules! shapes {
         pub enum $name {
             $(
                 $(#[$shape_doc])*
-                $shape { $( $carried: $carried_type, )+ },
+                $shape { $( $carried: $carried_type, )* },
             )+
         }
 
         #[cfg(test)]
         impl $name {
-            const SHAPES: &'static [(&'static str, usize)] =
-                &[$( (stringify!($shape), [$(stringify!($carried)),+].len()), )+];
+            const SHAPES: &'static [(&'static str, &'static [&'static str])] =
+                &[$( (stringify!($shape), &[$(stringify!($carried)),*]), )+];
         }
     };
 }
@@ -336,4 +339,5 @@ mod published {
 }
 
 pub mod canonical_concepts;
+pub mod fetch_analyze;
 pub mod fetch_normalize;

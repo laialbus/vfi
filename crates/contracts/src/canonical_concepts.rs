@@ -681,7 +681,7 @@ mod states_what_is_published {
     }
 
     /// A state's published name is its shape's name unchanged, so nothing is
-    /// translated here. What the published bytes do not state is how many
+    /// translated here. What the published bytes do not state is which
     /// fields a state carries, so that half of `SHAPES` has nothing to be
     /// compared against and the comparison is over the names.
     #[test]
@@ -703,7 +703,7 @@ mod states_what_is_published {
     fn a_period_takes_the_shapes_the_published_bytes_name() {
         let declared: Vec<(String, usize)> = Period::SHAPES
             .iter()
-            .map(|(shape, dates)| (as_published(shape), *dates))
+            .map(|(shape, dates)| (as_published(shape), dates.len()))
             .collect();
 
         let published = published();
