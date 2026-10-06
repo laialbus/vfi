@@ -1,9 +1,9 @@
 # A new gate, `literals`, reads analyze's non-test source as tokens and goes red on any numeric literal but zero and one outside the three places, and on the preset constructor's name outside `settings/`
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-05, by `M5-09`
-- **Decided:** —
+- **Decided:** 2026-10-05, by the decider
 - **Touches:** anchor 5's enforcement clause, which this applies and does not
   edit. A new gate name, `literals`, in the expected gate set, which a later
   task that owns `scripts/gates.sh` builds. The name of the preset
@@ -404,7 +404,41 @@ held by the check below, or left visibly open.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: a new gate name entering the
+  expected gate set is the tier's own example. It edits no anchor, no
+  protected path and no gate; the runner change lands in a later task under
+  the `human-approved` label, where a human sees it. Flagged for later human
+  review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Anchor 5's enforcement clause, which this applies and does not edit: a
+    lint on the analyze crate, a small allowlist, run in CI.
+  - `what-analyze-takes-and-returns.md`, accepted. The three places are
+    copied as that record writes them. The allowlist and whether tests are
+    read are the two things it left to this record by name. The constructor
+    it requires and leaves unnamed is named here without an edit to it.
+  - M5-04's task against "Beside M5-04's check". M5-04 reads every Rust file
+    under the crate, tests and build script included, for names; this reads
+    the library and the build script, as tokens. Different files, different
+    readings, no list passed either way.
+  - The runner as main holds it. `expected_gates`, `prove`, the `accept_`
+    copies, `must_name` and `--gates-only` exist as the proof set assumes,
+    and `egress` reads text without cargo as the record says of itself.
+  - The template's tiers. A later allowlist entry, a form moved out or a
+    directory left unread is a weakening and so Constitutional; reading
+    tests later is a tightening. The record says both.
+  - The seven alternatives as argued.
+- **Verdict and why:** accepted. What carries it is the allowlist's reason:
+  zero and one are the arithmetic's and no method's, and a file for them in
+  `constants/` would carry a citation that cites nothing, which is the exact
+  defect anchor 5 names. Every other form is decided in with a reason, the
+  two numbers that fit nowhere are left open by name rather than admitted,
+  the blind spots are listed rather than assumed, and the proof set pins each
+  decided form so a lexer that drifts goes red. The cost it owns, a second
+  reading of Rust inside the runner, is the price of keeping the lint's logic
+  where weakening it costs a signature.
+- **What would have changed it:** a value the derivation cannot be written
+  without that is neither zero nor one, which would make the allowlist a
+  method's list under another name. So would a fourth place, or a reading of
+  the three that differs from the accepted record's. A checker crate the
+  protected-path list covered would have reopened the `syn` alternative, but
+  widening that list is Constitutional and not this record's to decide.
