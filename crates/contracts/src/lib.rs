@@ -33,12 +33,16 @@
 /// A contract that says a value holds its fields *and* something else — a
 /// collection the boundary carries rather than a named field — declares that in
 /// `and { … }`, which the comparison leaves alone.
+///
+/// A field without `pub` is private, for a type whose constructor holds what
+/// the contract states of the whole — one filer, each name once — which a
+/// public field would be a way around.
 macro_rules! carries {
     (
         $(#[$type_doc:meta])*
         pub struct $name:ident {
             fields {
-                $( $(#[$field_doc:meta])* pub $field:ident : $field_type:ty, )+
+                $( $(#[$field_doc:meta])* $vis:vis $field:ident : $field_type:ty, )+
             }
             $(
                 and {
@@ -49,7 +53,7 @@ macro_rules! carries {
     ) => {
         $(#[$type_doc])*
         pub struct $name {
-            $( $(#[$field_doc])* pub $field: $field_type, )+
+            $( $(#[$field_doc])* $vis $field: $field_type, )+
             $( $( $(#[$held_doc])* pub $held: $held_type, )+ )?
         }
 
@@ -89,7 +93,7 @@ macro_rules! shapes {
 
         #[cfg(test)]
         impl $name {
-            const SHAPES: &'static [(&'static str, &'static [&'static str])] =
+            pub(crate) const SHAPES: &'static [(&'static str, &'static [&'static str])] =
                 &[$( (stringify!($shape), &[$(stringify!($carried)),*]), )+];
         }
     };
@@ -181,6 +185,22 @@ mod published {
     pub struct Contract {
         path: &'static str,
         text: String,
+    }
+
+    /// A declared name as the published bytes spell it: `AllowanceSpent` is
+    /// `allowance_spent`, and that is the whole of the translation between the
+    /// two spellings. A name the rule does not cover leaves the readings
+    /// unequal, which is the direction to be wrong in: it reports a difference
+    /// that is only a spelling, and never passes over one that is not.
+    pub fn as_published(declared: &str) -> String {
+        let mut spelled = String::new();
+        for (at, letter) in declared.char_indices() {
+            if at > 0 && letter.is_ascii_uppercase() {
+                spelled.push('_');
+            }
+            spelled.push(letter.to_ascii_lowercase());
+        }
+        spelled
     }
 
     impl Contract {
@@ -338,6 +358,7 @@ mod published {
     }
 }
 
+pub mod analyze_store;
 pub mod canonical_concepts;
 pub mod fetch_analyze;
 pub mod fetch_normalize;

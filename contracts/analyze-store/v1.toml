@@ -1,0 +1,215 @@
+# The analyze -> store contract at v1: what the caller of analyze hands store for
+# one filer, and nothing about how either side does its work.
+#
+# Frozen. The versions record beside this file holds its sha256, and the
+# contracts gate goes red if these bytes change. A change publishes v2.toml with
+# its own line, edits nothing here, and deletes nothing the record names.
+#
+# Why a result crosses with the history and crossing it read and the premises it
+# was computed under, what each reason is built from, and what was left out and
+# for what reason, is docs/adr/what-analyze-takes-and-returns.md. What three of
+# the reasons carry was ruled on the 2026-10-07 M5-12 stop, listed in
+# docs/adr/README.md. This file is the surface, not the argument.
+#
+# There is no version field. The version is this file's name and its line in the
+# record; a third copy inside would be one nothing checks.
+
+name = "analyze-store"
+
+[boundary]
+produced_by = "analyze"
+consumed_by = "store"
+carries = "one hand-over per filer, named by the CIK its history carries"
+
+[handover]
+one_per = "filer"
+holds = "the four fields below"
+
+[[handover.field]]
+name = "history"
+meaning = "the history analyze read, as canonical-concepts v2 publishes it. Its CIK names the filer the hand-over is for, and is stated nowhere else in it"
+
+[[handover.field]]
+name = "prices"
+meaning = "the price crossing analyze read, or that none was asked: exactly one of the [[prices.shape]] below"
+
+[[handover.field]]
+name = "premises"
+meaning = "what every result in the hand-over was computed under, carrying the fields of [[premises.field]]"
+
+[[handover.field]]
+name = "results"
+meaning = "per period, the results, each carrying the fields of [[results.field]], each period once, as a set whose order means nothing"
+
+# The prices are one of these, never both and never neither. Each shape carries
+# the fields its carries line names.
+[[prices.shape]]
+name = "asked"
+meaning = "the one crossing analyze read, carried as crossing, as fetch-analyze v1 publishes it"
+carries = ["crossing"]
+
+[[prices.shape]]
+name = "not_asked"
+meaning = "no price was asked, and analyze was handed no crossing"
+carries = []
+
+[[premises.field]]
+name = "method_version"
+meaning = "the method version every result was computed under, a positive integer"
+
+[[premises.field]]
+name = "settings"
+meaning = "every setting by name with the value used, preset or chosen alike, each carrying the fields of [[setting.field]], each name once, as a set whose order means nothing"
+
+[[setting.field]]
+name = "name"
+meaning = "the setting's name, as analyze defines it"
+
+[[setting.field]]
+name = "value"
+meaning = "the value used, as the characters analyze writes"
+
+[[results.field]]
+name = "period"
+meaning = "the period the results are stated at, in one of the two [[period.shape]] below"
+
+[[results.field]]
+name = "metrics"
+meaning = "each metric the method version computes at that period, named once with its outcome, each carrying the fields of [[metric.field]], as a set whose order means nothing"
+
+[[metric.field]]
+name = "name"
+meaning = "the metric's name, as analyze defines it beside the metric. This surface names no metric"
+
+[[metric.field]]
+name = "outcome"
+meaning = "exactly one of the [[outcome.shape]] below"
+
+# A period is one of these, never both and never neither, and its dates are the
+# whole of its name. Two periods are one exactly when their dates are equal
+# character for character, so an instant and a duration are never one.
+#
+# Restated from canonical-concepts v2, as v2 restated fetch-normalize's. Both
+# files are frozen, so neither statement drifts in place.
+[[period.shape]]
+name = "instant"
+dates = 1
+meaning = "the date the period is stated at, as the characters the facts carried it"
+
+[[period.shape]]
+name = "duration"
+dates = 2
+meaning = "the date the period starts and the date it ends, as the characters the facts carried them"
+
+# An outcome is one of these, never both and never neither.
+[[outcome.shape]]
+name = "value"
+meaning = "the figure, carried as figure, as the characters analyze writes. Its unit is stated in the metric's catalogue entry and not here"
+carries = ["figure"]
+
+[[outcome.shape]]
+name = "absent"
+meaning = "no figure, carried as reasons: a non-empty list of the reasons below, one per absent input, in the metric's own input order"
+carries = ["reasons"]
+
+# A reason is one of these. The set is closed: no seventh reason, no default, and
+# none of them is an error. Each carries the fields its carries line names.
+[reason_set]
+closed = true
+resolves_to = "exactly one of the six reasons below, and for no_price and basis_unproven exactly one of the three shapes listed under that name"
+
+[[reason]]
+name = "input_not_applicable"
+means = "an input concept is NotApplicable in the history at a period the metric reads, named as concept and period"
+carries = ["concept", "period"]
+
+[[reason]]
+name = "input_unknown"
+means = "an input concept is Unknown in the history at a period the metric reads, named as concept and period"
+carries = ["concept", "period"]
+
+[[reason]]
+name = "no_period"
+means = "the history holds no row for a period the metric reads, named by the period the metric was computing at, as computing_at, and the name of the rule that sought the other period, as sought_by"
+carries = ["computing_at", "sought_by"]
+
+[[reason]]
+name = "no_price"
+means = "the metric reads a price at a date and has none, carried as no_price: exactly one of the [[no_price.shape]] below"
+carries = ["no_price"]
+
+[[reason]]
+name = "basis_unproven"
+means = "a price was answered, and the figure it is put beside cannot be shown to be on the same share basis, carried as basis_unproven: exactly one of the [[basis_unproven.shape]] below"
+carries = ["basis_unproven"]
+
+[[reason]]
+name = "declined"
+means = "every input was present, and the metric's definition states it is undefined at those inputs, named as condition, as the metric's catalogue entry names it"
+carries = ["condition"]
+
+# The crossing holds exactly one answer per date asked, so these three cover
+# every way to have no price.
+[[no_price.shape]]
+name = "not_asked"
+means = "the hand-over's prices are not_asked"
+carries = []
+
+[[no_price.shape]]
+name = "date_not_asked"
+means = "the crossing holds no answer for the date the metric reads, named as date"
+carries = ["date"]
+
+[[no_price.shape]]
+name = "answered_absent"
+means = "the crossing's answer for the date the metric reads is an absence, named by its date asked, as date_asked"
+carries = ["date_asked"]
+
+[[basis_unproven.shape]]
+name = "splits_absent"
+means = "the crossing's split list is an absence, of which the crossing holds one"
+carries = []
+
+[[basis_unproven.shape]]
+name = "not_covered"
+means = "the covered range does not contain both the figure's period end and the price's trading date, named as covered_range, period_end and trading_date"
+carries = ["covered_range", "period_end", "trading_date"]
+
+[[basis_unproven.shape]]
+name = "split_within"
+means = "a split in the crossing's list is dated inside the span the share-basis rule reads, named as split, by its date and factor as published, with period_end and trading_date"
+carries = ["split", "period_end", "trading_date"]
+
+[[covered_range.field]]
+name = "from"
+meaning = "the earliest trading date any price in the crossing carries, as the characters the source published"
+
+[[covered_range.field]]
+name = "through"
+meaning = "the latest trading date any price in the crossing carries, as the characters the source published"
+
+[[property]]
+name = "one filer"
+holds = "where the prices are asked, the crossing's cik is the history's CIK, character for character"
+
+[[property]]
+name = "a reason names its witness"
+holds = "a reason names the state of its input in the history or the crossing the hand-over holds, and copies nothing that state carries"
+
+[[property]]
+name = "nothing is parsed"
+holds = "figures and setting values cross as the characters analyze writes, and the history and the crossing as their own contracts carry them"
+
+[[property]]
+name = "an absence is an outcome"
+holds = "a metric with no figure is absent with its reasons, and nothing on this surface is an error"
+
+# What this contract does not state, and where each is stated instead.
+[elsewhere]
+which_metrics_exist_and_their_names = "analyze, beside each metric, exposed through the catalogue it generates"
+a_figures_unit = "the metric's catalogue entry"
+how_a_figure_is_written = "analyze, under the method version"
+which_settings_exist = "analyze's settings"
+each_declined_condition = "the metric's catalogue entry"
+covered_range = "read off the prices the crossing answered, as docs/adr/what-analyze-takes-and-returns.md defines it"
+the_storage_schema_and_row_keys = "store"

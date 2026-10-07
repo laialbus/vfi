@@ -134,7 +134,7 @@ shapes! {
 #[cfg(test)]
 mod states_what_is_published {
     use super::{Answer, Crossing, Reason, SplitFactor, Splits};
-    use crate::published::Contract;
+    use crate::published::{as_published, Contract};
 
     /// The file this module states, relative to the repository root, named here
     /// and nowhere else in this module.
@@ -142,21 +142,6 @@ mod states_what_is_published {
 
     fn published() -> Contract {
         Contract::at(PATH)
-    }
-
-    /// A declared name as the published bytes spell it: `AllowanceSpent` is
-    /// `allowance_spent`, and that is the whole of the translation between the
-    /// two spellings. A name the rule does not cover leaves the readings
-    /// unequal, which is the direction to be wrong in.
-    fn as_published(declared: &str) -> String {
-        let mut spelled = String::new();
-        for (at, letter) in declared.char_indices() {
-            if at > 0 && letter.is_ascii_uppercase() {
-                spelled.push('_');
-            }
-            spelled.push(letter.to_ascii_lowercase());
-        }
-        spelled
     }
 
     fn shape_names(shapes: &[(&str, &[&str])]) -> Vec<String> {
