@@ -650,7 +650,7 @@ impl Row {
 #[cfg(test)]
 mod states_what_is_published {
     use super::{Concept, History, Kind, Measure, Period, Resolution, Row, Sign, Silence, Unit};
-    use crate::published::Contract;
+    use crate::published::{as_published, Contract};
 
     /// The file this module states, relative to the repository root, named here
     /// and nowhere else in this module.
@@ -658,22 +658,6 @@ mod states_what_is_published {
 
     fn published() -> Contract {
         Contract::at(PATH)
-    }
-
-    /// A declared name as the published bytes spell it: `InvestmentCompany` is
-    /// `investment_company`, and that is the whole of the translation between
-    /// the two spellings. A name the rule does not cover leaves the readings
-    /// unequal, which is the direction to be wrong in: it reports a difference
-    /// that is only a spelling, and never passes over one that is not.
-    fn as_published(declared: &str) -> String {
-        let mut spelled = String::new();
-        for (at, letter) in declared.char_indices() {
-            if at > 0 && letter.is_ascii_uppercase() {
-                spelled.push('_');
-            }
-            spelled.push(letter.to_ascii_lowercase());
-        }
-        spelled
     }
 
     fn owned(names: Vec<&str>) -> Vec<String> {
