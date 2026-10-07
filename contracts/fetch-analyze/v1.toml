@@ -1,0 +1,156 @@
+# The fetch -> analyze contract at v1: the prices one ask of the price provider
+# hands analyze, and nothing about how either side does its work.
+#
+# Frozen. The versions record beside this file holds its sha256, and the
+# contracts gate goes red if these bytes change. A change publishes v2.toml with
+# its own line, edits nothing here, and deletes nothing the record names.
+#
+# Why prices cross here, what each field is for, and what was left out and for
+# what reason, is docs/adr/what-analyze-takes-and-returns.md. What the provider
+# is asked and what each answer and reason means is docs/adr/price-provider.md.
+# This file is the surface, not the argument.
+#
+# There is no version field. The version is this file's name and its line in the
+# record; a third copy inside would be one nothing checks.
+
+name = "fetch-analyze"
+
+[boundary]
+produced_by = "fetch"
+consumed_by = "analyze"
+carries = "one value per ask"
+
+[crossing]
+one_per = "ask"
+holds = "the five fields below"
+
+[[crossing.field]]
+name = "cik"
+meaning = "the filer the ask was made on behalf of, as ten digits left-padded with zeros. The caller's claim: nothing in the crossing shows that the closes are this filer's"
+
+[[crossing.field]]
+name = "ticker"
+meaning = "the ticker the provider was asked for"
+
+[[crossing.field]]
+name = "at_valuation_date"
+meaning = "the provider's answer for the date the ask named as the valuation date, held apart from the rest. The valuation date is this answer's date asked, and is stated nowhere else"
+
+[[crossing.field]]
+name = "at_earlier_dates"
+meaning = "the provider's answer for each earlier date the ask named, as a set whose order means nothing"
+
+[[crossing.field]]
+name = "splits"
+meaning = "the split factors the source published inside the range the request covered, or that list's absence with its reason, as the provider answered"
+
+# An answer is one of these, never both and never neither. The fields each
+# carries are listed under the shape's own name.
+[[answer.shape]]
+name = "price"
+meaning = "the source published a close on or before the date asked"
+
+[[answer.shape]]
+name = "absence"
+meaning = "there is no close for the date asked, for one of the reasons below"
+
+[[price.field]]
+name = "date_asked"
+meaning = "the date the ask named, as the caller named it"
+
+[[price.field]]
+name = "trading_date"
+meaning = "the trading date the close is for, as the characters the source published"
+
+[[price.field]]
+name = "close"
+meaning = "the unadjusted close, as the decimal literal the source published, unparsed"
+
+[[price.field]]
+name = "retrieved_from"
+meaning = "the request that produced it, recorded by the provider rather than published by the source"
+
+[[absence.field]]
+name = "date_asked"
+meaning = "the date the ask named, as the caller named it"
+
+[[absence.field]]
+name = "reason"
+meaning = "why there is no close for it: exactly one of the reasons below"
+
+# The split list is one of these, never both and never neither.
+[[splits.shape]]
+name = "listed"
+meaning = "every split factor the source published inside the range the request covered, each carrying the fields of [[split.field]]"
+
+[[splits.shape]]
+name = "absence"
+meaning = "there is no list, for one of the reasons below"
+
+[[split.field]]
+name = "date"
+meaning = "the date the factor is published for, as the characters the source published"
+
+[[split.field]]
+name = "factor"
+meaning = "the factor, as the characters the source published, unparsed"
+
+# A reason is one of these. The set is closed: no eighth reason, no default, and
+# none of them is an error. Each carries the fields its carries line names.
+[reason_set]
+closed = true
+resolves_to = "exactly one of the seven reasons below"
+
+[[reason]]
+name = "no_key"
+means = "no key was given"
+carries = []
+
+[[reason]]
+name = "key_not_a_header_value"
+means = "the key given cannot be sent as a header value"
+carries = []
+
+[[reason]]
+name = "allowance_spent"
+means = "an allowance is spent, named as allowance"
+carries = ["allowance"]
+
+[[reason]]
+name = "refused"
+means = "the source answered with a status other than success, carried as status"
+carries = ["status"]
+
+[[reason]]
+name = "unreachable"
+means = "the source could not be reached, with why"
+carries = ["why"]
+
+[[reason]]
+name = "unreadable"
+means = "the answer could not be read, with why"
+carries = ["why"]
+
+[[reason]]
+name = "no_close"
+means = "the answer holds no close on or before the date asked"
+carries = []
+
+[[property]]
+name = "one answer per date asked"
+holds = "the crossing holds exactly one answer, a price or an absence, for each date the ask named, and none for a date it did not name"
+
+[[property]]
+name = "nothing is parsed"
+holds = "dates, closes and factors cross as characters: a date asked as the caller named it, everything else as the source published it"
+
+[[property]]
+name = "an absence is an answer"
+holds = "a date with no price is answered with its reason, and nothing on this surface is an error"
+
+# What this contract does not state, and where each is stated instead.
+[elsewhere]
+covered_range = "not a field: it is read off the prices answered, as docs/adr/what-analyze-takes-and-returns.md defines it"
+how_a_price_is_retrieved = "the price provider in fetch"
+how_a_missing_price_makes_a_metric_absent = "analyze"
+whether_a_price_may_stand_beside_a_figure = "analyze"
