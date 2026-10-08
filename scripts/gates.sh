@@ -83,6 +83,10 @@ at_once="$(machine_lanes)"
 # environment, the clock, a process, or a randomized hasher" — so it runs right
 # after purity, which is the half no dependency list can reach.
 #
+# literals is not a fifth either: it is the lint anchor 5's enforcement clause
+# names, as docs/adr/bare-literal-lint.md decides it, and it runs right after
+# ambient, the other gate that reads analyze's own source.
+#
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
 # it — the one that runs the gates and the one that proves them — so a name
@@ -99,6 +103,7 @@ expected_gates() {
 	deps
 	purity
 	ambient
+	literals
 	egress
 	contracts
 	registry
@@ -988,6 +993,438 @@ gate_ambient() {
 	fi
 
 	echo "ambient: $(printf '%s\n' "$sources" | awk 'END { print NR }') under $ambient_crate name none of the five"
+}
+
+# Anchor 5: nothing arbitrary enters the derivation, held by a lint that bans a
+# bare numeric literal from analyze outside a small allowlist. What it reads,
+# where a literal may stand, the allowlist and each form are decided in
+# docs/adr/bare-literal-lint.md; this is that record built, and decides nothing
+# it leaves open.
+#
+# It reads every .rs file under the crate but its tests/, benches/ and
+# examples/, which only cargo test, bench and run --example build, and it reads
+# them as tokens: strings, characters, comments and an item standing under
+# exactly #[cfg(test)] are passed over, and every other numeric literal is red
+# unless it stands in one of the three places or is on the allowlist. A file it
+# cannot lex is red rather than skipped, and so is reading no file at all.
+#
+# It walks the crate on its own and keeps its own lists. ambient reads a
+# different set of files a different way, and a walk the two shared would blind
+# both with one bug.
+#
+# What this cannot see, said here rather than left to be found:
+#   - a number spelled as a string and parsed, such as "0.15".parse(), and the
+#     width or precision in a format string;
+#   - a constant in an allowed place whose citation is false or missing, or a
+#     stated reason in settings/ that is; it reads no citation;
+#   - a value built by arithmetic over what passes, such as 1 + 1, a constant
+#     from one method used in another, and the numbers std names for itself,
+#     such as f64::EPSILON, u8::MAX or a string's len();
+#   - code in an allowed place that is not what the place is for, since each
+#     place is allowed whole;
+#   - source reaching analyze from outside what it reads: a #[path] to a file
+#     elsewhere, a manifest's [lib] path into tests/, and a macro or constant
+#     from another crate;
+#   - a second route to the presets, such as a Default impl on Settings or a
+#     second function in settings/ under another name; it bans one name;
+#   - a form the lexer misreads. Two are known. A number straight after a
+#     single dot is a tuple index wherever it stands, so a macro handed .15
+#     passes it. And an item under #[cfg(test)] is passed over from an item
+#     keyword to its first semicolon or closing brace at its own depth, so an
+#     item that runs on past either, such as a static whose value is a struct
+#     literal with a method called on it, is read from there; that errs red.
+literals_crate="crates/analyze"
+
+# The name of the preset constructor, Settings::preset. The derivation never
+# calls it, so it may stand only under settings/, and settings/ must still
+# define it, or this would be reading for a name nothing has.
+literals_preset="preset"
+
+# The only literals the derivation may write, compared after a type suffix and
+# one underscore before it are removed. Each is the arithmetic's and no
+# method's, so no source fixes it and a file for it in constants/ would carry a
+# citation that cites nothing. One spelling apiece: 0x1, 1e0, 1. and 00 are red.
+# A new entry here loosens a gate.
+literal_allowlist() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	# Zero: the empty sum, the start of a count, and the zero divisor the
+	# analyze record's declined reason names.
+	0
+	0.0
+	# One: the empty product, a count's step, the whole a fraction is part of,
+	# and the index of the second term.
+	1
+	1.0
+	EOF
+}
+
+# Every file this gate reads, found by walking the crate on each run.
+literal_sources() {
+	find "$literals_crate" -name '*.rs' ! -type d \
+		! -path "$literals_crate/tests/*" \
+		! -path "$literals_crate/benches/*" \
+		! -path "$literals_crate/examples/*" | sort
+}
+
+# The files named after the first, read as Rust tokens. The first is how many of
+# them stand under settings/, counted by the caller because awk never visits an
+# empty file. Each problem is one line, <file>:<line>: <what>.
+#
+# The lexer splits as rustc's does, as far as the forms the record decides: it
+# is narrow on purpose, and what it does not know how to read is refused.
+literal_reads() {
+	local held="$1"
+	shift
+	LC_ALL=C awk \
+		-v constants="$literals_crate/src/constants/" \
+		-v settings="$literals_crate/src/settings/" \
+		-v method="$literals_crate/src/method.rs" \
+		-v preset="$literals_preset" \
+		-v settings_held="$held" \
+		-v allowed="$(literal_allowlist | tr '\n' ' ')" '
+		BEGIN {
+			SQ = "\047"; DQ = "\""; BS = "\\"
+			PUNCT = ";,()[]{}@#~?:$=!<>-&|+*/^%"
+			count = split(allowed, list, " ")
+			for (k = 1; k <= count; k++) allow[list[k]] = 1
+			# What an item under #[cfg(test)] can begin with, after its other
+			# attributes and its visibility. Anything else there, a field, an
+			# arm or a variant, is read: passing over it could pass over what
+			# stands after it.
+			count = split("fn mod struct enum union trait impl const static type use extern unsafe async auto safe macro_rules", list, " ")
+			for (k = 1; k <= count; k++) item[list[k]] = 1
+		}
+
+		function ident_start(c) { return c ~ /[A-Za-z_]/ || c >= "\200" }
+		function ident_char(c) { return c ~ /[A-Za-z0-9_]/ || c >= "\200" }
+
+		function begin_file() {
+			end_file()
+			file = FILENAME
+			place = "derivation"
+			if (index(file, constants) == 1) place = "constants"
+			else if (index(file, settings) == 1) place = "settings"
+			else if (file == method) place = "method"
+			mode = "code"; dead = 0; tokens = 0; pending = 0
+			waiting = 0; held = 0; skipping = 0
+			split("", text); split("", line); split("", kind)
+		}
+
+		function end_file() {
+			if (file == "") return
+			if (!dead) {
+				if (mode == "block") unreadable(opened, "a block comment that never closes")
+				else if (mode != "code") unreadable(opened, "a string that never closes")
+				else if (skipping) unreadable(skipped_from, "an item under #[cfg(test)] that never ends")
+			}
+			if (pending) found(pending_line, pending_text)
+			pending = 0
+			flush()
+		}
+
+		function unreadable(at, why) {
+			print file ":" at ": cannot be read: " why
+			dead = 1
+		}
+
+		# While an attribute after #[cfg(test)] has not yet shown whether an
+		# item stands under it, what it holds waits on that answer.
+		function found(at, what) {
+			if (waiting) hold[++held] = at ": " what
+			else print file ":" at ": " what
+		}
+
+		function flush(   k) {
+			for (k = 1; k <= held; k++) print file ":" hold[k]
+			held = 0
+		}
+
+		function back(k) { return text[tokens - k] }
+
+		# The one line const METHOD_VERSION: <type> = <literal>; with pub or
+		# nothing before it, as far as the literal: the semicolon is the next
+		# token, and is waited for.
+		function method_version(at,   k) {
+			if (back(0) != "=" || kind[tokens - 1] != "id" || back(2) != ":" ||
+				back(3) != "METHOD_VERSION" || back(4) != "const") return 0
+			for (k = 0; k <= 4; k++) if (line[tokens - k] != at) return 0
+			if (back(5) == ")") return 0
+			if (back(5) == "pub" && line[tokens - 5] != at) return 0
+			return 1
+		}
+
+		function cfg_test() {
+			return tokens >= 7 && back(6) == "#" && back(5) == "[" &&
+				back(4) == "cfg" && back(3) == "(" && back(2) == "test" &&
+				back(1) == ")" && back(0) == "]"
+		}
+
+		# How a token after #[cfg(test)] bears on what stands under it: part
+		# of a further attribute or of the visibility, the item keyword, or
+		# anything else.
+		function under_cfg_test(k, t) {
+			if (in_attribute > 0) {
+				if (t == "[") in_attribute++
+				else if (t == "]") in_attribute--
+				return "prelude"
+			}
+			if (after_hash) {
+				after_hash = 0
+				if (t == "[") { in_attribute = 1; return "prelude" }
+				return "other"
+			}
+			if (in_visibility > 0) {
+				if (t == "(") in_visibility++
+				else if (t == ")") in_visibility--
+				return "prelude"
+			}
+			if (t == "#") { after_hash = 1; after_pub = 0; return "prelude" }
+			if (after_pub && t == "(") { in_visibility = 1; after_pub = 0; return "prelude" }
+			after_pub = 0
+			if (t == "pub" && k == "id") { after_pub = 1; return "prelude" }
+			if (k == "id" && (t in item)) return "item"
+			return "other"
+		}
+
+		function push(k, t, at) {
+			tokens++
+			text[tokens] = t; line[tokens] = at; kind[tokens] = k
+			delete text[tokens - 8]; delete line[tokens - 8]; delete kind[tokens - 8]
+		}
+
+		# Every token the lexer reads comes through here. ok says a number is
+		# on the allowlist.
+		function emit(k, t, ok,   at, step) {
+			at = FNR
+			if (pending) {
+				if (!(t == ";" && at == pending_line)) found(pending_line, pending_text)
+				pending = 0
+			}
+
+			if (skipping) {
+				if (k == "punct" && (t == "(" || t == "[" || t == "{")) depth++
+				else if (k == "punct" && (t == ")" || t == "]" || t == "}")) {
+					if (depth == 0) skipping = 0
+					else if (--depth == 0 && t == "}") { skipping = 0; push(k, t, at); return }
+				} else if (k == "punct" && t == ";" && depth == 0) { skipping = 0; push(k, t, at); return }
+				if (skipping) { push(k, t, at); return }
+			}
+
+			if (waiting) {
+				step = under_cfg_test(k, t)
+				if (step == "item") {
+					waiting = 0; held = 0
+					skipping = 1; depth = 0; skipped_from = waiting_from
+					push(k, t, at)
+					return
+				}
+				if (step == "other") { waiting = 0; flush() }
+			}
+
+			if (k == "num" && !ok && place != "constants" && place != "settings") {
+				if (place == "method" && !waiting && method_version(at)) {
+					pending = 1; pending_line = at; pending_text = t
+				} else found(at, t)
+			}
+			if ((k == "id" || k == "rawid") && t == preset) {
+				if (place != "settings") found(at, preset)
+				else if (back(0) == "fn") defined = 1
+			}
+			push(k, t, at)
+			if (k == "punct" && t == "]" && cfg_test()) {
+				if (!waiting) held = 0
+				waiting = 1; waiting_from = line[tokens - 6]
+				in_attribute = 0; after_hash = 0; in_visibility = 0; after_pub = 0
+			}
+		}
+
+		# A character literal, or a lifetime where one may stand. $i is the
+		# opening quote; the return is where reading resumes.
+		function quote(s, i, lifetime,   c, j, size) {
+			c = substr(s, i + 1, 1)
+			if (c == BS) {
+				j = index(substr(s, i + 3), SQ)
+				if (j == 0) { unreadable(FNR, "a character literal that never closes"); return length(s) + 1 }
+				emit("lit", SQ)
+				return i + 3 + j
+			}
+			size = 1
+			if (c >= "\360") size = 4
+			else if (c >= "\340") size = 3
+			else if (c >= "\300") size = 2
+			if (c != "" && c != SQ && substr(s, i + 1 + size, 1) == SQ) {
+				emit("lit", SQ)
+				return i + 2 + size
+			}
+			if (lifetime && ident_start(c)) {
+				for (j = i + 1; ident_char(substr(s, j, 1)); j++) ;
+				emit("lifetime", substr(s, i, j - i))
+				return j
+			}
+			unreadable(FNR, "a character literal that never closes")
+			return length(s) + 1
+		}
+
+		function number(s, i,   start, c, d, j, body, key, base) {
+			start = i
+			# A tuple index: a digit run straight after a single dot.
+			if (back(0) == "." && substr(s, i - 1, 1) == ".") {
+				while (substr(s, i, 1) ~ /[0-9]/) i++
+				emit("tuple", substr(s, start, i - start))
+				return i
+			}
+			if (substr(s, i, 1) == "0" && substr(s, i + 1, 1) ~ /[xob]/) {
+				base = substr(s, i + 1, 1) == "x" ? "[0-9a-fA-F_]" : "[0-9_]"
+				i += 2
+				for (j = i; substr(s, i, 1) ~ base; i++) ;
+				if (substr(s, j, i - j) !~ /[0-9a-fA-F]/) {
+					unreadable(FNR, "a number with no digits")
+					return length(s) + 1
+				}
+			} else {
+				while (substr(s, i, 1) ~ /[0-9_]/) i++
+				c = substr(s, i, 1); d = substr(s, i + 1, 1)
+				if (c == "." && d != "." && !ident_start(d)) {
+					i++
+					if (substr(s, i, 1) ~ /[0-9]/) {
+						while (substr(s, i, 1) ~ /[0-9_]/) i++
+						c = substr(s, i, 1)
+					} else c = ""
+				}
+				if (c ~ /[eE]/) {
+					j = i + 1
+					if (substr(s, j, 1) ~ /[+-]/) j++
+					for (d = j; substr(s, j, 1) ~ /[0-9_]/; j++) ;
+					if (substr(s, d, j - d) !~ /[0-9]/) {
+						unreadable(FNR, "an exponent with no digits")
+						return length(s) + 1
+					}
+					i = j
+				}
+			}
+			body = substr(s, start, i - start)
+			key = body
+			if (ident_start(substr(s, i, 1))) {
+				while (ident_char(substr(s, i, 1))) i++
+				sub(/_$/, "", key)
+			}
+			emit("num", substr(s, start, i - start), (key in allow))
+			return i
+		}
+
+		# A word: an identifier, a keyword, or the prefix of a string, a byte
+		# character or a raw identifier.
+		function word(s, i,   start, w, c, j) {
+			for (start = i; ident_char(substr(s, i, 1)); i++) ;
+			w = substr(s, start, i - start)
+			c = substr(s, i, 1)
+			if ((w == "r" || w == "br" || w == "cr") && (c == "#" || c == DQ)) {
+				for (j = i; substr(s, j, 1) == "#"; j++) ;
+				if (substr(s, j, 1) == DQ) {
+					mode = "raw"; closer = DQ substr(s, i, j - i); opened = FNR
+					emit("lit", DQ)
+					return j + 1
+				}
+				if (w == "r" && j == i + 1 && ident_start(substr(s, j, 1))) {
+					for (start = j; ident_char(substr(s, j, 1)); j++) ;
+					emit("rawid", substr(s, start, j - start))
+					return j
+				}
+				unreadable(FNR, "a raw string with no opening quote")
+				return length(s) + 1
+			}
+			if ((w == "b" || w == "c") && c == DQ) {
+				mode = "string"; opened = FNR
+				emit("lit", DQ)
+				return i + 1
+			}
+			if (w == "b" && c == SQ) return quote(s, i, 0)
+			emit("id", w)
+			return i
+		}
+
+		function lex(s,   n, i, c, j) {
+			n = length(s)
+			i = 1
+			while (i <= n && !dead) {
+				if (mode == "block") {
+					c = substr(s, i, 2)
+					if (c == "/*") { nest++; i += 2 }
+					else if (c == "*/") { i += 2; if (--nest == 0) mode = "code" }
+					else i++
+					continue
+				}
+				if (mode == "string") {
+					c = substr(s, i, 1)
+					if (c == BS) i += 2
+					else { i++; if (c == DQ) mode = "code" }
+					continue
+				}
+				if (mode == "raw") {
+					j = index(substr(s, i), closer)
+					if (j == 0) break
+					i += j - 1 + length(closer)
+					mode = "code"
+					continue
+				}
+				c = substr(s, i, 1)
+				if (c == " " || c == "\t" || c == "\r" || c == "\f" || c == "\v") { i++; continue }
+				if (substr(s, i, 2) == "//") break
+				if (substr(s, i, 2) == "/*") { mode = "block"; nest = 1; opened = FNR; i += 2; continue }
+				if (c == DQ) { mode = "string"; opened = FNR; emit("lit", DQ); i++; continue }
+				if (c == SQ) { i = quote(s, i, 1); continue }
+				if (c ~ /[0-9]/) { i = number(s, i); continue }
+				if (ident_start(c)) { i = word(s, i); continue }
+				if (c == ".") {
+					for (j = i; substr(s, j, 1) == "."; j++) ;
+					emit("punct", substr(s, i, j - i))
+					i = j
+					continue
+				}
+				if (index(PUNCT, c) > 0) { emit("punct", c); i++; continue }
+				unreadable(FNR, "a character outside the grammar")
+			}
+		}
+
+		FNR == 1 { begin_file() }
+		!dead { lex($0) }
+		END {
+			end_file()
+			if (settings_held > 0 && !defined)
+				print settings ": no file under it defines fn " preset
+		}
+	' "$@"
+}
+
+gate_literals() {
+	local sources file held found
+	local -a files
+
+	if [ ! -d "$literals_crate" ]; then
+		echo "$prog: $literals_crate is gone, so there is no analyze source to read" >&2
+		return 1
+	fi
+	sources="$(literal_sources)"
+	if [ -z "$sources" ]; then
+		echo "$prog: no Rust source under $literals_crate outside its tests, benches and examples, so this gate reads nothing" >&2
+		return 1
+	fi
+	while IFS= read -r file; do
+		files+=("$file")
+	done <<<"$sources"
+	held="$(printf '%s\n' "$sources" | awk -v dir="$literals_crate/src/settings/" 'index($0, dir) == 1 { n++ } END { print n + 0 }')"
+
+	if ! found="$(literal_reads "$held" "${files[@]}")"; then
+		echo "$prog: the literal reader could not run over $literals_crate" >&2
+		return 1
+	fi
+	if [ -n "$found" ]; then
+		echo "$prog: $literals_crate holds what anchor 5 keeps out of the derivation:" >&2
+		printf '%s\n' "$found" | sed 's/^/  /' >&2
+		return 1
+	fi
+
+	echo "literals: ${#files[@]} under $literals_crate hold no bare literal outside the three places"
 }
 
 # GOALS.md at M3: the fetcher cannot reach a host outside the allowed list, and
@@ -3046,6 +3483,101 @@ pub mod planted {
 EOF
 }
 
+# One line appended to $2, a derivation file under the copy $1, and what the
+# failure must then name: that file, the line the plant landed on, and $3.
+plant_literal() {
+	local file="$1/$2"
+	printf '\n%s\n' "$4" >>"$file"
+	must_name="$2:$(awk 'END { print NR }' "$file"): $3"
+}
+
+# A literal in each of the three places, the allowlist in each spelling it
+# admits, and one of each form decided out. The version is 2 and not 1, so it is
+# the place that lets it through and not the allowlist. method.rs is written
+# whole, since it may hold nothing but the one line; settings/ gains a file
+# beside whatever defines the constructor already.
+accept_literals() {
+	local crate="$1/$literals_crate"
+
+	mkdir -p "$crate/src/constants" "$crate/src/settings" "$crate/tests"
+	printf '%s\n' 'pub const PLANTED: f64 = 0.15;' >"$crate/src/constants/planted.rs"
+	printf '%s\n' 'pub const METHOD_VERSION: u32 = 2;' >"$crate/src/method.rs"
+	cat >"$crate/src/settings/planted.rs" <<'EOF'
+pub struct Planted {
+    pub rate: f64,
+}
+
+impl Planted {
+    pub fn preset() -> Self {
+        Planted { rate: 0.15 }
+    }
+}
+EOF
+	cat >"$crate/tests/planted.rs" <<'EOF'
+#[test]
+fn planted() {
+    let settings = vfi_analyze::Settings::preset();
+    assert_eq!(settings.rate(), 0.15);
+}
+EOF
+	cat >>"$crate/src/lib.rs" <<'EOF'
+
+/// Planted by the literals proof, from Piotroski (2000), p. 7: a citation's
+/// year and page are prose.
+pub mod planted {
+    /* A block comment holding 0.15, /* nested around 2 */ and closed. */
+    pub fn first(pair: ((f64, f64), f64), terms: &[f64]) -> f64 {
+        let label = "0.15 of \"2\"";
+        let raw = r#"a raw "3" string"#;
+        let bytes = b"4";
+        let digit = '5';
+        let quote = '\'';
+        let lifetime: &'static str = "6";
+        let cagr_5y: f64 = pair.0.1 + pair.1;
+        let count = 1u32 + 1_usize as u32 + 0 + 1;
+        let whole = 0.0_f64 + 1.0 + 0.0f32 as f64 - 1.0 - -1.0;
+        let tail = terms[0] + terms[1..][0];
+        let _ = (label, raw, bytes, digit, quote, lifetime, count);
+        cagr_5y + whole + tail
+    }
+
+    #[cfg(test)]
+    mod tests {
+        #[test]
+        fn first() {
+            assert_eq!(super::first(((0.0, 0.15), 2.5), &[3.0, 4.0]), 9.65);
+        }
+    }
+}
+EOF
+}
+
+violate_literals() {
+	plant_literal "$1" "$literals_crate/src/lib.rs" "0.15" \
+		'pub fn planted() -> f64 { 0.15 }'
+}
+
+violate_literals_preset() {
+	plant_literal "$1" "$literals_crate/src/lib.rs" "preset" \
+		'pub fn planted() -> settings::Settings { settings::Settings::preset() }'
+}
+
+# Whatever settings/ holds is replaced, so the constructor is gone whether or
+# not the tree defined one.
+violate_literals_preset_gone() {
+	local settings="$1/$literals_crate/src/settings"
+	rm -rf "$settings"
+	mkdir -p "$settings"
+	printf '%s\n' 'pub struct Settings;' >"$settings/mod.rs"
+	must_name="$literals_crate/src/settings/: no file under it defines fn $literals_preset"
+}
+
+violate_literals_unreadable() {
+	plant_literal "$1" "$literals_crate/src/lib.rs" \
+		"cannot be read: a block comment that never closes" \
+		'/* Planted by the literals proof, and never closed.'
+}
+
 # One call site that opens a connection of its own, appended to $1. Where it
 # lands is the whole difference between the two proofs below: the same lines are
 # what the chokepoint is for and what it exists to keep out, and a gate that
@@ -4237,11 +4769,14 @@ prove() {
 # named for the gate, but for fixtures: its harness holds the stage to expected
 # and the claims to expected, and either check could stop while the other still
 # turned the gate red. And for ambient, which reads for five things, and one
-# with no plant of its own would be one it was never shown to catch.
+# with no plant of its own would be one it was never shown to catch. And for
+# literals, which goes red on a literal, the constructor's name, a settings/ that
+# lost the constructor, and a file it cannot read, each its own reason.
 violations() {
 	case "$1" in
 	fixtures) echo fixtures fixtures_claims ;;
 	ambient) echo ambient_filesystem ambient_environment ambient_clock ambient_clock_grouped ambient_clock_glob ambient_process ambient_hasher ;;
+	literals) echo literals literals_preset literals_preset_gone literals_unreadable ;;
 	*) echo "$1" ;;
 	esac
 }
