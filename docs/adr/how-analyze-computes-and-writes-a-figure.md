@@ -1,9 +1,9 @@
 # Analyze reads each amount and close as the exact number its characters state, computes in exact rationals, and writes a figure once, rounded to thirty-four significant digits, as a plain decimal
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-07, by `M5-16`
-- **Decided:** —
+- **Decided:** 2026-10-07, by the decider
 - **Touches:** the two things `what-analyze-takes-and-returns.md` hands "to
   the first metric task, under the method version": the arithmetic analyze
   computes in, and how a figure is written. `analyze-store` v1 leaves the
@@ -527,7 +527,53 @@ This applies anchors 1, 4 and 5, and edits none of them.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the characters of
+  two fields that cross `analyze-store` v1, the `figure` and a setting's
+  `value`, which store and M6 will read, and that is the tier's own example
+  of a contract field. It edits no anchor, no protected path, no gate and no
+  frozen byte. The two constants land in a later task under the `literals`
+  gate, in a place the accepted records already allow. Flagged for later
+  human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The fifteen acceptance lines of `tasks/M5-16.md`, each against the
+    record. All are met.
+  - The reading grammar against `crates/normalize/src/settling/figure.rs`
+    as main holds it: an optional minus, a non-empty whole, an optional point
+    with a non-empty fraction, ASCII digits only. The record states the same
+    grammar.
+  - `declined` against the frozen `analyze-store` v1. Its witness is "every
+    input was present, and the metric's definition states it is undefined at
+    those inputs", and its condition is whatever the catalogue entry names.
+    An input that states no number is present and the formula is undefined
+    there, so `input_not_a_decimal` fits the accepted reason, and the record
+    adds no seventh reason and moves no byte.
+  - `what-analyze-takes-and-returns.md`, accepted, which hands these two
+    things to this record by name and places both under the method version.
+    Its outcome, six reasons, three places and catalogue stand unchanged.
+  - `bare-literal-lint.md`, accepted. Both open questions are answered by
+    name. The scale needs no literal. The precision stands in `constants/`,
+    one of the three places, with a citation, so no fourth place and no
+    allowlist entry is proposed. The ties rule avoids a half and a two.
+  - The citations as stated: decimal128's precision is 34 in IEEE 754-2008
+    §3.6; roundTiesToAway is defined in §4.3.1; RFC 8259 §6 states base 10.
+    The proof set's arithmetic: 2^53 + 1 is 9007199254740993, and √2 to 34
+    significant digits is 1.414213562373095048801688724209698 with a 0
+    following, so no tie.
+  - `tasks/M5-15.md`, whose skeleton starts the version at 1 and writes no
+    figure, so nothing stored predates the arithmetic and no bump is due.
+  - The thirteen alternatives as argued.
+- **Verdict and why:** accepted. What carries it is that every number is
+  exact until it is written, and that writing rounds once under one rule
+  every metric shares, so no metric chooses an arithmetic and no float
+  reads a published decimal. The reading's failure is an absence under an
+  accepted reason, and never an invented number or a second error. The two
+  literals the arithmetic cannot do without each stand in an allowed place
+  under a source that fixes them, which is what anchor 5 asks, and the
+  blind spots are listed rather than assumed.
+- **What would have changed it:** an amount normalize can publish outside
+  its own grammar, which would make the unreadable case reachable from the
+  history and worth a reason of its own; or a number for which 34
+  significant digits with ties away from zero gives two spellings, which
+  would break read-back; or a metric among M5's criteria that needs a
+  logarithm or a real power, which would make the operation set too narrow
+  to accept as the arithmetic every metric works under.
