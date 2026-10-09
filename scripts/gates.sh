@@ -134,6 +134,7 @@ allowed_edges="
 	vfi-analyze>vfi-store
 	vfi-fetch>vfi-contracts
 	vfi-normalize>vfi-contracts
+	vfi-analyze>vfi-contracts
 "
 
 # Anchor 4: analyze takes data in and returns results out — no network, no disk,
