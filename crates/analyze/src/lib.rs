@@ -11,6 +11,8 @@ use vfi_contracts::analyze_store::{HandOver, Premises, Prices, Results};
 use vfi_contracts::canonical_concepts::History;
 use vfi_contracts::fetch_analyze::Crossing;
 
+mod arithmetic;
+mod constants;
 mod method;
 pub mod settings;
 
