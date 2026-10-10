@@ -14,6 +14,7 @@ use vfi_contracts::fetch_analyze::Crossing;
 mod arithmetic;
 mod constants;
 mod method;
+mod metrics;
 pub mod settings;
 
 pub use settings::Settings;
@@ -84,8 +85,8 @@ pub fn analyze(
         .expect("the filer is checked above and each period is taken once"))
 }
 
-/// The results at each period the history holds, each once. No metric is
-/// defined, so each holds none.
+/// The results at each period the history holds, each once, holding every
+/// metric stated at that period.
 ///
 /// The history states each period once. A period it repeated would still be
 /// one period, and is taken at its first row.
@@ -94,7 +95,9 @@ fn results(history: &History) -> Vec<Results> {
     rows.iter()
         .enumerate()
         .filter(|(at, row)| !rows[..*at].iter().any(|seen| seen.period() == row.period()))
-        .map(|(_, row)| row.period().clone())
-        .map(|period| Results::at(period, Vec::new()).expect("no metric is named twice"))
+        .map(|(_, row)| {
+            Results::at(row.period().clone(), metrics::at(row))
+                .expect("no two entries share a name")
+        })
         .collect()
 }

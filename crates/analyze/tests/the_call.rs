@@ -110,17 +110,24 @@ fn with_no_setting_defined_the_premises_are_the_version_alone() {
 }
 
 #[test]
-fn each_period_holds_its_results_and_no_metric() {
+fn each_period_holds_its_results_and_the_metrics_stated_at_it() {
     let hand_over = handed(None);
     let periods: Vec<&Period> = hand_over.results().iter().map(|at| at.period()).collect();
     assert_eq!(periods, [&year_end(), &fiscal_year()]);
-    for results in hand_over.results() {
-        assert!(
-            results.metrics().is_empty(),
-            "a metric was computed at {:?}, and none is defined",
-            results.period()
-        );
-    }
+
+    let names = |at: usize| -> Vec<&str> {
+        hand_over.results()[at]
+            .metrics()
+            .iter()
+            .map(|metric| &*metric.name)
+            .collect()
+    };
+    assert!(
+        names(0).is_empty(),
+        "a metric was computed at an instant, and none is stated at one: {:?}",
+        names(0)
+    );
+    assert!(names(1).contains(&"gross_margin"), "{:?}", names(1));
 }
 
 #[test]
