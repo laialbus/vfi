@@ -8,7 +8,7 @@
 //! `docs/adr/how-analyze-computes-and-writes-a-figure.md`'s, under the method
 //! version.
 
-#![expect(dead_code, reason = "no metric reads the arithmetic yet")]
+#![expect(dead_code, reason = "no metric reads every operation yet")]
 
 use std::cmp::Ordering;
 
