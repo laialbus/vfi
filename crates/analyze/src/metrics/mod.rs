@@ -14,9 +14,21 @@ use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 
 mod gross_margin;
+mod interest_coverage;
+mod net_margin;
+mod operating_margin;
 
 /// Every metric the method computes, each once.
-const DERIVATIONS: &[Derivation] = &[gross_margin::GROSS_MARGIN];
+const DERIVATIONS: &[Derivation] = &[
+    gross_margin::GROSS_MARGIN,
+    operating_margin::OPERATING_MARGIN,
+    net_margin::NET_MARGIN,
+    interest_coverage::INTEREST_COVERAGE,
+];
+
+/// Revenue is zero, and no fraction of zero is defined. Every metric over
+/// revenue is undefined under this one condition.
+const ZERO_REVENUE: &str = "zero_revenue";
 
 /// A metric: its entry, and its number at a row of the shape the entry is
 /// stated at, or the reasons it has none.
@@ -74,6 +86,9 @@ impl Entry {
 enum Unit {
     /// A ratio: `0.25` is a quarter, and never `25`.
     FractionOfOne,
+    /// How many times one amount covers another, at a scale of one: `4.25` is
+    /// four and a quarter times, and never `425` or a percentage.
+    Multiple,
 }
 
 /// One of the two shapes a period takes.
