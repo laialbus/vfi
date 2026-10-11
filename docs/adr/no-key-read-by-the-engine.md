@@ -1,9 +1,9 @@
 # A new gate, `secrets`, reads every engine crate but analyze for the environment, file and keychain reads that could hand the engine a key it was not given
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-10, by `M5-08`
-- **Decided:** —
+- **Decided:** 2026-10-10, by the decider
 - **Touches:** the gate set. A new gate name, `secrets`, enters the expected
   gate set with its proof, and `denied_packages` gains a `keychain` group, which
   purity then also reads. It applies ANCHORS.md's invariant "Secrets live in the
@@ -376,7 +376,56 @@ left to be found:
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: a new gate, which the template
+  places in the tier the decider accepts flagged for later human review. No
+  anchor is edited, no gate is narrowed or removed, no name leaves
+  `ambient_names`, no entry leaves `denied_packages`, `allowed_edges` or the
+  expected gate set, and the protected-path list is untouched. The gate
+  script is protected, so the task that implements this will need the human
+  label on its own PR. Flagged for later human review.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The invariant "Secrets live in the shell, never the engine" and the
+    first M5 criterion, which this applies and does not restate.
+  - `price-provider.md`, left as accepted: the key stays a constructor
+    parameter, sent only as a header and never printed. The gap its
+    Enforcement names is the one closed here, in part, with the residue
+    stated.
+  - `price-allowance-between-sessions.md`, the record #300 contradicted
+    without naming. The journal stays in `price/spent/`, append-only, at a
+    path it is handed. The three reasons the key cannot reach it from there
+    are that record's own words: no key in an entry, the record handed
+    `&mut` to the provider and never the reverse, the host checked as a
+    string.
+  - The table of main's reads, against main at `c706c70`. Every file and
+    line is as written. The eight `CARGO_MANIFEST_DIR` and three
+    `CARGO_TARGET_TMPDIR` calls are the complete set. No crate read names
+    `env::var`, `var_os`, `vars`, `vars_os`, `home_dir`, `env::{`, `env::*`,
+    `option_env!`, an `include` macro, `process::Command` or `Command::new`.
+    No build script, no `ApiKey`, no `price/` exists. Direct dependencies
+    are as stated, and store, jobs and contracts list none.
+  - `ambient_names`, `denied_packages`, `expected_gates`, `chokepoint` and
+    `wire_names` in the gate script, which are as the record reads them.
+  - The six alternatives as argued.
+- **Verdict and why:** accepted. The decision that matters is where the file
+  way is held. A name check cannot tell a key file from a journal, so the
+  record holds it where the key lives and follows the key by its type
+  wherever it moves, and that is the only shape that leaves the spent
+  journal where an accepted record put it without leaving it a blind spot:
+  a file under `spent/` that writes `ApiKey` is drawn back in. Reading
+  direct dependencies rather than the resolved tree for the keychain group
+  is right, since `native-tls` would otherwise go red on main for a reason
+  that is not a key. Two things are left visible and none is settled here:
+  - The residue the Enforcement section names first, a key read by any
+    file reader outside the key's places and handed in as a string, stands
+    open. It is the honest limit of a name check, and the type-boundary
+    alternative is the shape that would close it, once a shell binding
+    exists.
+  - The accept copy and the plants are a proof the implementing task must
+    bring in full. A gate that lands with the plants but without the accept
+    copy proves it catches and not that it leaves main's own reads alone.
+- **What would have changed it:** a read of the environment or the
+  filesystem on main that the table missed, since the record's claim that
+  main passes would then be false; or a reason the key could reach
+  `price/spent/` that the allowance record's interface allows, since the
+  carve-out would then be a hole and not a directory the type cannot be
+  written in. Neither was found.
