@@ -8,11 +8,8 @@
 use vfi_contracts::analyze_store::Reasons;
 use vfi_contracts::canonical_concepts::{Concept, Row};
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Derivation, Entry, Shape, Unit, ZERO_REVENUE, declined, read};
 use crate::arithmetic::Number;
-
-/// Revenue is zero, and no fraction of zero is defined.
-const ZERO_REVENUE: &str = "zero_revenue";
 
 pub(super) const GROSS_MARGIN: Derivation = Derivation {
     entry: Entry {
