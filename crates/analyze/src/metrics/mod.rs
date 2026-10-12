@@ -13,8 +13,10 @@ use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
 
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 
+mod debt_to_equity;
 mod gross_margin;
 mod interest_coverage;
+mod liabilities_to_assets;
 mod net_margin;
 mod operating_margin;
 
@@ -24,6 +26,8 @@ const DERIVATIONS: &[Derivation] = &[
     operating_margin::OPERATING_MARGIN,
     net_margin::NET_MARGIN,
     interest_coverage::INTEREST_COVERAGE,
+    debt_to_equity::DEBT_TO_EQUITY,
+    liabilities_to_assets::LIABILITIES_TO_ASSETS,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
@@ -94,7 +98,6 @@ enum Unit {
 /// One of the two shapes a period takes.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Shape {
-    #[expect(dead_code, reason = "no metric is stated at an instant yet")]
     Instant,
     Duration,
 }

@@ -122,12 +122,9 @@ fn each_period_holds_its_results_and_the_metrics_stated_at_it() {
             .map(|metric| &*metric.name)
             .collect()
     };
-    assert!(
-        names(0).is_empty(),
-        "a metric was computed at an instant, and none is stated at one: {:?}",
-        names(0)
-    );
+    assert_eq!(names(0), ["debt_to_equity", "liabilities_to_assets"]);
     assert!(names(1).contains(&"gross_margin"), "{:?}", names(1));
+    assert!(!names(1).contains(&"debt_to_equity"), "{:?}", names(1));
 }
 
 #[test]
