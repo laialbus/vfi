@@ -16,6 +16,9 @@ use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 mod cash_ratio;
 mod current_ratio;
 mod debt_to_equity;
+mod dividend_coverage;
+mod dividend_payout_on_earnings;
+mod dividend_payout_on_free_cash_flow;
 mod gross_margin;
 mod interest_coverage;
 mod liabilities_to_assets;
@@ -34,6 +37,9 @@ const DERIVATIONS: &[Derivation] = &[
     current_ratio::CURRENT_RATIO,
     quick_ratio::QUICK_RATIO,
     cash_ratio::CASH_RATIO,
+    dividend_payout_on_earnings::DIVIDEND_PAYOUT_ON_EARNINGS,
+    dividend_payout_on_free_cash_flow::DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW,
+    dividend_coverage::DIVIDEND_COVERAGE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
