@@ -87,6 +87,11 @@ at_once="$(machine_lanes)"
 # names, as docs/adr/bare-literal-lint.md decides it, and it runs right after
 # ambient, the other gate that reads analyze's own source.
 #
+# secrets is not a fifth either: it is ANCHORS.md's "secrets live in the shell,
+# never the engine", checked rather than intended, as
+# docs/adr/no-key-read-by-the-engine.md decides it. It runs right after egress,
+# since both read fetch's source and it reads egress's chokepoint by name.
+#
 # This is the only place the set is written down, and it is checked against the
 # gates the file actually defines before any of them runs. Both loops below read
 # it — the one that runs the gates and the one that proves them — so a name
@@ -105,6 +110,7 @@ expected_gates() {
 	ambient
 	literals
 	egress
+	secrets
 	contracts
 	registry
 	benchmark
@@ -209,6 +215,13 @@ denied_packages() {
 	envy                environment
 	config              environment
 	clap                environment
+
+	# The system's keychain, where a desktop keeps a secret by name. The key
+	# reaches the engine only as a parameter, so no crate reaches for one.
+	keyring             keychain
+	security-framework  keychain
+	security-framework-sys keychain
+	secret-service      keychain
 
 	# A logger writes somewhere. The effect is what anchor 4 bans, not the
 	# message.
@@ -1515,6 +1528,247 @@ gate_egress() {
 	fi
 
 	echo "egress: $inside in the chokepoint may reach a host, $outside elsewhere cannot"
+}
+
+# ANCHORS.md: secrets live in the shell, never the engine, which receives an API
+# key as a parameter and never reads a keychain, config file or environment for
+# one. What this reads for and where is decided in
+# docs/adr/no-key-read-by-the-engine.md; this is that record built, and decides
+# nothing it leaves open.
+#
+# It reads every workspace member but the crate ambient_crate names, read off
+# the workspace so that a crate added later is read from its first commit, and
+# in each every Rust file under the crate's directory: a build script and a test
+# as much as its library, and no item passed over for a cfg. A build script that
+# read a key would bake it into the engine, and a test that read one would make
+# CI hold one. Analyze is left out because ambient reads every name below there
+# under a stricter rule, and a second gate would print the same failure twice.
+# The matcher is ambient's, so a name is matched as text, comments included,
+# and never as the middle of a longer identifier.
+#
+# A name check cannot tell a key file from a journal, so a file is read for what
+# reaches the disk, the environment or a process only where the key lives, the
+# key's places below. Everywhere else it is read for the forms that locate or
+# bake a key, and for a keychain.
+#
+# What this cannot see, said here rather than left to be found:
+#   - a key read from a file outside the key's places and handed in as a
+#     string. The ledger journal, the spent journal, the registry reader, a bin
+#     and a test all read files, and a name check cannot tell that read from
+#     the one each already makes;
+#   - a key written out rather than read in, such as the key's text put in a
+#     spent entry. That is held by the key printing no part of itself;
+#   - an alias (`use std::env as e; e::var(…)`, `use std::process::{Command as
+#     C}; C::new(…)`), or a name spelled with spaces around its ::. These are
+#     the matcher's blind spots, and an alias of the key's type under spent/ is
+#     one of them;
+#   - a foreign function block. native-tls already links the macOS keychain
+#     library into vfi-fetch, so an extern block declaring its calls needs no
+#     new package, and an unsafe extern block is what a reader sees in a diff;
+#   - what a dependency does inside, such as a client that falls back to a
+#     variable. Such a package belongs in a denied_packages group, which this
+#     then learns;
+#   - source pulled in from outside the crate's directory by a #[path]
+#     attribute or a manifest key, since it reads files by where they sit;
+#   - a key passed in argv to a bin, which is not read, by decision.
+
+# This gate's own names, each beside the way it reaches. A runtime getter is
+# read for the call and not the variable, so a key stored under any name is
+# caught, and a grouped or glob import from std::env is the form in which a
+# getter stands bare, so it is refused whatever it holds. home_dir finds a
+# per-user file the caller never named, and the engine holds no per-user state.
+# A child process is how a keychain's own tool is reached, and it could read the
+# environment or a file for the engine as well.
+#
+# Not read outside the key's places: env::args and args_os, since a process's
+# arguments are what whoever runs it passes, which is a parameter in a
+# process's shape; env::temp_dir, current_dir and current_exe, which return a
+# place the process stands and never the value of a variable the code names;
+# and process::id and process::ExitCode, which spawn nothing and read nothing.
+secrets_names() {
+	sed 's/#.*//' <<-'EOF' | awk 'NF'
+	env::var            environment
+	env::var_os         environment
+	env::vars           environment
+	env::vars_os        environment
+	env::{              environment
+	env::*              environment
+	env::home_dir       filesystem
+	process::Command    keychain
+	Command::new        keychain
+	EOF
+}
+
+# Engine-wide, ambient's compile-time forms join these: a key read through one
+# is baked into every engine built, wherever it is written.
+secrets_everywhere() {
+	secrets_names
+	ambient_names | awk '($2 == "environment" || $2 == "filesystem") && $1 ~ /!$/'
+}
+
+# In the key's places, every name ambient reads for the disk, the environment or
+# a process, and every filesystem package as a source path, read as wire_names
+# reads the network group. Code that holds the key has no reason to touch any of
+# them.
+secrets_in_key_places() {
+	secrets_names
+	ambient_names | awk '$2 == "environment" || $2 == "filesystem" || $2 == "process"'
+	denied_packages | awk '$2 == "filesystem" { gsub(/-/, "_", $1); print $1 "::", $2 }'
+}
+
+# The key's places are the chokepoint; this directory, where the price
+# provider's trait and request sit, but for spent/; and any file in a read crate
+# that names the key's type, wherever it sits. The directory is a place, and not
+# only the files naming the type, because a method in a file of its own reaches
+# the key through a field without writing it.
+#
+# spent/ stands outside by directory only. The spent journal opens and appends
+# to the file it is handed, and the key cannot reach it from there: an entry
+# holds no key, the record is handed to the provider and never the reverse, and
+# the journal is told its host as a string. So nothing there has reason to name
+# the type, and a file there that does is drawn back in.
+price_place="crates/fetch/src/price"
+spent_place="$price_place/spent"
+
+key_type() {
+	echo ApiKey key
+}
+
+# Cargo sets both itself for each compile, to the package's own directory and
+# the integration tests' scratch directory, and neither carries a value a user
+# exported. Exactly these two calls are taken out of a line before it is read,
+# and nothing else is: a longer macro name ending in env! keeps them.
+secrets_unbaked() {
+	awk '
+		function word(c) { return c ~ /[A-Za-z0-9_]/ }
+		{
+			rest = $0
+			kept = ""
+			last = ""
+			while (match(rest, /env!\("CARGO_(MANIFEST_DIR|TARGET_TMPDIR)"\)/)) {
+				before = RSTART > 1 ? substr(rest, RSTART - 1, 1) : last
+				if (word(before)) {
+					kept = kept substr(rest, 1, RSTART + RLENGTH - 1)
+				} else {
+					kept = kept substr(rest, 1, RSTART - 1)
+				}
+				last = ")"
+				rest = substr(rest, RSTART + RLENGTH)
+			}
+			print kept rest
+		}
+	' "$1"
+}
+
+# A member's directory, relative to the root, off the path cargo prints beside
+# it. cargo prints that path as the kernel resolves it, so the root is compared
+# the same way.
+member_directory() {
+	local root printed
+	root="$(pwd -P)"
+	printed="$(cargo tree -p "$1" --depth 0 --prefix none --format '{p}' |
+		sed -n '1s/.*(\(.*\))$/\1/p')" || return 1
+	case "$printed" in
+	"$root"/*) printf '%s\n' "${printed#"$root"/}" ;;
+	*)
+		echo "$prog: $1 sits at '$printed', outside $root, where this gate does not read" >&2
+		return 1
+		;;
+	esac
+}
+
+gate_secrets() {
+	local members member dir sources named file deps package reason \
+		everywhere in_place unbaked found packages crates files
+
+	members="$(workspace_members)" || return 1
+
+	everywhere=""
+	in_place=""
+	packages=""
+	crates=0
+	files=0
+	for member in $members; do
+		dir="$(member_directory "$member")" || return 1
+		if [ "$dir" = "$ambient_crate" ]; then
+			continue
+		fi
+		crates=$((crates + 1))
+
+		sources="$(find "$dir" -name '*.rs' | sort)"
+		if [ -z "$sources" ]; then
+			echo "$prog: no Rust source under $dir, so this gate reads nothing of $member" >&2
+			return 1
+		fi
+		named=" $(ambient_reaches <(key_type) $sources | awk -F: '{ print $1 }' | sort -u | tr '\n' ' ')" ||
+			return 1
+		for file in $sources; do
+			files=$((files + 1))
+			case "$file" in
+			"$spent_place"/*) ;;
+			"$chokepoint"/* | "$price_place"/*)
+				in_place="$in_place $file"
+				continue
+				;;
+			esac
+			case "$named" in
+			*" $file "*) in_place="$in_place $file" ;;
+			*) everywhere="$everywhere $file" ;;
+			esac
+		done
+
+		deps=" $(direct_dependencies "$member" | tr '\n' ' ')" || return 1
+		while read -r package reason; do
+			case "$reason" in
+			environment | keychain) ;;
+			*) continue ;;
+			esac
+			case "$deps" in
+			*" $package "*) packages="$packages  $member lists $package ($reason)
+" ;;
+			esac
+		done <<-EOF
+		$(denied_packages)
+		EOF
+	done
+
+	if [ "$files" -eq 0 ]; then
+		echo "$prog: no crate but $ambient_crate in the workspace, so this gate reads nothing" >&2
+		return 1
+	fi
+
+	# The two calls are taken out of a copy, laid out as the tree is, so what
+	# the matcher prints names the file and line as they stand.
+	unbaked="$(mktemp -d "${TMPDIR:-/tmp}/vfi-secrets.XXXXXX")" || return 1
+	for file in $everywhere $in_place; do
+		mkdir -p "$unbaked/$(dirname "$file")"
+		secrets_unbaked "$file" >"$unbaked/$file"
+	done
+	if ! found="$(
+		cd "$unbaked" || exit 1
+		if [ -n "$everywhere" ]; then
+			ambient_reaches <(secrets_everywhere) $everywhere || exit 1
+		fi
+		if [ -n "$in_place" ]; then
+			ambient_reaches <(secrets_in_key_places) $in_place || exit 1
+		fi
+	)"; then
+		rm -rf "$unbaked"
+		echo "$prog: the matcher could not run over the crates this gate reads" >&2
+		return 1
+	fi
+	rm -rf "$unbaked"
+
+	if [ -n "$found" ] || [ -n "$packages" ]; then
+		echo "$prog: these could hand the engine a key it was not given:" >&2
+		if [ -n "$found" ]; then
+			printf '%s\n' "$found" | sort -t: -k1,1 -k2,2n | sed 's/^/  /' >&2
+		fi
+		printf '%s' "$packages" >&2
+		return 1
+	fi
+
+	echo "secrets: $files in $crates crates read, $(printf '%s\n' $in_place | awk 'NF { n++ } END { print n + 0 }') in the key's places, none reaches for a key"
 }
 
 # Anchor 3: every boundary between stages is a typed, versioned contract, and a
@@ -3628,6 +3882,195 @@ violate_egress() {
 	plant_connection "$file"
 }
 
+# What sits beside a key and is no way to one: each read main holds that the
+# record's table names, each name secrets_names writes down as not read, the
+# spent journal's shape in spent/ with nothing there naming the key's type, and
+# words that hold a read name inside a longer one. A gate that refused these
+# would catch every plant below just as well while refusing main's own reads,
+# or the journal an accepted record requires.
+accept_secrets() {
+	cat >>"$1/crates/fetch/tests/planted.rs" <<'EOF'
+
+//! Planted by the secrets proof: what a process is handed, where it stands,
+//! and the two places Cargo names for itself.
+#[test]
+fn planted() {
+    let given: Vec<String> = std::env::args().skip(1).collect();
+    let scratch = std::env::temp_dir().join(env!("CARGO_TARGET_TMPDIR"));
+    let manifest = std::path::Path::new(env!("CARGO_MANIFEST_DIR"));
+    assert!(given.len() < usize::MAX && scratch.is_absolute() && manifest.is_absolute());
+}
+EOF
+	cat >>"$1/crates/normalize/src/lib.rs" <<'EOF'
+
+/// Planted by the secrets proof: a library reading a file it is handed.
+pub fn planted(path: &std::path::Path) -> std::io::Result<Vec<u8>> {
+    std::fs::read(path)
+}
+EOF
+	mkdir -p "$1/$spent_place"
+	cat >>"$1/$spent_place/mod.rs" <<'EOF'
+//! Planted by the secrets proof: the shape the spent journal and its tests
+//! take, appending to the file it is handed.
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::path::Path;
+
+pub fn append(at: &Path, entry: &str) -> std::io::Result<()> {
+    OpenOptions::new().create(true).append(true).open(at)?.write_all(entry.as_bytes())
+}
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn appends() {
+        let at = std::env::temp_dir().join(format!("vfi-spent-{}", std::process::id()));
+        super::append(&at, "planted\n").unwrap();
+        std::fs::remove_file(&at).unwrap();
+    }
+}
+EOF
+	cat >>"$1/crates/jobs/src/lib.rs" <<'EOF'
+
+/// Planted by the secrets proof: the process's own id, and how it exits.
+pub fn planted() -> (u32, std::process::ExitCode) {
+    (std::process::id(), std::process::ExitCode::SUCCESS)
+}
+EOF
+	cat >>"$1/crates/store/src/lib.rs" <<'EOF'
+
+/// Planted by the secrets proof: a module that shares a package's name.
+pub mod config {
+    pub const PLANTED: &str = "planted";
+}
+
+pub fn planted() -> &'static str {
+    config::PLANTED
+}
+EOF
+	cat >>"$1/crates/contracts/src/lib.rs" <<'EOF'
+
+/// Planted by the secrets proof: read names inside longer ones, none a read.
+pub mod planted {
+    pub mod env {
+        pub fn variables() -> usize { 0 }
+        pub fn var_count() -> usize { 0 }
+        pub fn home_directory() -> usize { 0 }
+    }
+    pub mod process {
+        pub struct Commands;
+    }
+    pub struct Command;
+    impl Command {
+        pub fn newly() -> Self { Command }
+    }
+
+    pub fn counted() -> (usize, process::Commands, Command) {
+        (env::variables() + env::var_count() + env::home_directory(), process::Commands, Command::newly())
+    }
+}
+EOF
+}
+
+# A local package carrying a denied name, listed under $3 in the manifest of the
+# read crate at $2, planted as violate_purity plants rand and for the same
+# reasons. What the failure must then name is the crate, the package and its
+# group, $5.
+plant_secrets_package() {
+	local denied="$1-$4"
+	mkdir -p "$denied/src"
+	cat >"$denied/Cargo.toml" <<EOF
+[package]
+name = "$4"
+version = "0.0.0"
+edition = "2024"
+publish = false
+EOF
+	: >"$denied/src/lib.rs"
+	cat >>"$1/$2/Cargo.toml" <<EOF
+
+[$3.$4]
+path = "$denied"
+EOF
+	must_name="$(awk -F'"' '/^name = / { print $2; exit }' "$1/$2/Cargo.toml") lists $4 ($5)"
+}
+
+# One plant per way docs/adr/no-key-read-by-the-engine.md claims to catch, each
+# in a copy of its own and pinned to the planted file, line and name, or to the
+# crate and package. They are spread over crates, and over a library file, a
+# build script and a test, because the gate claims to read all of them.
+violate_secrets_getter() {
+	plant_ambient "$1" "crates/fetch/src/lib.rs" "env::var (environment)" \
+		'pub fn planted() -> Option<String> { std::env::var("PLANTED").ok() }'
+}
+
+violate_secrets_grouped() {
+	plant_ambient "$1" "crates/normalize/src/lib.rs" "env::{ (environment)" \
+		'pub fn planted() -> bool { use std::env::{var as planted}; planted("PLANTED").is_ok() }'
+}
+
+violate_secrets_option_env() {
+	plant_ambient "$1" "crates/store/build.rs" "option_env! (environment)" \
+		'fn main() { let _ = option_env!("PLANTED"); }'
+}
+
+# Beside one of Cargo's two, which is taken out and leaves the other standing.
+violate_secrets_env() {
+	plant_ambient "$1" "crates/fetch/tests/planted.rs" "env! (environment)" \
+		'#[test] fn planted() { let _ = (env!("CARGO_MANIFEST_DIR"), env!("PLANTED")); }'
+}
+
+violate_secrets_environment_package() {
+	plant_secrets_package "$1" "crates/normalize" dependencies dotenvy environment
+}
+
+violate_secrets_price() {
+	plant_ambient "$1" "$price_place/mod.rs" "std::fs (filesystem)" \
+		'pub fn planted() -> std::io::Result<String> { std::fs::read_to_string("planted") }'
+}
+
+violate_secrets_chokepoint() {
+	local file
+	file="$(chokepoint_source "$1")" || return 1
+	plant_ambient "$1" "${file#"$1"/}" "std::fs (filesystem)" \
+		'pub fn planted() -> std::io::Result<String> { std::fs::read_to_string("planted") }'
+}
+
+violate_secrets_named() {
+	plant_ambient "$1" "crates/store/src/lib.rs" "std::fs (filesystem)" \
+		'pub struct ApiKey(String); pub fn planted() -> std::io::Result<ApiKey> { std::fs::read_to_string("planted").map(ApiKey) }'
+}
+
+# The carve-out ends where the type is written.
+violate_secrets_spent() {
+	plant_ambient "$1" "$spent_place/mod.rs" "std::fs (filesystem)" \
+		'pub struct ApiKey(String); pub fn planted() -> std::io::Result<ApiKey> { std::fs::read_to_string("planted").map(ApiKey) }'
+}
+
+violate_secrets_include() {
+	plant_ambient "$1" "crates/jobs/tests/planted.rs" "include_str! (filesystem)" \
+		'#[test] fn planted() { let _ = include_str!("planted"); }'
+}
+
+violate_secrets_home() {
+	plant_ambient "$1" "crates/contracts/src/lib.rs" "env::home_dir (filesystem)" \
+		'#[allow(deprecated)] pub fn planted() -> Option<std::path::PathBuf> { std::env::home_dir() }'
+}
+
+violate_secrets_keychain_package() {
+	plant_secrets_package "$1" "crates/jobs" dev-dependencies keyring keychain
+}
+
+violate_secrets_command() {
+	plant_ambient "$1" "crates/fetch/src/bin/record.rs" "process::Command (keychain)" \
+		'use std::process::Command;'
+}
+
+violate_secrets_command_grouped() {
+	plant_ambient "$1" "crates/jobs/src/lib.rs" "Command::new (keychain)" \
+		'pub fn planted() -> bool { use std::{process::{Command}}; Command::new("security").status().is_ok() }'
+}
+
 # The fixture contracts the contracts proof runs over. They live here, with the
 # proofs, and not in contracts/: nothing in this file is a contract between
 # stages, and a fixture sitting in contracts/ would be read as one.
@@ -4772,12 +5215,18 @@ prove() {
 # turned the gate red. And for ambient, which reads for five things, and one
 # with no plant of its own would be one it was never shown to catch. And for
 # literals, which goes red on a literal, the constructor's name, a settings/ that
-# lost the constructor, and a file it cannot read, each its own reason.
+# lost the constructor, and a file it cannot read, each its own reason. And for
+# secrets, which claims fourteen ways a key could arrive, for ambient's reason.
 violations() {
 	case "$1" in
 	fixtures) echo fixtures fixtures_claims ;;
 	ambient) echo ambient_filesystem ambient_environment ambient_clock ambient_clock_grouped ambient_clock_glob ambient_process ambient_hasher ;;
 	literals) echo literals literals_preset literals_preset_gone literals_unreadable ;;
+	secrets)
+		echo secrets_getter secrets_grouped secrets_option_env secrets_env secrets_environment_package \
+			secrets_price secrets_chokepoint secrets_named secrets_spent secrets_include secrets_home \
+			secrets_keychain_package secrets_command secrets_command_grouped
+		;;
 	*) echo "$1" ;;
 	esac
 }
