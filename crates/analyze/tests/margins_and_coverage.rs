@@ -355,7 +355,10 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "gross_margin",
             "operating_margin",
             "net_margin",
-            "interest_coverage"
+            "interest_coverage",
+            "dividend_payout_on_earnings",
+            "dividend_payout_on_free_cash_flow",
+            "dividend_coverage"
         ]
     );
 }
