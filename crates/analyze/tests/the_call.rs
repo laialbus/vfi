@@ -122,7 +122,16 @@ fn each_period_holds_its_results_and_the_metrics_stated_at_it() {
             .map(|metric| &*metric.name)
             .collect()
     };
-    assert_eq!(names(0), ["debt_to_equity", "liabilities_to_assets"]);
+    assert_eq!(
+        names(0),
+        [
+            "debt_to_equity",
+            "liabilities_to_assets",
+            "current_ratio",
+            "quick_ratio",
+            "cash_ratio"
+        ]
+    );
     assert!(names(1).contains(&"gross_margin"), "{:?}", names(1));
     assert!(!names(1).contains(&"debt_to_equity"), "{:?}", names(1));
 }

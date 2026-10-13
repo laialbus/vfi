@@ -218,7 +218,10 @@ fn an_unknown_long_term_debt_makes_debt_to_equity_absent_naming_it() {
     let at = row(year_end(), &given);
     let reason = Reason::input_unknown(&at, Concept::LongTermDebt)
         .expect("long-term debt is Unknown at the row");
-    assert_eq!(outcome("debt_to_equity", &given), absent(reason, Vec::new()));
+    assert_eq!(
+        outcome("debt_to_equity", &given),
+        absent(reason, Vec::new())
+    );
 }
 
 #[test]
@@ -332,7 +335,16 @@ fn an_instant_carries_each_metric_by_its_entrys_name_in_order() {
         .iter()
         .map(|metric| &*metric.name)
         .collect();
-    assert_eq!(names, ["debt_to_equity", "liabilities_to_assets"]);
+    assert_eq!(
+        names,
+        [
+            "debt_to_equity",
+            "liabilities_to_assets",
+            "current_ratio",
+            "quick_ratio",
+            "cash_ratio"
+        ]
+    );
 }
 
 #[test]

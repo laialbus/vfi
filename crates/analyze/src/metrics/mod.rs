@@ -13,12 +13,15 @@ use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
 
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 
+mod cash_ratio;
+mod current_ratio;
 mod debt_to_equity;
 mod gross_margin;
 mod interest_coverage;
 mod liabilities_to_assets;
 mod net_margin;
 mod operating_margin;
+mod quick_ratio;
 
 /// Every metric the method computes, each once.
 const DERIVATIONS: &[Derivation] = &[
@@ -28,11 +31,18 @@ const DERIVATIONS: &[Derivation] = &[
     interest_coverage::INTEREST_COVERAGE,
     debt_to_equity::DEBT_TO_EQUITY,
     liabilities_to_assets::LIABILITIES_TO_ASSETS,
+    current_ratio::CURRENT_RATIO,
+    quick_ratio::QUICK_RATIO,
+    cash_ratio::CASH_RATIO,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
 /// revenue is undefined under this one condition.
 const ZERO_REVENUE: &str = "zero_revenue";
+
+/// Current liabilities are zero, and no ratio to zero is defined. Every
+/// liquidity ratio is undefined under this one condition.
+const ZERO_CURRENT_LIABILITIES: &str = "zero_current_liabilities";
 
 /// A metric: its entry, and its number at a row of the shape the entry is
 /// stated at, or the reasons it has none.
