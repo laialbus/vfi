@@ -49,16 +49,22 @@
 //! to one. That stays a module of its own rather than more names out here,
 //! because a step, a reason, and a verdict mean something beside the ledger
 //! they belong to and very little without it.
+//!
+//! What asking a price source has cost goes on record through [`price::spent`],
+//! one entry per request, so a free tier's allowance holds across sessions. It
+//! is a module of its own for the same reason the ledger is.
 
 mod company;
 mod edgar;
 mod egress;
+mod epoch;
 mod filing;
 pub mod funnel;
 mod hosts;
 pub mod ledger;
 mod pace;
 mod policy;
+pub mod price;
 mod source;
 
 pub use company::{Cik, Company, Ticker};
