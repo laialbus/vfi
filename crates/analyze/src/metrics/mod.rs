@@ -17,8 +17,10 @@ mod cash_ratio;
 mod current_ratio;
 mod debt_to_equity;
 mod dividend_coverage;
+mod dividend_coverage_per_share;
 mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
+mod dividend_payout_per_share;
 mod gross_margin;
 mod interest_coverage;
 mod liabilities_to_assets;
@@ -40,6 +42,8 @@ const DERIVATIONS: &[Derivation] = &[
     dividend_payout_on_earnings::DIVIDEND_PAYOUT_ON_EARNINGS,
     dividend_payout_on_free_cash_flow::DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW,
     dividend_coverage::DIVIDEND_COVERAGE,
+    dividend_payout_per_share::DIVIDEND_PAYOUT_PER_SHARE,
+    dividend_coverage_per_share::DIVIDEND_COVERAGE_PER_SHARE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over

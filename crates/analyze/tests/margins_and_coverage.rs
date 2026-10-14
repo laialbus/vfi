@@ -358,7 +358,9 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "interest_coverage",
             "dividend_payout_on_earnings",
             "dividend_payout_on_free_cash_flow",
-            "dividend_coverage"
+            "dividend_coverage",
+            "dividend_payout_per_share",
+            "dividend_coverage_per_share"
         ]
     );
 }
