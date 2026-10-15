@@ -1,9 +1,9 @@
 # The common-shareholder forms read common equity and income available to common, each formed once; the common dividend has no total v2 can form, so payout and coverage take their per-share forms as the common ones, and retention and sustainable growth are built on those
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-14, by `M5-27`
-- **Decided:** —
+- **Decided:** 2026-10-14, by the decider
 - **Touches:** the composition `canonical-concepts-open-questions.md` leaves to
   analysis when it admits `preferred_equity` and `preferred_dividends` for "the
   common-shareholder forms". It defines retention and sustainable growth,
@@ -619,7 +619,58 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of six metrics that will cross `analyze-store` v1 as characters,
+  and a rule every common-shareholder metric shares, both inside analyze. It
+  edits no anchor, no protected path, no gate, no contract byte and no
+  milestone scope, and asks for no allowlist entry. Flagged for later human
+  review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - `canonical-concepts` v2: `preferred_dividends` is defined as the
+    deduction between the period's profit and the profit available to common,
+    with accretion and redemption adjustments; `preferred_equity` includes
+    redeemable preferred outside permanent equity; `dividends_paid` is every
+    class; both preferred concepts apply to every kind with
+    `silence = "unknown"`. The three terms are read off those bytes and
+    change none.
+  - `declared-cash-dividends-stand-in.md` (Accepted): `DividendsCommonStockCash`
+    is admitted as a stand-in for `dividends_paid`. That is what makes the
+    double deduction in the first alternative real and not hypothetical.
+  - `canonical-concepts-open-questions.md` (Accepted): M5's metrics are
+    common-shareholder measures, and common equity is `shareholders_equity`
+    less `preferred_equity`. This record carries that and restates nothing.
+  - `which-other-period-a-metric-reads.md` (Accepted this day, one PR
+    earlier): its table names return on equity and on common equity as
+    averaged, per CFA. This record leaves the pairing to it by name and reads
+    no date itself.
+  - `what-analyze-takes-and-returns.md`: six reasons, one `NotApplicable`
+    exception for `short_term_investments`. `zero_common_equity` is a
+    `declined` condition and not a seventh reason; preferred silence is
+    `input_unknown` and never read as zero.
+  - `bare-literal-lint.md`: the allowlist holds one, which is the only number
+    `retention_per_share` needs.
+  - `dividend_payout_per_share.rs`: `zero_earnings_per_share_diluted` exists
+    and is shared, not redefined.
+  - The worked figures under the proof: 100/800, 140/800, 1 − 0.5/2 and
+    0.125 × 0.75 give what the record says.
+  - The alternatives as argued, including the four the task required.
+- **Verdict and why:** accepted. The record's weight is in what it refuses:
+  it finds that v2 cannot form the common dividend total without a number that
+  flatters, says so by name, and leaves the term open rather than closing it
+  with the subtraction that looks obvious. Taking the per-share forms as the
+  common forms of payout and coverage costs nothing today, since M5-23 already
+  computes them, and it leaves room for a v3 total to stand beside them without
+  renaming anything. The naming rule is checkable by a catalogue test, and the
+  `Unknown`-beside-total reading of preferred silence makes the common forms
+  absent for most filers, which is the safe side the accepted records already
+  chose. The cost it names honestly: most filers get no common return on
+  equity, price/book or sustainable growth until a registry override or a v3
+  record changes that, and M6 must cope with that absence.
+- **What would have changed it:** a seventh reason, a changed byte of
+  `canonical-concepts` v2 or `analyze-store` v1, a reading of preferred silence
+  as zero inside analyze, or a common dividend formed from `dividends_paid`
+  less `preferred_dividends`. So would a source that, on reading, fixes
+  retention or sustainable growth otherwise than the record says; the record
+  makes that a stop for the implementing task, and that stop and the mezzanine
+  preferred override under "what no check can see" are the items flagged for
+  the human alongside the Structural tier.
