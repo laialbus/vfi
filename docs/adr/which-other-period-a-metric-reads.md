@@ -1,9 +1,9 @@
 # A metric that pairs a flow with a balance is stated at the flow's duration and reads the balance at the instant that duration closes at, opens at, or the two averaged, as its source fixes; finding the preceding duration is another record's
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-14, by `M5-26`
-- **Decided:** —
+- **Decided:** 2026-10-14, by the decider
 - **Touches:** the rule `what-analyze-takes-and-returns.md` leaves to "that
   metric's task" and names in `no_period` as "the rule that sought the other
   period". It fixes the characters `analyze-store` v1's `sought_by` carries,
@@ -553,7 +553,48 @@ This applies anchors 4 and 5, and edits neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the characters of
+  `sought_by`, a field `analyze-store` v1 already carries as a string, and a
+  rule every cross-period metric shares, both inside analyze. It edits no
+  anchor, no protected path, no gate, no contract byte and no milestone scope,
+  and asks for no allowlist entry. Flagged for later human review, as the tier
+  requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - `what-analyze-takes-and-returns.md`: `no_period` carries `computing_at`
+    and `sought_by`, and the rule that seeks the other period is left to "that
+    metric's task". This record is that rule and adds no seventh reason.
+  - `how-analyze-computes-and-writes-a-figure.md`: dates are not numbers and
+    are read by "the share-basis rule and each metric". The one date module
+    here reads calendar fields and never enters the number type, as it says.
+  - `bare-literal-lint.md`: `crates/analyze/src/constants/` is one of the
+    three places, so `constants/calendar.rs` under RFC 3339 needs no fourth
+    place and no allowlist change.
+  - `period-alignment.md`: telling a year from a quarter is its open question,
+    and this record leaves the preceding duration and the series to a record
+    of their own rather than answering it by a day count.
+  - The entry shape in `metrics/mod.rs`: `stated_at`, `inputs` and
+    `conditions` carry what the record asks of an entry, so M5-18's shape is
+    not changed.
+  - Anchors 4 and 5 as the Enforcement section applies them: no dependency,
+    no clock, every calendar number in a cited constant.
+  - The alternatives as argued: closing alone, average alone, Damodaran's
+    opening, a setting, a v3 pairing, the nearest instant by ordering, the
+    instant-stated metric, one `sought_by` name, a field in the entry, a
+    length window, a date crate, and `no_period` for a bad start.
+- **Verdict and why:** accepted. What carries it is that the record refuses
+  every path to a wrong number that looks right: no near instant stands in, no
+  row is ordered, a start outside the grammar is `declined` and not read
+  around, and each metric's reading is the one its author fixed, so Piotroski's
+  ROA and the standalone return on assets stay different names for different
+  numbers. The cost it takes is absence, which the accepted records already
+  make the safe side. Choosing the CFA average for the standalone family on
+  the strength of one citation covering all five metrics is a reasoned choice
+  that a later record can supersede without an edit, since the method version
+  moves with it.
+- **What would have changed it:** a seventh reason, a changed byte of
+  `analyze-store` v1 or `canonical-concepts` v2, a calendar number anywhere
+  but `constants/`, or a reading under which a missing opening instant was
+  filled from the nearest earlier row. So would a stated source for any term
+  that, on reading, fixes the balance otherwise than the table says; the
+  record makes that a stop for the implementing task, and that stop is the
+  item flagged for the human alongside the Structural tier.
