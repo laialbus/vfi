@@ -13,6 +13,7 @@ use vfi_contracts::fetch_analyze::Crossing;
 
 mod arithmetic;
 mod constants;
+mod date;
 mod method;
 mod metrics;
 pub mod settings;
