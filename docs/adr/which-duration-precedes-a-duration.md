@@ -1,9 +1,9 @@
 # A duration is a year when its own dates run twelve months to a month's end or fifty-two or fifty-three weeks and no other such duration shares a day with it; the year before a year is the year that ends the day before it starts, and a series is that seek repeated
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-14, by `M5-32`
-- **Decided:**
+- **Decided:** 2026-10-15, by the decider
 - **Touches:** the record `which-other-period-a-metric-reads.md` (Accepted)
   leaves "to a record of their own": the preceding duration and the series.
   It fixes the characters of two more `sought_by` values that `analyze-store`
@@ -765,7 +765,71 @@ This applies anchors 4 and 5, and edits neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the characters of
+  two `sought_by` values and three `declined` conditions, fields
+  `analyze-store` v1 carries as open strings, and a rule every year-stated
+  metric shares, all inside analyze. It edits no anchor, no protected path,
+  no gate, no contract byte and no milestone scope, asks for no allowlist
+  entry, and adds no setting of its own. Flagged for later human review, as
+  the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - `which-other-period-a-metric-reads.md`: it leaves the preceding duration
+    and the series "to a record of their own" that reads dates through
+    `date.rs`, and says ordering "adds it here under its own record". This
+    record is that one, adds the ordering there and nowhere else, and keeps
+    `start_not_a_date` where the accepted record defines it.
+  - `what-analyze-takes-and-returns.md`: the six reasons stand and no seventh
+    is added. `no_period` carries `computing_at` and `sought_by`;
+    `declined` names a condition per the catalogue entry; a metric read over
+    several periods is stated at the last of them by its own rule, which is
+    the computing year here. The two settings follow its settings section:
+    name, domain, preset and reason, in `settings/`.
+  - `analyze-store` v1: `sought_by` and `condition` are strings the
+    contract leaves to analyze, and settings cross by name, so no byte moves.
+  - `period-alignment.md`: it refused a day count and left the year a
+    decision; this record counts days only where §441(f) fixes the count and
+    otherwise reads months, and labels nothing in the history. Its warning
+    that a missed period reads as a suspension is met by `no_period` at a
+    gap and by keeping quarters out of a series.
+  - `bare-literal-lint.md`: seven, fifty-two and fifty-three go under
+    `constants/` and the two presets under `settings/`, two of the three
+    places; nothing on the allowlist moves.
+  - The fixtures, read from `fixtures/normalize/*/expected`:
+    `a-filer-that-changed-its-fiscal-year` holds the 28 durations the table
+    lists, and its calendar year 2023 carries the transition period's pretax
+    income under twelve-month dates, so the alone clause is what keeps a
+    wrong year out of the fiscal-year change. `every-fact-a-filer-reported`
+    holds 19 durations in the history. The suspension fixture's calendar
+    years read as the Context states them.
+  - The two length clauses against the proof's cases: each listed year
+    satisfies one clause, and 2024-07-15 to 2025-07-14 fails both.
+  - The alternatives as argued: the day-before duration of any length, a
+    length class, a carried fiscal year end, a per-period form, the span
+    between annual reports, leaving the metrics out of M5, no alone clause,
+    the stub or the old year across a change, calendar stepping, an uncapped
+    streak, a lower bound, a raising streak, a series over quarters,
+    `no_period` for a non-year, every read at a non-year, one opening name,
+    and `Shape::Year`.
+- **Verdict and why:** accepted. The record answers the question both
+  accepted records refused in passing, and answers it in the one way that
+  gives no wrong year in any fixture: a year is read from its own dates under
+  a cited statute, the year before is found by equality and never by nearness,
+  and where two year-length spans overlap, neither is taken. Every path to a
+  plausible wrong year — the quarter that ends the day before, the transition
+  stub, the recast calendar year, the nearest old year, a calendar-stepped
+  series — ends in absence, which the accepted records already make the safe
+  side. Counting the streak in paying years rather than raising ones is what
+  makes the catalogue's one-period excess tolerable, and the settings' presets
+  carry stated reasons where no source fixes a window. The cost is real and
+  stated: a first year after a fiscal-year change has no year before, and a
+  stray year-long span costs the real years it overlaps.
+- **What would have changed it:** a seventh reason, a changed byte of
+  `analyze-store` v1 or `canonical-concepts` v2, a date ordered anywhere but
+  `date.rs`, a number for the week or the year anywhere but `constants/`, or a
+  reading under which a quarter, a stub or a near year was ever taken as the
+  year before. So would a §441 reading that, on the implementing task's own
+  reading, fixes a year otherwise than the two clauses say; the record makes
+  that a stop, and that stop is the first item flagged for the human. The
+  second is the residual the record names and no check sees: a filer-dated
+  year holding another period's figures with nothing overlapping it is read
+  as a year, and only the corpus can say how often that happens.
