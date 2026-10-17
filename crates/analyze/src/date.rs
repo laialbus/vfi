@@ -4,11 +4,6 @@
 //! `docs/adr/which-other-period-a-metric-reads.md`'s, under the method
 //! version.
 
-#![cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric seeks an opening instant yet")
-)]
-
 use crate::constants::calendar::{
     CENTURY_DIVISOR, DAY_DIGITS, LEAP_CENTURY_DIVISOR, LEAP_DIVISOR, MONTH_DIGITS, MONTH_LENGTHS,
     MONTHS, YEAR_DIGITS,

@@ -9,9 +9,9 @@
 //! naming `current_liabilities` only.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, ZERO_CURRENT_LIABILITIES, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, ZERO_CURRENT_LIABILITIES, declined, read};
 use crate::arithmetic::Number;
 
 pub(super) const CASH_RATIO: Derivation = Derivation {
@@ -24,11 +24,12 @@ pub(super) const CASH_RATIO: Derivation = Derivation {
         inputs: &[Concept::CashAndEquivalents, Concept::CurrentLiabilities],
         conditions: &[ZERO_CURRENT_LIABILITIES],
     },
+    readings: &[None, None],
     derived: cash_ratio,
 };
 
-fn cash_ratio(row: &Row) -> Result<Number, Reasons> {
-    let [cash_and_equivalents, current_liabilities] = read(row, CASH_RATIO.entry.inputs)?;
+fn cash_ratio(computing: &Computing) -> Result<Number, Reasons> {
+    let [cash_and_equivalents, current_liabilities] = read(computing, &CASH_RATIO)?;
     cash_and_equivalents
         .divided(&current_liabilities)
         .ok_or_else(|| declined(ZERO_CURRENT_LIABILITIES))

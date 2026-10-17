@@ -9,9 +9,9 @@
 //! value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, ZERO_CURRENT_LIABILITIES, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, ZERO_CURRENT_LIABILITIES, declined, read};
 use crate::arithmetic::Number;
 
 pub(super) const QUICK_RATIO: Derivation = Derivation {
@@ -29,11 +29,12 @@ pub(super) const QUICK_RATIO: Derivation = Derivation {
         ],
         conditions: &[ZERO_CURRENT_LIABILITIES],
     },
+    readings: &[None, None, None],
     derived: quick_ratio,
 };
 
-fn quick_ratio(row: &Row) -> Result<Number, Reasons> {
-    let [current_assets, inventory, current_liabilities] = read(row, QUICK_RATIO.entry.inputs)?;
+fn quick_ratio(computing: &Computing) -> Result<Number, Reasons> {
+    let [current_assets, inventory, current_liabilities] = read(computing, &QUICK_RATIO)?;
     current_assets
         .minus(&inventory)
         .divided(&current_liabilities)

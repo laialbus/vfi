@@ -11,9 +11,9 @@
 //! it, so the coverage is then declined. A loss gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Dividends declared per share are zero, and nothing is a multiple of zero.
@@ -33,12 +33,13 @@ pub(super) const DIVIDEND_COVERAGE_PER_SHARE: Derivation = Derivation {
         ],
         conditions: &[ZERO_DIVIDENDS_DECLARED_PER_SHARE],
     },
+    readings: &[None, None],
     derived: dividend_coverage_per_share,
 };
 
-fn dividend_coverage_per_share(row: &Row) -> Result<Number, Reasons> {
+fn dividend_coverage_per_share(computing: &Computing) -> Result<Number, Reasons> {
     let [earnings_per_share_diluted, dividends_declared_per_share] =
-        read(row, DIVIDEND_COVERAGE_PER_SHARE.entry.inputs)?;
+        read(computing, &DIVIDEND_COVERAGE_PER_SHARE)?;
     earnings_per_share_diluted
         .divided(&dividends_declared_per_share)
         .ok_or_else(|| declined(ZERO_DIVIDENDS_DECLARED_PER_SHARE))

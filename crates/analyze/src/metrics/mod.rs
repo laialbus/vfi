@@ -9,10 +9,12 @@
 //! `docs/adr/how-analyze-computes-and-writes-a-figure.md` fixes.
 
 use vfi_contracts::analyze_store::{Metric, Outcome, Reason, Reasons};
-use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
+use vfi_contracts::canonical_concepts::{Concept, Period, Row};
 
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
+use reading::{Computing, Reading, read};
 
+mod asset_turnover;
 mod cash_ratio;
 mod current_ratio;
 mod debt_to_equity;
@@ -27,6 +29,8 @@ mod liabilities_to_assets;
 mod net_margin;
 mod operating_margin;
 mod quick_ratio;
+mod reading;
+mod return_on_assets;
 
 /// Every metric the method computes, each once.
 const DERIVATIONS: &[Derivation] = &[
@@ -44,6 +48,8 @@ const DERIVATIONS: &[Derivation] = &[
     dividend_coverage::DIVIDEND_COVERAGE,
     dividend_payout_per_share::DIVIDEND_PAYOUT_PER_SHARE,
     dividend_coverage_per_share::DIVIDEND_COVERAGE_PER_SHARE,
+    return_on_assets::RETURN_ON_ASSETS,
+    asset_turnover::ASSET_TURNOVER,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
@@ -54,11 +60,20 @@ const ZERO_REVENUE: &str = "zero_revenue";
 /// liquidity ratio is undefined under this one condition.
 const ZERO_CURRENT_LIABILITIES: &str = "zero_current_liabilities";
 
-/// A metric: its entry, and its number at a row of the shape the entry is
-/// stated at, or the reasons it has none.
+/// The average of total assets at the instants a duration opens and closes
+/// at is zero, and no ratio to zero is defined. Every metric over that
+/// average is undefined under this one condition.
+const ZERO_AVERAGE_TOTAL_ASSETS: &str = "zero_average_total_assets";
+
+/// A metric: its entry, how it reads each input, and its number at a row of
+/// the shape the entry is stated at, or the reasons it has none.
 struct Derivation {
     entry: Entry,
-    derived: fn(&Row) -> Result<Number, Reasons>,
+    /// One per input, in the entry's order: the reading of an input whose
+    /// measure is `balance` where the metric is stated at a duration, and
+    /// none for any other input, which is read at the row itself.
+    readings: &'static [Option<Reading>],
+    derived: fn(&Computing) -> Result<Number, Reasons>,
 }
 
 /// What a metric states about itself, which the catalogue the shell reads is
@@ -80,8 +95,7 @@ struct Entry {
     /// The shape of period the metric is stated at. It is computed at every
     /// period of that shape the history holds, and at no other.
     stated_at: Shape,
-    /// The concepts the metric reads at the row, in the order its reasons
-    /// follow.
+    /// The concepts the metric reads, in the order its reasons follow.
     inputs: &'static [Concept],
     /// Each condition under which the metric's own definition is undefined at
     /// inputs that were all read.
@@ -133,13 +147,15 @@ impl Shape {
 
 /// Every metric stated at `row`'s period, each once, by its entry's name, with
 /// its outcome there: its number written once, or the reasons it has none.
-pub(crate) fn at(row: &Row) -> Vec<Metric> {
+/// `history` is every row the history holds, `row` among them.
+pub(crate) fn at(row: &Row, history: &[Row]) -> Vec<Metric> {
+    let computing = Computing::at(row, history);
     DERIVATIONS
         .iter()
         .filter(|derivation| derivation.entry.stated_at.holds(row.period()))
         .map(|derivation| Metric {
             name: derivation.entry.name.into(),
-            outcome: match (derivation.derived)(row) {
+            outcome: match (derivation.derived)(&computing) {
                 Ok(number) => Outcome::Value {
                     figure: number.written(),
                 },
@@ -147,43 +163,6 @@ pub(crate) fn at(row: &Row) -> Vec<Metric> {
             },
         })
         .collect()
-}
-
-/// The number each of `inputs` states at `row`, in their order; or, where any
-/// states none, a reason for each that states none, in the same order.
-/// Nothing is substituted for an input.
-///
-/// `N` is how many numbers the metric takes, which is how many inputs its
-/// entry lists.
-fn read<const N: usize>(row: &Row, inputs: &[Concept]) -> Result<[Number; N], Reasons> {
-    let (numbers, reasons): (Vec<_>, Vec<_>) = inputs
-        .iter()
-        .map(|concept| input(row, *concept))
-        .partition(Result::is_ok);
-    let mut reasons = reasons.into_iter().filter_map(Result::err);
-    if let Some(first) = reasons.next() {
-        return Err(Reasons::of(first, reasons.collect()));
-    }
-    let numbers: Vec<Number> = numbers.into_iter().filter_map(Result::ok).collect();
-    Ok(numbers
-        .try_into()
-        .expect("a metric takes a number for each input its entry lists"))
-}
-
-/// The number `concept` states at `row`, or why it states none: the state it
-/// is in where that is no `Value`, and `INPUT_NOT_A_DECIMAL` where its
-/// characters are outside the reader's grammar.
-fn input(row: &Row, concept: Concept) -> Result<Number, Reason> {
-    match row.of(concept) {
-        Resolution::Value { amount, .. } => {
-            Number::read(amount).ok_or_else(|| Reason::declined(INPUT_NOT_A_DECIMAL.into()))
-        }
-        Resolution::NotApplicable { .. } => Err(Reason::input_not_applicable(row, concept)
-            .expect("the concept is NotApplicable at the row")),
-        Resolution::Unknown { .. } => {
-            Err(Reason::input_unknown(row, concept).expect("the concept is Unknown at the row"))
-        }
-    }
 }
 
 /// The one reason a metric is absent where every input was read and its

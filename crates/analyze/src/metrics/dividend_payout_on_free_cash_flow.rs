@@ -12,9 +12,9 @@
 //! figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Operating cash flow less capital expenditure is zero, and no fraction of
@@ -36,12 +36,13 @@ pub(super) const DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW: Derivation = Derivation {
         ],
         conditions: &[ZERO_FREE_CASH_FLOW],
     },
+    readings: &[None, None, None],
     derived: dividend_payout_on_free_cash_flow,
 };
 
-fn dividend_payout_on_free_cash_flow(row: &Row) -> Result<Number, Reasons> {
+fn dividend_payout_on_free_cash_flow(computing: &Computing) -> Result<Number, Reasons> {
     let [dividends_paid, operating_cash_flow, capital_expenditure] =
-        read(row, DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW.entry.inputs)?;
+        read(computing, &DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW)?;
     dividends_paid
         .divided(&operating_cash_flow.minus(&capital_expenditure))
         .ok_or_else(|| declined(ZERO_FREE_CASH_FLOW))

@@ -10,9 +10,9 @@
 //! that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Dividends paid are zero, and nothing is a multiple of zero.
@@ -28,11 +28,12 @@ pub(super) const DIVIDEND_COVERAGE: Derivation = Derivation {
         inputs: &[Concept::NetIncome, Concept::DividendsPaid],
         conditions: &[ZERO_DIVIDENDS_PAID],
     },
+    readings: &[None, None],
     derived: dividend_coverage,
 };
 
-fn dividend_coverage(row: &Row) -> Result<Number, Reasons> {
-    let [net_income, dividends_paid] = read(row, DIVIDEND_COVERAGE.entry.inputs)?;
+fn dividend_coverage(computing: &Computing) -> Result<Number, Reasons> {
+    let [net_income, dividends_paid] = read(computing, &DIVIDEND_COVERAGE)?;
     net_income
         .divided(&dividends_paid)
         .ok_or_else(|| declined(ZERO_DIVIDENDS_PAID))

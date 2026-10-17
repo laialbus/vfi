@@ -97,7 +97,7 @@ fn results(history: &History) -> Vec<Results> {
         .enumerate()
         .filter(|(at, row)| !rows[..*at].iter().any(|seen| seen.period() == row.period()))
         .map(|(_, row)| {
-            Results::at(row.period().clone(), metrics::at(row))
+            Results::at(row.period().clone(), metrics::at(row, rows))
                 .expect("no two entries share a name")
         })
         .collect()
