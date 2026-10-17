@@ -1,9 +1,9 @@
 # Capital employed is total assets less current liabilities, invested capital is shareholders' equity plus net debt, and net operating profit after tax applies the effective rate only where that rate is a share of a profit; each is formed once
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-15, by `M5-31`
-- **Decided:**
+- **Decided:** 2026-10-16, by the decider
 - **Touches:** the three terms `canonical-concepts.md` names only in part for
   return on capital employed and return on invested capital: capital
   employed, invested capital, and the effective tax rate that turns operating
@@ -691,7 +691,72 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of two metrics that cross `analyze-store` v1 as characters, forms
+  three terms every later reader of them shares, and names five consumers of
+  concepts v2 carries no consumer list for, all inside analyze. It edits no
+  anchor, no protected path, no gate, no contract byte, no schema and no
+  milestone scope, adds no setting and asks for no allowlist entry. Flagged
+  for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - `canonical-concepts.md`: the three partial namings are quoted as
+    printed, and "a concept no metric consumes is not in this list" is the
+    sentence the new-consumer argument rests on. It says why a concept is in
+    the set, not who may read it, and v2's own file carries no consumer list.
+  - The frozen v2 contract: `short_term_debt` and `long_term_debt` read
+    silence as `unknown` and apply to every kind; `short_term_investments`
+    reads silence as zero and applies to `operating` alone; `operating_income`
+    applies to `operating` and `reit`. The record states each the same way.
+  - `canonical-concepts-open-questions.md`: net debt is formed in analysis
+    from both cash concepts, and `short_term_investments` inside it is the one
+    term a `NotApplicable` lets contribute nothing. The record carries both
+    and extends neither.
+  - `what-analyze-takes-and-returns.md`: the six reasons stand and no seventh
+    is added; the four conditions are `declined` naming a condition per the
+    catalogue entry; a setting is a value "neither the filings nor the
+    metric's cited source fixes", and the record's argument that the filings
+    fix the effective rate and the law fixes a statutory one meets that
+    definition.
+  - `which-other-period-a-metric-reads.md`: both metrics are listed as
+    averaged, an averaged balance is two reads, opening then closing, and the
+    record decides nothing of the instant and shows the two means equal.
+  - `common-shareholder-forms.md`: another consumer of `preferred_equity` is
+    "its own record"; this record reads neither preferred concept.
+  - `debt_to_equity.rs`: forms total debt inline and gives a signed figure at
+    a negative equity, as the record says of it.
+  - `bare-literal-lint.md`: no place, form or allowlist entry moves, and the
+    one literal the terms need is `Number::one`.
+  - The hand-worked figures in the proof section, each reproduced, including
+    `0.1` against the `0.1125` that counting one read would give.
+  - The alternatives as argued: equity plus debt, cash not netted, cash alone
+    netted, a statutory rate as a setting or as a fallback, a clamp, a rate
+    read at a loss, a zero rate at a loss, leaving the metric out of M5,
+    equity as assets less liabilities, the operating form, declining at a
+    negative capital, averaging the term, and each metric forming its own
+    terms.
+- **Verdict and why:** accepted. The two returns needed terms no record had
+  formed, and forming them in a metric's file would have put a method choice
+  where enterprise value and the discounted cash flow bridge would inherit it
+  unseen. The record forms each term once under a cited source, and at every
+  edge the filings do not fix the rate it declines rather than substitutes:
+  no clamp, no statutory rate, no zero at a loss. The new-consumer reading is
+  right: the catalogue's lists are the derivation that earned each concept its
+  place, not a grant, and v2 carries no list to amend. The gaps it cannot
+  close, non-controlling interests, redeemable preferred outside permanent
+  equity and the operating cash inside the netting, are named with their
+  direction, which flatters in each case, and left to a v3 record rather than
+  approximated here.
+- **What would have changed it:** a seventh reason; a changed byte of
+  `canonical-concepts` v2 or `analyze-store` v1; a rate clamped, defaulted or
+  read at a loss; a term formed in a metric's file; a read of
+  `preferred_equity`; or a source that on reading forms capital employed or
+  invested capital otherwise than stated, which the record makes a stop for
+  the implementing task. Two items are flagged for the human beside the tier:
+  the signed figure at a negative capital, kept for one rule across the family
+  of returns and argued either way in the record, and the overstatement of
+  return on invested capital wherever non-controlling interests or redeemable
+  preferred exist, which nothing measures. One more sits outside the record:
+  it was written before `sources-a-task-can-read.md` was accepted, and its
+  "cites its page as its task reads it" now reads under that record, so the
+  implementing tasks cite the two closed books by chapter alone and the open
+  primaries by the locator they have.
