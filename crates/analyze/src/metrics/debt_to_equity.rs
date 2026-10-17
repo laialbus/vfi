@@ -10,9 +10,9 @@
 //! absent, and a negative equity is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Shareholders' equity is zero, and no ratio to zero is defined.
@@ -33,12 +33,12 @@ pub(super) const DEBT_TO_EQUITY: Derivation = Derivation {
         ],
         conditions: &[ZERO_SHAREHOLDERS_EQUITY],
     },
+    readings: &[None, None, None],
     derived: debt_to_equity,
 };
 
-fn debt_to_equity(row: &Row) -> Result<Number, Reasons> {
-    let [short_term_debt, long_term_debt, shareholders_equity] =
-        read(row, DEBT_TO_EQUITY.entry.inputs)?;
+fn debt_to_equity(computing: &Computing) -> Result<Number, Reasons> {
+    let [short_term_debt, long_term_debt, shareholders_equity] = read(computing, &DEBT_TO_EQUITY)?;
     short_term_debt
         .plus(&long_term_debt)
         .divided(&shareholders_equity)

@@ -9,9 +9,9 @@
 //! than computed over a gross figure nobody stated.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Interest expense is zero, and nothing is a multiple of zero.
@@ -27,11 +27,12 @@ pub(super) const INTEREST_COVERAGE: Derivation = Derivation {
         inputs: &[Concept::OperatingIncome, Concept::InterestExpense],
         conditions: &[ZERO_INTEREST_EXPENSE],
     },
+    readings: &[None, None],
     derived: interest_coverage,
 };
 
-fn interest_coverage(row: &Row) -> Result<Number, Reasons> {
-    let [operating_income, interest_expense] = read(row, INTEREST_COVERAGE.entry.inputs)?;
+fn interest_coverage(computing: &Computing) -> Result<Number, Reasons> {
+    let [operating_income, interest_expense] = read(computing, &INTEREST_COVERAGE)?;
     operating_income
         .divided(&interest_expense)
         .ok_or_else(|| declined(ZERO_INTEREST_EXPENSE))

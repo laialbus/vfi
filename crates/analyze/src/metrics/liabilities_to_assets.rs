@@ -5,9 +5,9 @@
 //! to every kind, so the metric reads one row and no other period.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Total assets are zero, and no fraction of zero is defined.
@@ -23,11 +23,12 @@ pub(super) const LIABILITIES_TO_ASSETS: Derivation = Derivation {
         inputs: &[Concept::TotalLiabilities, Concept::TotalAssets],
         conditions: &[ZERO_TOTAL_ASSETS],
     },
+    readings: &[None, None],
     derived: liabilities_to_assets,
 };
 
-fn liabilities_to_assets(row: &Row) -> Result<Number, Reasons> {
-    let [total_liabilities, total_assets] = read(row, LIABILITIES_TO_ASSETS.entry.inputs)?;
+fn liabilities_to_assets(computing: &Computing) -> Result<Number, Reasons> {
+    let [total_liabilities, total_assets] = read(computing, &LIABILITIES_TO_ASSETS)?;
     total_liabilities
         .divided(&total_assets)
         .ok_or_else(|| declined(ZERO_TOTAL_ASSETS))

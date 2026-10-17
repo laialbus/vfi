@@ -6,9 +6,9 @@
 //! loss is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, ZERO_REVENUE, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, ZERO_REVENUE, declined, read};
 use crate::arithmetic::Number;
 
 pub(super) const NET_MARGIN: Derivation = Derivation {
@@ -21,11 +21,12 @@ pub(super) const NET_MARGIN: Derivation = Derivation {
         inputs: &[Concept::NetIncome, Concept::Revenue],
         conditions: &[ZERO_REVENUE],
     },
+    readings: &[None, None],
     derived: net_margin,
 };
 
-fn net_margin(row: &Row) -> Result<Number, Reasons> {
-    let [net_income, revenue] = read(row, NET_MARGIN.entry.inputs)?;
+fn net_margin(computing: &Computing) -> Result<Number, Reasons> {
+    let [net_income, revenue] = read(computing, &NET_MARGIN)?;
     net_income
         .divided(&revenue)
         .ok_or_else(|| declined(ZERO_REVENUE))

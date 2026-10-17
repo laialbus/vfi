@@ -6,9 +6,9 @@
 //! profit is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, ZERO_REVENUE, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, ZERO_REVENUE, declined, read};
 use crate::arithmetic::Number;
 
 pub(super) const GROSS_MARGIN: Derivation = Derivation {
@@ -21,11 +21,12 @@ pub(super) const GROSS_MARGIN: Derivation = Derivation {
         inputs: &[Concept::GrossProfit, Concept::Revenue],
         conditions: &[ZERO_REVENUE],
     },
+    readings: &[None, None],
     derived: gross_margin,
 };
 
-fn gross_margin(row: &Row) -> Result<Number, Reasons> {
-    let [gross_profit, revenue] = read(row, GROSS_MARGIN.entry.inputs)?;
+fn gross_margin(computing: &Computing) -> Result<Number, Reasons> {
+    let [gross_profit, revenue] = read(computing, &GROSS_MARGIN)?;
     gross_profit
         .divided(&revenue)
         .ok_or_else(|| declined(ZERO_REVENUE))

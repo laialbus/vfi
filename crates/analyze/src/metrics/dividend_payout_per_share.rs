@@ -10,9 +10,9 @@
 //! zero, and the payout is then zero. A loss gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Diluted earnings per share are zero, and no fraction of zero is defined.
@@ -32,12 +32,13 @@ pub(super) const DIVIDEND_PAYOUT_PER_SHARE: Derivation = Derivation {
         ],
         conditions: &[ZERO_EARNINGS_PER_SHARE_DILUTED],
     },
+    readings: &[None, None],
     derived: dividend_payout_per_share,
 };
 
-fn dividend_payout_per_share(row: &Row) -> Result<Number, Reasons> {
+fn dividend_payout_per_share(computing: &Computing) -> Result<Number, Reasons> {
     let [dividends_declared_per_share, earnings_per_share_diluted] =
-        read(row, DIVIDEND_PAYOUT_PER_SHARE.entry.inputs)?;
+        read(computing, &DIVIDEND_PAYOUT_PER_SHARE)?;
     dividends_declared_per_share
         .divided(&earnings_per_share_diluted)
         .ok_or_else(|| declined(ZERO_EARNINGS_PER_SHARE_DILUTED))

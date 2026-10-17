@@ -9,9 +9,9 @@
 //! zero. A net loss is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
-use vfi_contracts::canonical_concepts::{Concept, Row};
+use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Derivation, Entry, Shape, Unit, declined, read};
+use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Net income is zero, and no fraction of zero is defined.
@@ -27,11 +27,12 @@ pub(super) const DIVIDEND_PAYOUT_ON_EARNINGS: Derivation = Derivation {
         inputs: &[Concept::DividendsPaid, Concept::NetIncome],
         conditions: &[ZERO_NET_INCOME],
     },
+    readings: &[None, None],
     derived: dividend_payout_on_earnings,
 };
 
-fn dividend_payout_on_earnings(row: &Row) -> Result<Number, Reasons> {
-    let [dividends_paid, net_income] = read(row, DIVIDEND_PAYOUT_ON_EARNINGS.entry.inputs)?;
+fn dividend_payout_on_earnings(computing: &Computing) -> Result<Number, Reasons> {
+    let [dividends_paid, net_income] = read(computing, &DIVIDEND_PAYOUT_ON_EARNINGS)?;
     dividends_paid
         .divided(&net_income)
         .ok_or_else(|| declined(ZERO_NET_INCOME))
