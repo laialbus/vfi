@@ -31,6 +31,7 @@ mod net_margin;
 mod operating_margin;
 mod quick_ratio;
 mod reading;
+mod retention_per_share;
 mod return_on_assets;
 mod return_on_common_equity;
 mod return_on_equity;
@@ -55,6 +56,7 @@ const DERIVATIONS: &[Derivation] = &[
     asset_turnover::ASSET_TURNOVER,
     return_on_equity::RETURN_ON_EQUITY,
     return_on_common_equity::RETURN_ON_COMMON_EQUITY,
+    retention_per_share::RETENTION_PER_SHARE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
