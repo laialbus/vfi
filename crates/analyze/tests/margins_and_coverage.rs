@@ -363,7 +363,8 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "dividend_coverage_per_share",
             "return_on_assets",
             "asset_turnover",
-            "return_on_equity"
+            "return_on_equity",
+            "return_on_common_equity"
         ]
     );
 }
