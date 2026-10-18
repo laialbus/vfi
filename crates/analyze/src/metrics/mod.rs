@@ -35,6 +35,7 @@ mod retention_per_share;
 mod return_on_assets;
 mod return_on_common_equity;
 mod return_on_equity;
+mod sustainable_growth_on_common_equity;
 
 /// Every metric the method computes, each once.
 const DERIVATIONS: &[Derivation] = &[
@@ -57,6 +58,7 @@ const DERIVATIONS: &[Derivation] = &[
     return_on_equity::RETURN_ON_EQUITY,
     return_on_common_equity::RETURN_ON_COMMON_EQUITY,
     retention_per_share::RETENTION_PER_SHARE,
+    sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
