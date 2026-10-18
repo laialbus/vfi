@@ -17,6 +17,8 @@ use super::Derivation;
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 use crate::date::{START_NOT_A_DATE, day_before};
 
+pub(super) mod year;
+
 /// The `sought_by` of a read whose duration's opening instant the history
 /// does not hold.
 const OPENING_INSTANT: &str = "opening_instant";
@@ -112,12 +114,17 @@ impl Seek {
             }
             Seek::Closing => end.into(),
         };
-        computing
-            .history
-            .iter()
-            .find(|row| matches!(row.period(), Period::Instant { at } if *at == date))
+        instant(computing.history, &date)
             .ok_or_else(|| Reason::no_period(computing.row.period().clone(), self.name().into()))
     }
+}
+
+/// `history`'s first row at the instant dated `date`, character for
+/// character, or none.
+fn instant<'a>(history: &'a [Row], date: &str) -> Option<&'a Row> {
+    history
+        .iter()
+        .find(|row| matches!(row.period(), Period::Instant { at } if **at == *date))
 }
 
 /// What one input's reads give, in read order: one number for an input read
