@@ -120,10 +120,43 @@ impl Seek {
     }
 }
 
+/// What one input's reads give, in read order: one number for an input read
+/// at the row, and one for each instant its reading reads.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(super) struct Reads {
+    reading: Option<Reading>,
+    numbers: Vec<Number>,
+}
+
+impl Reads {
+    /// The number the input states as its derivation reads it: the mean of
+    /// its reads, which at one read is that read.
+    pub(super) fn mean(&self) -> Number {
+        mean(self.numbers.iter().cloned())
+    }
+
+    /// `operation` taken read by read over `self` and `other`, which were read
+    /// at the same rows: a term two inputs form at each row, before any mean.
+    pub(super) fn with(&self, other: &Reads, operation: fn(&Number, &Number) -> Number) -> Reads {
+        assert_eq!(
+            self.reading, other.reading,
+            "a term is formed of inputs read at the same rows"
+        );
+        Reads {
+            reading: self.reading,
+            numbers: self
+                .numbers
+                .iter()
+                .zip(&other.numbers)
+                .map(|(one, another)| operation(one, another))
+                .collect(),
+        }
+    }
+}
+
 /// The number each of `derivation`'s inputs states, in their order, each read
 /// as the derivation names; or, where any read states none, a reason for each
-/// read that states none, in read order. Every read is made, none stops
-/// another, and nothing is substituted for an input.
+/// read that states none, in read order.
 ///
 /// `N` is how many numbers the metric takes, which is how many inputs its
 /// entry lists.
@@ -131,34 +164,55 @@ pub(super) fn read<const N: usize>(
     computing: &Computing,
     derivation: &Derivation,
 ) -> Result<[Number; N], Reasons> {
-    let (numbers, absent): (Vec<_>, Vec<_>) = derivation
+    Ok(reads(computing, derivation)?.map(|reads| reads.mean()))
+}
+
+/// What each of `derivation`'s inputs' reads give, in their order, each read
+/// as the derivation names; or, where any read states none, a reason for each
+/// read that states none, in read order. Every read is made, none stops
+/// another, and nothing is substituted for an input.
+///
+/// `N` is how many inputs the metric's entry lists.
+pub(super) fn reads<const N: usize>(
+    computing: &Computing,
+    derivation: &Derivation,
+) -> Result<[Reads; N], Reasons> {
+    let (stated, absent): (Vec<_>, Vec<_>) = derivation
         .entry
         .inputs
         .iter()
         .zip(derivation.readings)
-        .map(|(concept, reading)| match reading {
-            None => input(computing.row, *concept).map_err(|reason| vec![reason]),
-            Some(reading) => balance(computing, *concept, *reading),
+        .map(|(concept, reading)| {
+            match reading {
+                None => input(computing.row, *concept)
+                    .map(|number| vec![number])
+                    .map_err(|reason| vec![reason]),
+                Some(reading) => balance(computing, *concept, *reading),
+            }
+            .map(|numbers| Reads {
+                reading: *reading,
+                numbers,
+            })
         })
         .partition(Result::is_ok);
     let mut reasons = absent.into_iter().filter_map(Result::err).flatten();
     if let Some(first) = reasons.next() {
         return Err(Reasons::of(first, reasons.collect()));
     }
-    let numbers: Vec<Number> = numbers.into_iter().filter_map(Result::ok).collect();
-    Ok(numbers
+    let stated: Vec<Reads> = stated.into_iter().filter_map(Result::ok).collect();
+    Ok(stated
         .try_into()
         .expect("a metric takes a number for each input its entry lists"))
 }
 
-/// The balance `concept` states under `reading`: the mean of its balances at
-/// the instants the reading reads, which at one instant is that balance; or a
-/// reason for each of those reads that states none, in read order.
+/// The balances `concept` states at each instant `reading` reads, in read
+/// order; or a reason for each of those reads that states none, in read
+/// order.
 fn balance(
     computing: &Computing,
     concept: Concept,
     reading: Reading,
-) -> Result<Number, Vec<Reason>> {
+) -> Result<Vec<Number>, Vec<Reason>> {
     let (balances, absent): (Vec<_>, Vec<_>) = reading
         .seeks()
         .iter()
@@ -168,7 +222,7 @@ fn balance(
     if !reasons.is_empty() {
         return Err(reasons);
     }
-    Ok(mean(balances.into_iter().filter_map(Result::ok)))
+    Ok(balances.into_iter().filter_map(Result::ok).collect())
 }
 
 /// The sum of `numbers` divided by how many were summed, the count starting
@@ -177,8 +231,7 @@ fn mean(numbers: impl Iterator<Item = Number>) -> Number {
     let (sum, count) = numbers.fold((Number::zero(), Number::zero()), |(sum, count), number| {
         (sum.plus(&number), count.plus(&Number::one()))
     });
-    sum.divided(&count)
-        .expect("a reading reads at least one instant")
+    sum.divided(&count).expect("an input is read at least once")
 }
 
 /// The number `concept` states at `row`, or why it states none: the state it
@@ -463,7 +516,12 @@ mod tests {
             .collect();
         assert_eq!(
             gave,
-            ["return_on_assets", "asset_turnover", "return_on_equity"]
+            [
+                "return_on_assets",
+                "asset_turnover",
+                "return_on_equity",
+                "return_on_common_equity"
+            ]
         );
     }
 }

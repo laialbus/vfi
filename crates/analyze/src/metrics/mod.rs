@@ -16,6 +16,7 @@ use reading::{Computing, Reading, read};
 
 mod asset_turnover;
 mod cash_ratio;
+mod common_shareholder;
 mod current_ratio;
 mod debt_to_equity;
 mod dividend_coverage;
@@ -31,6 +32,7 @@ mod operating_margin;
 mod quick_ratio;
 mod reading;
 mod return_on_assets;
+mod return_on_common_equity;
 mod return_on_equity;
 
 /// Every metric the method computes, each once.
@@ -52,6 +54,7 @@ const DERIVATIONS: &[Derivation] = &[
     return_on_assets::RETURN_ON_ASSETS,
     asset_turnover::ASSET_TURNOVER,
     return_on_equity::RETURN_ON_EQUITY,
+    return_on_common_equity::RETURN_ON_COMMON_EQUITY,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
