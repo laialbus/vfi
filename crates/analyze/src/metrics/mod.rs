@@ -31,6 +31,7 @@ mod operating_margin;
 mod quick_ratio;
 mod reading;
 mod return_on_assets;
+mod return_on_equity;
 
 /// Every metric the method computes, each once.
 const DERIVATIONS: &[Derivation] = &[
@@ -50,6 +51,7 @@ const DERIVATIONS: &[Derivation] = &[
     dividend_coverage_per_share::DIVIDEND_COVERAGE_PER_SHARE,
     return_on_assets::RETURN_ON_ASSETS,
     asset_turnover::ASSET_TURNOVER,
+    return_on_equity::RETURN_ON_EQUITY,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over

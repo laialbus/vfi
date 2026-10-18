@@ -461,6 +461,9 @@ mod tests {
                 derivation.entry.name
             })
             .collect();
-        assert_eq!(gave, ["return_on_assets", "asset_turnover"]);
+        assert_eq!(
+            gave,
+            ["return_on_assets", "asset_turnover", "return_on_equity"]
+        );
     }
 }
