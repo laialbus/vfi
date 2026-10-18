@@ -16,7 +16,9 @@ use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
 /// Diluted earnings per share are zero, and no fraction of zero is defined.
-const ZERO_EARNINGS_PER_SHARE_DILUTED: &str = "zero_earnings_per_share_diluted";
+/// Every metric over diluted earnings per share is undefined under this one
+/// condition.
+pub(super) const ZERO_EARNINGS_PER_SHARE_DILUTED: &str = "zero_earnings_per_share_diluted";
 
 pub(super) const DIVIDEND_PAYOUT_PER_SHARE: Derivation = Derivation {
     entry: Entry {
