@@ -365,7 +365,8 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "asset_turnover",
             "return_on_equity",
             "return_on_common_equity",
-            "retention_per_share"
+            "retention_per_share",
+            "sustainable_growth_on_common_equity"
         ]
     );
 }

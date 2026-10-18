@@ -520,7 +520,8 @@ mod tests {
                 "return_on_assets",
                 "asset_turnover",
                 "return_on_equity",
-                "return_on_common_equity"
+                "return_on_common_equity",
+                "sustainable_growth_on_common_equity"
             ]
         );
     }
