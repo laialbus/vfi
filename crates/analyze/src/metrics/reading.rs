@@ -568,6 +568,7 @@ mod tests {
                 "asset_turnover",
                 "return_on_equity",
                 "return_on_common_equity",
+                "return_on_capital_employed",
                 "sustainable_growth_on_common_equity",
                 "dividend_streak"
             ]
