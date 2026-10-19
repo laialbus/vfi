@@ -6,7 +6,13 @@
 //! `docs/adr/what-analyze-takes-and-returns.md`'s. A method that has settings
 //! adds its file here and its fields to the one declaration below.
 
+use std::fmt;
+
 use vfi_contracts::analyze_store::Setting;
+
+use dividend_streak::DividendStreakYears;
+
+mod dividend_streak;
 
 /// A setting's value as the characters analyze writes it, which is how the
 /// premises carry it. How a value is written is under the method version, so
@@ -53,13 +59,61 @@ settings! {
     /// caller has one only from a constructor here.
     #[non_exhaustive]
     #[derive(Clone, Debug, Eq, PartialEq)]
-    pub struct Settings {}
+    pub struct Settings {
+        dividend_streak_years: DividendStreakYears,
+    }
 }
 
 impl Settings {
     /// Every setting at its preset value. The caller calls this, and the
     /// derivation never does.
     pub fn preset() -> Self {
-        Settings {}
+        Settings {
+            dividend_streak_years: DividendStreakYears::PRESET,
+        }
+    }
+
+    pub(crate) fn dividend_streak_years(&self) -> DividendStreakYears {
+        self.dividend_streak_years
     }
 }
+
+/// A value outside a setting's domain, which the setting's constructor
+/// refuses and never clamps. It is the caller's error, raised before analyze
+/// runs.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct Refused {
+    domain: &'static str,
+    value: Box<str>,
+}
+
+impl Refused {
+    fn of(domain: &'static str, value: impl fmt::Display) -> Self {
+        Refused {
+            domain,
+            value: value.to_string().into(),
+        }
+    }
+
+    /// The values the setting admits, in words.
+    pub fn domain(&self) -> &str {
+        self.domain
+    }
+
+    /// The value refused, as the caller handed it.
+    pub fn value(&self) -> &str {
+        &self.value
+    }
+}
+
+impl fmt::Display for Refused {
+    fn fmt(&self, out: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            out,
+            "the setting admits {}, and {} is not among them",
+            self.domain, self.value
+        )
+    }
+}
+
+impl std::error::Error for Refused {}

@@ -346,5 +346,10 @@ fn every_earlier_metric_is_computed_as_before_beside_it() {
 fn adding_the_metric_adds_no_setting_and_keeps_the_version() {
     let premises = handed(vec![row(year(), &[])]).premises().clone();
     assert_eq!(premises.method_version().get(), 1);
-    assert!(premises.settings().is_empty(), "{:?}", premises.settings());
+    let recorded: Vec<(&str, &str)> = premises
+        .settings()
+        .iter()
+        .map(|setting| (&*setting.name, &*setting.value))
+        .collect();
+    assert_eq!(recorded, [("dividend_streak_years", "10")]);
 }
