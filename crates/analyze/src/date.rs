@@ -1,8 +1,10 @@
 //! The one reader of a date in the derivation. It reads a date, steps it back
-//! one day and writes it in the grammar it was read in, and it never orders
-//! two dates. Why a metric reads a date, and only so, is
-//! `docs/adr/which-other-period-a-metric-reads.md`'s, under the method
-//! version.
+//! one day and writes it in the grammar it was read in. Why a metric reads a
+//! date, and only so, is `docs/adr/which-other-period-a-metric-reads.md`'s,
+//! under the method version. Whether a date ends its month, whether two dates
+//! are a year apart in one month, and whether one date is on or before
+//! another are `docs/adr/which-duration-precedes-a-duration.md`'s, for the
+//! test of whether a duration is a year and for nothing else.
 
 use crate::constants::calendar::{
     CENTURY_DIVISOR, DAY_DIGITS, LEAP_CENTURY_DIVISOR, LEAP_DIVISOR, MONTH_DIGITS, MONTH_LENGTHS,
@@ -40,7 +42,7 @@ pub(crate) fn day_before(start: &str) -> Option<Box<str>> {
 /// A day on the proleptic Gregorian calendar, as its three calendar fields.
 /// They are not amounts, and no figure is made of them.
 #[derive(Clone, Copy, Debug)]
-struct Date {
+pub(crate) struct Date {
     year: u32,
     month: u32,
     day: u32,
@@ -52,7 +54,7 @@ impl Date {
     /// field's digits, joined by `SEPARATOR`, with a month from the first to
     /// the `MONTHS`th and a day from the first to that month's length in
     /// that year.
-    fn read(characters: &str) -> Option<Date> {
+    pub(crate) fn read(characters: &str) -> Option<Date> {
         let mut fields = characters.split(SEPARATOR);
         let year = field(fields.next()?, YEAR_DIGITS)?;
         let month = field(fields.next()?, MONTH_DIGITS)?;
@@ -66,7 +68,7 @@ impl Date {
     /// The day before, or none before the first day of year zero. Across a
     /// month it is the previous month's last day, and across a year
     /// December's.
-    fn previous(self) -> Option<Date> {
+    pub(crate) fn previous(self) -> Option<Date> {
         if self.day > 1 {
             Some(Date {
                 day: self.day - 1,
@@ -90,7 +92,7 @@ impl Date {
     }
 
     /// The characters of the date in RFC 3339's `full-date`.
-    fn written(self) -> Box<str> {
+    pub(crate) fn written(self) -> Box<str> {
         [
             written_field(self.year, YEAR_DIGITS),
             written_field(self.month, MONTH_DIGITS),
@@ -98,6 +100,35 @@ impl Date {
         ]
         .join(SEPARATOR)
         .into()
+    }
+}
+
+#[cfg_attr(
+    not(test),
+    expect(dead_code, reason = "no metric tests for a year yet")
+)]
+impl Date {
+    /// Whether this is the last day of its month, by that month's length in
+    /// its year.
+    pub(crate) fn ends_its_month(self) -> bool {
+        self.day == days_in(self.year, self.month)
+    }
+
+    /// Whether `later` is in this date's month, in the year after this
+    /// date's year, read from the calendar fields alone.
+    pub(crate) fn in_its_month_a_year_before(self, later: Date) -> bool {
+        self.month == later.month && self.year.checked_add(1) == Some(later.year)
+    }
+
+    /// Whether this date is on or before `other`: an earlier year, or the
+    /// same year and an earlier month, or the same month and an earlier or
+    /// the same day.
+    ///
+    /// The one ordering of dates in the derivation. It is for whether two
+    /// durations share a day and for nothing else: it never seeks a row,
+    /// never sorts and never picks the latest.
+    pub(crate) fn on_or_before(self, other: Date) -> bool {
+        (self.year, self.month, self.day) <= (other.year, other.month, other.day)
     }
 }
 
@@ -176,6 +207,74 @@ mod tests {
     fn the_first_day_of_year_zero_is_in_the_grammar_and_has_no_day_before() {
         let first = Date::read("0000-01-01").expect("0000-01-01 is a full-date");
         assert!(first.previous().is_none());
+    }
+
+    fn date(characters: &str) -> Date {
+        Date::read(characters).expect(characters)
+    }
+
+    #[test]
+    fn a_month_ends_on_its_length_in_its_year() {
+        for end in [
+            "2024-12-31",
+            "2024-09-30",
+            "2024-02-29",
+            "2023-02-28",
+            "2100-02-28",
+        ] {
+            assert!(date(end).ends_its_month(), "{end}");
+        }
+        for not_an_end in ["2024-12-30", "2024-02-28", "2024-07-14", "2024-09-01"] {
+            assert!(!date(not_an_end).ends_its_month(), "{not_an_end}");
+        }
+    }
+
+    #[test]
+    fn a_year_before_in_its_month_is_the_same_month_of_the_next_year() {
+        let in_month = [
+            ("2023-12-31", "2024-12-31"),
+            ("2023-02-28", "2024-02-29"),
+            ("2023-09-01", "2024-09-30"),
+        ];
+        for (earlier, later) in in_month {
+            assert!(
+                date(earlier).in_its_month_a_year_before(date(later)),
+                "{earlier} {later}"
+            );
+        }
+        let not_in_month = [
+            ("2023-12-31", "2023-12-31"),
+            ("2023-12-31", "2025-12-31"),
+            ("2023-08-31", "2024-09-30"),
+            ("2024-12-31", "2023-12-31"),
+            ("9999-12-31", "9999-12-31"),
+        ];
+        for (earlier, later) in not_in_month {
+            assert!(
+                !date(earlier).in_its_month_a_year_before(date(later)),
+                "{earlier} {later}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_date_is_on_or_before_itself_and_every_later_date() {
+        let ordered = [
+            ("2023-12-31", "2023-12-31"),
+            ("2023-12-31", "2024-01-01"),
+            ("2023-04-30", "2023-05-01"),
+            ("2023-01-31", "2023-02-01"),
+            ("2022-12-31", "2023-01-01"),
+        ];
+        for (earlier, later) in ordered {
+            assert!(date(earlier).on_or_before(date(later)), "{earlier} {later}");
+        }
+        for (earlier, later) in ordered.iter().filter(|(one, other)| one != other) {
+            assert!(
+                !date(later).on_or_before(date(earlier)),
+                "{later} {earlier}"
+            );
+        }
     }
 
     #[test]
