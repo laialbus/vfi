@@ -16,6 +16,7 @@ use crate::settings::Settings;
 use reading::{Computing, Reading, read};
 
 mod asset_turnover;
+mod capital;
 mod cash_ratio;
 mod common_shareholder;
 mod current_ratio;
@@ -35,6 +36,7 @@ mod quick_ratio;
 mod reading;
 mod retention_per_share;
 mod return_on_assets;
+mod return_on_capital_employed;
 mod return_on_common_equity;
 mod return_on_equity;
 mod sustainable_growth_on_common_equity;
@@ -59,6 +61,7 @@ const DERIVATIONS: &[Derivation] = &[
     asset_turnover::ASSET_TURNOVER,
     return_on_equity::RETURN_ON_EQUITY,
     return_on_common_equity::RETURN_ON_COMMON_EQUITY,
+    return_on_capital_employed::RETURN_ON_CAPITAL_EMPLOYED,
     retention_per_share::RETENTION_PER_SHARE,
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
     dividend_streak::DIVIDEND_STREAK,

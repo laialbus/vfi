@@ -6,13 +6,16 @@
 //! The denominator is `shareholders_equity` as v2 carries it, preferred claim
 //! included: the open-questions record forms common equity only for the
 //! common-shareholder forms of return on equity, price/book and sustainable
-//! growth. Neither debt is a term that contributes nothing where it is
-//! absent, and a negative equity is a value that gives a negative figure.
+//! growth. The two debts are summed as total debt in [`super::capital`].
+//! Neither debt is a term that contributes nothing where it is absent, and a
+//! negative equity is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
 use vfi_contracts::canonical_concepts::Concept;
 
-use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
+use super::capital::total_debt;
+use super::reading::reads;
+use super::{Computing, Derivation, Entry, Shape, Unit, declined};
 use crate::arithmetic::Number;
 
 /// Shareholders' equity is zero, and no ratio to zero is defined.
@@ -38,10 +41,10 @@ pub(super) const DEBT_TO_EQUITY: Derivation = Derivation {
 };
 
 fn debt_to_equity(computing: &Computing) -> Result<Number, Reasons> {
-    let [short_term_debt, long_term_debt, shareholders_equity] = read(computing, &DEBT_TO_EQUITY)?;
-    short_term_debt
-        .plus(&long_term_debt)
-        .divided(&shareholders_equity)
+    let [short_term_debt, long_term_debt, shareholders_equity] = reads(computing, &DEBT_TO_EQUITY)?;
+    total_debt(&short_term_debt, &long_term_debt)
+        .mean()
+        .divided(&shareholders_equity.mean())
         .ok_or_else(|| declined(ZERO_SHAREHOLDERS_EQUITY))
 }
 
