@@ -351,5 +351,10 @@ fn an_instant_carries_each_metric_by_its_entrys_name_in_order() {
 fn adding_the_metrics_adds_no_setting_and_keeps_the_version() {
     let premises = handed(vec![row(year_end(), &[])]).premises().clone();
     assert_eq!(premises.method_version().get(), 1);
-    assert!(premises.settings().is_empty(), "{:?}", premises.settings());
+    let recorded: Vec<(&str, &str)> = premises
+        .settings()
+        .iter()
+        .map(|setting| (&*setting.name, &*setting.value))
+        .collect();
+    assert_eq!(recorded, [("dividend_streak_years", "10")]);
 }

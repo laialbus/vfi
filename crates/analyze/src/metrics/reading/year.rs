@@ -9,7 +9,10 @@
 //! history is labelled a year. The year before is found by equality of
 //! characters, and nothing is ordered to find it.
 
-#![cfg_attr(not(test), expect(dead_code, reason = "no metric reads a year yet"))]
+#![cfg_attr(
+    not(test),
+    expect(dead_code, reason = "no metric reads the year before's instants yet")
+)]
 
 use std::iter;
 
@@ -208,6 +211,7 @@ mod tests {
         PRECEDING_YEAR, year,
     };
     use crate::date::START_NOT_A_DATE;
+    use crate::settings::Settings;
 
     fn duration(start: &str, end: &str) -> Period {
         Period::Duration {
@@ -264,7 +268,8 @@ mod tests {
             .iter()
             .find(|row| *row.period() == duration(start, end))
             .expect("the duration is in the history");
-        let computing = Computing::at(at, rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(at, rows, &settings);
         match year(&computing) {
             Ok(year) => Answer::Year(year.before().map(|row| row.period().clone())),
             Err(reason) => Answer::Not(reason),
@@ -414,7 +419,8 @@ mod tests {
     fn the_year_before_missing_is_no_period_at_the_computing_year() {
         let history = durations(&[("2024-01-01", "2024-12-31")]);
         let rows = history.periods();
-        let computing = Computing::at(&rows[0], rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(&rows[0], rows, &settings);
         let year = year(&computing).expect("2024 is a year");
         assert_eq!(
             year.before(),
@@ -592,7 +598,8 @@ mod tests {
                 .chain(instants.iter().map(|at| instant(at))),
         );
         let rows = history.periods();
-        let computing = Computing::at(&rows[0], rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(&rows[0], rows, &settings);
         let year = year(&computing).expect("2024 is a year");
         [year.closing_of_before(), year.opening_of_before()]
             .map(|read| read.map(|row| row.period().clone()))
@@ -636,7 +643,8 @@ mod tests {
             instant("2023-09-30"),
         ]);
         let rows = history.periods();
-        let computing = Computing::at(&rows[0], rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(&rows[0], rows, &settings);
         let year = year(&computing).expect("2024 is a year");
         let missing = || {
             Err(Reason::no_period(
@@ -653,7 +661,8 @@ mod tests {
     fn series_from_2022(years: &[(&str, &str)]) -> Vec<Result<Period, Reason>> {
         let history = durations(years);
         let rows = history.periods();
-        let computing = Computing::at(&rows[0], rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(&rows[0], rows, &settings);
         let year = year(&computing).expect("2022 is a year");
         year.series(2)
             .map(|read| read.map(|row| row.period().clone()))
@@ -718,7 +727,8 @@ mod tests {
     fn a_repeated_year_before_is_taken_at_its_first_row() {
         let history = durations(&[YEAR_2024, YEAR_2023, YEAR_2023]);
         let rows = history.periods();
-        let computing = Computing::at(&rows[0], rows);
+        let settings = Settings::preset();
+        let computing = Computing::at(&rows[0], rows, &settings);
         let year = year(&computing).expect("2024 is a year");
         assert!(std::ptr::eq(
             year.before().expect("2023 is the year before"),

@@ -366,7 +366,8 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "return_on_equity",
             "return_on_common_equity",
             "retention_per_share",
-            "sustainable_growth_on_common_equity"
+            "sustainable_growth_on_common_equity",
+            "dividend_streak"
         ]
     );
 }
@@ -375,5 +376,10 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
 fn adding_the_metrics_adds_no_setting_and_keeps_the_version() {
     let premises = handed(vec![row(fiscal_year(), &[])]).premises().clone();
     assert_eq!(premises.method_version().get(), 1);
-    assert!(premises.settings().is_empty(), "{:?}", premises.settings());
+    let recorded: Vec<(&str, &str)> = premises
+        .settings()
+        .iter()
+        .map(|setting| (&*setting.name, &*setting.value))
+        .collect();
+    assert_eq!(recorded, [("dividend_streak_years", "10")]);
 }

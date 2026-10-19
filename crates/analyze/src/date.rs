@@ -103,10 +103,6 @@ impl Date {
     }
 }
 
-#[cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric tests for a year yet")
-)]
 impl Date {
     /// Whether this is the last day of its month, by that month's length in
     /// its year.

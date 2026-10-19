@@ -6,9 +6,9 @@
 //! version.
 //!
 //! This is the one place the derivation reaches the history. A metric is
-//! handed the row it computes at and the history beside it as one
-//! [`Computing`], whose rows only this module reads, so no metric finds a row
-//! itself.
+//! handed the row it computes at, the history beside it and the settings it
+//! is computed under as one [`Computing`], whose rows only this module reads,
+//! so no metric finds a row itself.
 
 use vfi_contracts::analyze_store::{Reason, Reasons};
 use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
@@ -16,6 +16,8 @@ use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
 use super::Derivation;
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 use crate::date::{START_NOT_A_DATE, day_before};
+use crate::settings::Settings;
+use year::Year;
 
 pub(super) mod year;
 
@@ -27,16 +29,28 @@ const OPENING_INSTANT: &str = "opening_instant";
 /// does not hold.
 const CLOSING_INSTANT: &str = "closing_instant";
 
-/// The row a metric computes at, and the history beside it.
+/// The row a metric computes at, the history beside it, and the settings
+/// it is computed under.
 pub(super) struct Computing<'a> {
     row: &'a Row,
     history: &'a [Row],
+    settings: &'a Settings,
 }
 
 impl<'a> Computing<'a> {
-    /// At `row`, one of `history`'s periods.
-    pub(super) fn at(row: &'a Row, history: &'a [Row]) -> Self {
-        Computing { row, history }
+    /// At `row`, one of `history`'s periods, under `settings`.
+    pub(super) fn at(row: &'a Row, history: &'a [Row], settings: &'a Settings) -> Self {
+        Computing {
+            row,
+            history,
+            settings,
+        }
+    }
+
+    /// The settings handed to analyze, which are the only settings a metric
+    /// reads.
+    pub(super) fn settings(&self) -> &'a Settings {
+        self.settings
     }
 
     /// The dates the duration computed at starts and ends at.
@@ -232,6 +246,19 @@ fn balance(
     Ok(balances.into_iter().filter_map(Result::ok).collect())
 }
 
+/// What `concept` states at each year of `year`'s series `back` years back,
+/// in series order: a number, or the one reason the read gives. A read is
+/// made only when its year is asked for, so a metric whose reads are defined
+/// by the figures read makes none past where it stops.
+pub(super) fn yearly<'a>(
+    year: &Year<'_, 'a>,
+    concept: Concept,
+    back: usize,
+) -> impl Iterator<Item = Result<Number, Reason>> + use<'a> {
+    year.series(back)
+        .map(move |found| found.and_then(|row| input(row, concept)))
+}
+
 /// The sum of `numbers` divided by how many were summed, the count starting
 /// at zero and stepping by one.
 fn mean(numbers: impl Iterator<Item = Number>) -> Number {
@@ -264,10 +291,12 @@ mod tests {
         Concept, Measure, Period, Resolution, Row, Rule, SetBy,
     };
 
+    use super::year::{END_NOT_A_DATE, NOT_A_YEAR, OVERLAPS_ANOTHER_YEAR};
     use super::{CLOSING_INSTANT, Computing, OPENING_INSTANT, Reading, Seek, read};
     use crate::arithmetic::Number;
     use crate::date::START_NOT_A_DATE;
     use crate::metrics::{DERIVATIONS, Derivation, Entry, Shape, Unit};
+    use crate::settings::Settings;
 
     fn instant(at: &str) -> Period {
         Period::Instant { at: at.into() }
@@ -320,7 +349,7 @@ mod tests {
     /// The two numbers `reading` reads at the duration `history` holds first.
     fn read_under(reading: Reading, history: &[Row]) -> Result<[Number; 2], Reasons> {
         read(
-            &Computing::at(&history[0], history),
+            &Computing::at(&history[0], history, &Settings::preset()),
             &over_total_assets(reading),
         )
     }
@@ -480,19 +509,29 @@ mod tests {
     }
 
     #[test]
-    fn a_metric_lists_start_not_a_date_exactly_where_it_reads_an_opening() {
+    fn a_metric_lists_start_not_a_date_exactly_where_it_reads_an_opening_or_tests_for_a_year() {
         for derivation in DERIVATIONS {
             let reads_an_opening = derivation
                 .readings
                 .iter()
                 .flatten()
                 .any(|reading| reading.seeks().contains(&Seek::Opening));
+            let conditions = derivation.entry.conditions;
+            let tests_for_a_year = conditions.contains(&NOT_A_YEAR);
             assert_eq!(
-                derivation.entry.conditions.contains(&START_NOT_A_DATE),
-                reads_an_opening,
+                conditions.contains(&START_NOT_A_DATE),
+                reads_an_opening || tests_for_a_year,
                 "{}",
                 derivation.entry.name
             );
+            for condition in [END_NOT_A_DATE, OVERLAPS_ANOTHER_YEAR] {
+                assert_eq!(
+                    conditions.contains(&condition),
+                    tests_for_a_year,
+                    "{} {condition}",
+                    derivation.entry.name
+                );
+            }
         }
     }
 
@@ -503,7 +542,8 @@ mod tests {
             row(instant("2024-12-31"), "7"),
             row(instant("2023-12-31"), "7"),
         ];
-        let computing = Computing::at(&history[0], &history);
+        let settings = Settings::preset();
+        let computing = Computing::at(&history[0], &history, &settings);
         let declined = Reason::declined(START_NOT_A_DATE.into());
         let gave: Vec<&str> = DERIVATIONS
             .iter()
@@ -528,7 +568,8 @@ mod tests {
                 "asset_turnover",
                 "return_on_equity",
                 "return_on_common_equity",
-                "sustainable_growth_on_common_equity"
+                "sustainable_growth_on_common_equity",
+                "dividend_streak"
             ]
         );
     }

@@ -12,6 +12,7 @@ use vfi_contracts::analyze_store::{Metric, Outcome, Reason, Reasons};
 use vfi_contracts::canonical_concepts::{Concept, Period, Row};
 
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
+use crate::settings::Settings;
 use reading::{Computing, Reading, read};
 
 mod asset_turnover;
@@ -24,6 +25,7 @@ mod dividend_coverage_per_share;
 mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
 mod dividend_payout_per_share;
+mod dividend_streak;
 mod gross_margin;
 mod interest_coverage;
 mod liabilities_to_assets;
@@ -59,6 +61,7 @@ const DERIVATIONS: &[Derivation] = &[
     return_on_common_equity::RETURN_ON_COMMON_EQUITY,
     retention_per_share::RETENTION_PER_SHARE,
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
+    dividend_streak::DIVIDEND_STREAK,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
@@ -136,6 +139,8 @@ enum Unit {
     /// How many times one amount covers another, at a scale of one: `4.25` is
     /// four and a quarter times, and never `425` or a percentage.
     Multiple,
+    /// A count of whole years: `3` is three years.
+    Years,
 }
 
 /// One of the two shapes a period takes.
@@ -156,9 +161,10 @@ impl Shape {
 
 /// Every metric stated at `row`'s period, each once, by its entry's name, with
 /// its outcome there: its number written once, or the reasons it has none.
-/// `history` is every row the history holds, `row` among them.
-pub(crate) fn at(row: &Row, history: &[Row]) -> Vec<Metric> {
-    let computing = Computing::at(row, history);
+/// `history` is every row the history holds, `row` among them, and every
+/// metric is computed under `settings`.
+pub(crate) fn at(row: &Row, history: &[Row], settings: &Settings) -> Vec<Metric> {
+    let computing = Computing::at(row, history, settings);
     DERIVATIONS
         .iter()
         .filter(|derivation| derivation.entry.stated_at.holds(row.period()))

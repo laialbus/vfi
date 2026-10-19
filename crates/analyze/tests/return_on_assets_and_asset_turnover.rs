@@ -419,5 +419,10 @@ fn a_net_loss_gives_a_negative_return() {
 fn adding_the_metrics_adds_no_setting_and_keeps_the_version() {
     let premises = handed(vec![flows(year())]).premises().clone();
     assert_eq!(premises.method_version().get(), 1);
-    assert!(premises.settings().is_empty(), "{:?}", premises.settings());
+    let recorded: Vec<(&str, &str)> = premises
+        .settings()
+        .iter()
+        .map(|setting| (&*setting.name, &*setting.value))
+        .collect();
+    assert_eq!(recorded, [("dividend_streak_years", "10")]);
 }

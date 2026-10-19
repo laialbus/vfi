@@ -99,14 +99,35 @@ fn no_crossing_is_handed_over_as_none_asked() {
 }
 
 #[test]
-fn with_no_setting_defined_the_premises_are_the_version_alone() {
-    let premises = handed(None).premises().clone();
-    assert_eq!(premises.method_version().get(), 1);
-    assert!(
-        premises.settings().is_empty(),
-        "settings were recorded that Settings does not define: {:?}",
-        premises.settings()
-    );
+fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed() {
+    let recorded = |settings: &Settings| {
+        let premises = analyze(history(), None, settings)
+            .expect("no crossing is handed")
+            .premises()
+            .clone();
+        assert_eq!(premises.method_version().get(), 1);
+        premises
+            .settings()
+            .iter()
+            .map(|setting| (setting.name.to_string(), setting.value.to_string()))
+            .collect::<Vec<_>>()
+    };
+    let named = |value: &str| vec![("dividend_streak_years".to_owned(), value.to_owned())];
+
+    assert_eq!(recorded(&Settings::preset()), named("10"));
+    let two = Settings::preset()
+        .with_dividend_streak_years(2)
+        .expect("two is a positive integer");
+    assert_eq!(recorded(&two), named("2"));
+}
+
+#[test]
+fn a_setting_outside_its_domain_is_refused_before_analyze_runs() {
+    let refused = Settings::preset()
+        .with_dividend_streak_years(0)
+        .expect_err("zero is not a positive integer");
+    assert_eq!(refused.value(), "0");
+    assert_eq!(refused.domain(), "the positive integers");
 }
 
 #[test]
