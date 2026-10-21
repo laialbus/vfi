@@ -1,9 +1,9 @@
 # The discounted cash flow grows a year's free cash flow over a forecast and a perpetuity under four settings, subtracts net debt and divides by the diluted share count; its margin of safety is that value less the valuation date's close, as a fraction of the value
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-19, by `M5-43`
-- **Decided:**
+- **Decided:** 2026-10-19, by the decider
 - **Touches:** the discounted cash flow with margin of safety that GOALS.md's
   fourth M5 criterion names and no record forms. It fixes the names and
   meanings of two metrics that cross `analyze-store` v1 as characters, and no
@@ -918,7 +918,102 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of two metrics that cross `analyze-store` v1 as characters, names
+  four settings that every result records, forms free cash flow once for the
+  three metrics that read it, and makes the margin the first reader of the
+  crossing, all inside analyze. It edits no anchor, no protected path, no
+  gate, no contract byte, no schema and no milestone scope, and asks for no
+  allowlist entry. Flagged for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - `what-analyze-takes-and-returns.md`: a setting is a value "neither the
+    filings nor the metric's cited source fixes", and "the discount rate,
+    terminal growth and forecast horizon" are its examples; the six reasons
+    stand and no seventh is added; the three `no_price` witnesses and the
+    three `basis_unproven` witnesses are named as the record names them; the
+    share-basis rule is "the one function every price-dependent metric
+    calls".
+  - `fetch-analyze` v1 as frozen: `Crossing` carries `at_valuation_date` as
+    an `Answer` that every crossing holds, so the record's argument that
+    `date_not_asked` has no witness for this metric holds against the
+    contract, and the test it substitutes shows what the type gives instead.
+  - `how-analyze-computes-and-writes-a-figure.md`: integer powers are what
+    "discounting uses", a per-share figure "is currency per one share", and
+    every numeric setting is held to `SIGNIFICANT_DIGITS`. Every step of the
+    derivation is an operation in its table.
+  - `which-other-period-a-metric-reads.md`: "Every other metric that pairs a
+    flow with a balance reads the average. This holds whatever source its
+    formula cites." The record reads that as written, averages net debt, and
+    names the bridge's want of the closing claim as a question for a record
+    of its own rather than reading the rule narrowly.
+  - `which-duration-precedes-a-duration.md`: a metric is stated over a year
+    "when its source states it over a fiscal year"; `dividend_growth_years`
+    is its window setting, which the forecast preset's reason leans on; the
+    ordering it adds "is used by the alone clause and by nothing else", which
+    the record names as the second open question and does not resolve.
+  - `capital-employed-invested-capital-and-nopat.md`: net debt is formed once
+    and the bridge is a named consumer that reads "it here"; the record reads
+    no `preferred_equity` and leaves non-controlling interests to a v3, both
+    with their direction, which flatters.
+  - `common-shareholder-forms.md`: `common` "exactly when", `per_share`
+    without that word; the record's reading that the rule places `per_share`
+    and does not forbid it is a fair reading of the sentence, and no catalogue
+    test on main asserts otherwise. Another consumer of `preferred_equity` is
+    "its own record", and this one reads neither preferred concept.
+  - `canonical-concepts.md` and its open-questions record:
+    `capital_expenditure` silence is `Unknown` because reading it as zero
+    "would overstate free cash flow by the whole of it"; `operating_cash_flow`
+    is after interest "where the filer classifies them there";
+    `short_term_investments` inside net debt is the one `NotApplicable` that
+    contributes nothing. The record carries each and extends none.
+  - `price-provider.md`: the margin is listed under the valuation date, as a
+    metric that "compares a per-share value with the price"; the record's
+    Context quotes it as "comparing", the task's own paraphrase.
+  - `bare-literal-lint.md`: no place, form or allowlist entry moves; the four
+    presets stand in `settings/` and the derivation needs `Number::one` alone.
+    The catalogue's `Unit` gained `Years` with the dividend streak, so a
+    currency-per-share value is the same kind of addition and no field.
+  - The four open sources, each opened in this run and quoted as printed:
+    Damodaran's survey at the pages cited; his cost-of-capital table, "Data
+    used is as of January 2026", the row "Total Market (without financials)"
+    giving 7.72%; the FOMC statement "as reaffirmed effective January 27,
+    2026"; and C&DI 102.07. Graham and ASC 230 are marked not read.
+  - The hand-worked figures in the proof section, each reproduced: `80` at
+    the presets at any n, `100` off them, `95` and `97.5` under the
+    exception's count of two, `0.25` and `-0.25`, `0` and `-10`, and the
+    six-then-seven reason order.
+  - The alternatives as argued: the flow to equity, the flow to the firm, an
+    exit multiple, no terminal value, a computed forecast rate, a preset above
+    the terminal rate, the margin over the price and as price over value, an
+    averaged base, net debt at the close, subtracting the preferred, declining
+    the four kinds through the exception, `shares_outstanding`, a joint
+    domain, a signed negative base, a past margin, leaving the metric out of
+    M5, and each metric forming free cash flow itself.
+- **Verdict and why:** accepted. The discounted cash flow has more free
+  parameters than any metric before it, and the record puts each one in the
+  settings layer with a preset whose reason is stated and, where a source
+  exists, cited to a copy opened in the run. The two presets that lean on no
+  source, the forecast rate at the terminal rate and the five years, assume
+  the least: at the presets the value is one growing perpetuity and n changes
+  nothing, so a user who has set nothing is not credited with growth the
+  filings do not show. Free cash flow is formed once before a third reader
+  exists. Where the method errs, the record says where and in which direction
+  rather than correcting with a number it has no source for: net interest
+  counted twice, the claims not subtracted, the averaged bridge, the
+  financial kinds. And where the right reading needs an accepted record
+  changed, it names the question and leaves it, as the capital record did.
+- **What would have changed it:** a seventh reason; a changed byte of
+  `fetch-analyze` v1 or `analyze-store` v1; a preset with no stated reason or
+  a derivation reading a value the handed `Settings` does not carry; a
+  constructor that clamps; a terminal value with no `declined` condition at
+  r not above g∞; a bridge reading net debt at the close in silence against
+  the period record; a read of `preferred_equity`; a cap on the terminal
+  value, which would be a number with no source; or a source that on reading
+  forms the perpetuity or the bridge otherwise than stated, which the record
+  makes a stop for the implementing task. Flagged for the human beside the
+  tier: the averaged bridge and the ordering the share-basis rule needs,
+  the two open questions; the double count of net interest, which errs
+  conservatively for a net borrower and flatters a net lender; a computed
+  figure for a `bank`, an `insurer` or an `investment_company` with no known
+  direction; and the discount preset as January 2026's figure, with nothing
+  saying when it is moved.
