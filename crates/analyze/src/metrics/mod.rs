@@ -39,6 +39,7 @@ mod return_on_assets;
 mod return_on_capital_employed;
 mod return_on_common_equity;
 mod return_on_equity;
+mod return_on_invested_capital;
 mod sustainable_growth_on_common_equity;
 
 /// Every metric the method computes, each once.
@@ -62,6 +63,7 @@ const DERIVATIONS: &[Derivation] = &[
     return_on_equity::RETURN_ON_EQUITY,
     return_on_common_equity::RETURN_ON_COMMON_EQUITY,
     return_on_capital_employed::RETURN_ON_CAPITAL_EMPLOYED,
+    return_on_invested_capital::RETURN_ON_INVESTED_CAPITAL,
     retention_per_share::RETENTION_PER_SHARE,
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
     dividend_streak::DIVIDEND_STREAK,

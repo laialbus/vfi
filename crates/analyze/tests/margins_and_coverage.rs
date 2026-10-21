@@ -366,6 +366,7 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "return_on_equity",
             "return_on_common_equity",
             "return_on_capital_employed",
+            "return_on_invested_capital",
             "retention_per_share",
             "sustainable_growth_on_common_equity",
             "dividend_streak"

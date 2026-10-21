@@ -198,6 +198,26 @@ pub(super) fn reads<const N: usize>(
     computing: &Computing,
     derivation: &Derivation,
 ) -> Result<[Reads; N], Reasons> {
+    reads_except(computing, derivation, None)
+}
+
+/// As [`reads`], except that `nothing`, at a row where it is `NotApplicable`,
+/// is read as zero: summed as nothing there, with the row still counted.
+/// Every other state of it, and every other concept, is read as [`reads`]
+/// reads it.
+pub(super) fn reads_with_nothing<const N: usize>(
+    computing: &Computing,
+    derivation: &Derivation,
+    nothing: Concept,
+) -> Result<[Reads; N], Reasons> {
+    reads_except(computing, derivation, Some(nothing))
+}
+
+fn reads_except<const N: usize>(
+    computing: &Computing,
+    derivation: &Derivation,
+    nothing: Option<Concept>,
+) -> Result<[Reads; N], Reasons> {
     let (stated, absent): (Vec<_>, Vec<_>) = derivation
         .entry
         .inputs
@@ -205,10 +225,10 @@ pub(super) fn reads<const N: usize>(
         .zip(derivation.readings)
         .map(|(concept, reading)| {
             match reading {
-                None => input(computing.row, *concept)
+                None => input_or_nothing(computing.row, *concept, nothing)
                     .map(|number| vec![number])
                     .map_err(|reason| vec![reason]),
-                Some(reading) => balance(computing, *concept, *reading),
+                Some(reading) => balance(computing, *concept, *reading, nothing),
             }
             .map(|numbers| Reads {
                 reading: *reading,
@@ -233,11 +253,15 @@ fn balance(
     computing: &Computing,
     concept: Concept,
     reading: Reading,
+    nothing: Option<Concept>,
 ) -> Result<Vec<Number>, Vec<Reason>> {
     let (balances, absent): (Vec<_>, Vec<_>) = reading
         .seeks()
         .iter()
-        .map(|seek| seek.row(computing).and_then(|row| input(row, concept)))
+        .map(|seek| {
+            seek.row(computing)
+                .and_then(|row| input_or_nothing(row, concept, nothing))
+        })
         .partition(Result::is_ok);
     let reasons: Vec<Reason> = absent.into_iter().filter_map(Result::err).collect();
     if !reasons.is_empty() {
@@ -266,6 +290,19 @@ fn mean(numbers: impl Iterator<Item = Number>) -> Number {
         (sum.plus(&number), count.plus(&Number::one()))
     });
     sum.divided(&count).expect("an input is read at least once")
+}
+
+/// The number `concept` states at `row`, as [`input`] reads it, except that
+/// where `concept` is `nothing` and `NotApplicable` there it is zero.
+fn input_or_nothing(
+    row: &Row,
+    concept: Concept,
+    nothing: Option<Concept>,
+) -> Result<Number, Reason> {
+    match row.of(concept) {
+        Resolution::NotApplicable { .. } if nothing == Some(concept) => Ok(Number::zero()),
+        _ => input(row, concept),
+    }
 }
 
 /// The number `concept` states at `row`, or why it states none: the state it
@@ -569,6 +606,7 @@ mod tests {
                 "return_on_equity",
                 "return_on_common_equity",
                 "return_on_capital_employed",
+                "return_on_invested_capital",
                 "sustainable_growth_on_common_equity",
                 "dividend_streak"
             ]
