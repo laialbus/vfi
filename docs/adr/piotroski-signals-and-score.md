@@ -1,9 +1,9 @@
 # Piotroski's nine signals are each a metric beside his score, each a comparison over a year and the year before at the instants the period record fixed; his score is their count, and a filer whose shape lacks a signal's concept has none
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-20, by `M5-44`
-- **Decided:**
+- **Decided:** 2026-10-20, by the decider
 - **Touches:** Piotroski's nine signals and his score, which GOALS.md's
   fourth M5 criterion names under financial health and the established
   screens and which no record forms. It fixes the names and meanings of ten
@@ -922,7 +922,78 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of ten metrics that cross `analyze-store` v1 as characters, five
+  new `declined` conditions and one rule of composition, all inside analyze,
+  and adds a value of the catalogue's `Unit` as the dividend streak did. It
+  edits no anchor, no protected path, no gate, no contract byte, no schema
+  and no milestone scope, and asks for no allowlist entry. Flagged for later
+  human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The Chicago Booth copy, downloaded in this run and extracted with
+    `pdfminer.six`: every quotation in the source table found as printed, at
+    the printed page the locator gives (§2.3 p. 6; §2.3.1 and footnote 3
+    p. 7; §2.3.2 pp. 7–8; §2.3.3 p. 8; §2.3.4 p. 9; §3.1 p. 10; §3.3
+    pp. 10–11; Table 1 (continued) p. 13). The leverage sentence reads "fell
+    (rose)" and no passage names a debt-free or unchanged case. The body
+    scales turnover by the opening balance and Table 1 by the average, as the
+    record says.
+  - `what-analyze-takes-and-returns.md`: a `NotApplicable` input makes the
+    metric absent, with the one exception "where the metric's own
+    definition states that the term contributes nothing", named for
+    `short_term_investments` inside net debt. The record extends it to no
+    signal, which is why a bank has no score.
+  - `which-other-period-a-metric-reads.md`: its four Piotroski rows and
+    "EQ_OFFER reads no balance" are restated, not moved. The record's ΔTURN
+    follows the row.
+  - `which-duration-precedes-a-duration.md`: `preceding_year`,
+    `preceding_opening_instant`, `not_a_year`, `end_not_a_date` and
+    `overlaps_another_year` are its names, and `year.rs` holds `Year::before`,
+    `closing_of_before` and `opening_of_before` as the record cites them.
+    "All five change signals are present or absent together" still holds;
+    the record adds EQ_OFFER to the set and contradicts nothing.
+  - `canonical-concepts.md`: the five `operating`-only clauses include
+    `gross_profit`, `current_assets` and `current_liabilities`;
+    `diluted_shares_weighted_average` is consumed by EQ_OFFER;
+    `shares_outstanding` is "at or near the period end". The open-questions
+    record reads `long_term_debt` silence as `Unknown` and names ΔLEVER.
+  - `bare-literal-lint.md` places `[bool; PIOTROSKI_SIGNALS]` in `constants/`;
+    `how-analyze-computes-and-writes-a-figure.md` says "a count is a count".
+  - `metrics/mod.rs` defines `zero_revenue`, `zero_current_liabilities` and
+    `zero_average_total_assets` once each, and `liabilities_to_assets` owns
+    `zero_total_assets`, so the three reused names and the one not reused are
+    as stated. `Unit` holds `FractionOfOne`, `Multiple` and `Years`.
+  - The hand-worked history, all nine flip rows, the three zero rows, the
+    eight `declined` rows, the two ordering rows and the missing-instant
+    counts, each reproduced by arithmetic. The eighteen reads and each
+    signal's subset of them, counted.
+  - The alternatives as argued: the score alone, a score over the admitted
+    signals, EQ_OFFER through `shares_outstanding` or a financing concept,
+    ΔLEVER with `short_term_debt`, leaving the score out of M5, an unchanged
+    leverage giving one, ΔTURN on the average, the concatenated score, the
+    unscaled accrual, the continuous variables, and the cut-offs as a setting.
+- **Verdict and why:** accepted. The record puts every number the score
+  needs where anchor 5 wants it: the count in `constants/` under its
+  citation, every benchmark the allowlist's zero with the copy's own reason
+  quoted, and no setting invented. Where v2 cannot carry the copy's term, it
+  reads the catalogue's concept, says which way the error runs, and leaves
+  the fix to a v3 record rather than building a stand-in from
+  `short_term_debt` that would look like the term and not be it. Storing
+  each signal beside the score is what lets M6 screen without recomputing,
+  and a bank's seven signals survive its absent score. An unchanged leverage
+  giving zero is the strict reading every other signal already takes, and the
+  copy awards no point for no change. The score built on the signals' reads,
+  one per absent input, keeps the six reasons closed.
+- **What would have changed it:** a seventh reason; a changed byte of
+  `canonical-concepts` v2 or `analyze-store` v1; a `NotApplicable` signal
+  made to contribute nothing, which would extend the one exception the
+  analyze record names; a score rescaled over seven signals; a benchmark or
+  cut-off entering analyze as a constant or setting; `short_term_debt` added
+  back into ΔLEVER; a passage of the copy naming what an unchanged leverage
+  or a debt-free firm gets, which was looked for and not found; or a
+  quotation not found as printed. Flagged for the human beside the tier: a
+  debt-free filer never earns F_ΔLEVER; ΔLEVER flatters a reclassification
+  to current and EQ_OFFER an issue offset by a repurchase, neither measured;
+  six signals absent together where the series record spoke of five; and
+  ΔTURN read on the opening balance where the copy's Table 1 reads the
+  average.
