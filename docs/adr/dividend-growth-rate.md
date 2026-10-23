@@ -1,9 +1,9 @@
 # The dividend growth rate is the compound rate over `dividend_growth_years` years, read at the computing year and at the year that many years before it and at no year between; an excess between them moves nothing, and one at either end moves the rate through the n-th root, up at the computing year and down at the base year
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-20, by `M5-42`
-- **Decided:**
+- **Decided:** 2026-10-22, by the decider
 - **Touches:** the dividend growth rate, which GOALS.md's fifth M5 criterion
   names and which `which-duration-precedes-a-duration.md` (Accepted) leaves
   to "that metric's task": which of its n + 1 years it reads, its formula,
@@ -684,7 +684,69 @@ This applies anchors 4 and 5, and edits neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the characters of
+  one metric's name and of one new `declined` condition, which cross
+  `analyze-store` v1, and a formula under the method version. It edits no
+  anchor, no protected path, no gate, no contract byte, no schema and no
+  milestone scope, and asks for no allowlist entry. Flagged for later human
+  review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The author's copy, downloaded in this run and extracted with
+    `pdfminer.six`: its sha256 is the record's, it has 52 pages with printed
+    numbers matching, and every quotation was found as printed at the page
+    the record gives (pages 3, 4 and 7), with "also applies to revenues" on
+    page 3. The entry page's two sentences read as quoted, and neither page
+    prints a year, as the record says.
+  - `which-duration-precedes-a-duration.md`: "that metric's task", "reads at
+    least the first and the last", "Every read it names is made", the
+    negative figure and the base-year zero named as this metric's own
+    conditions, the preset's reason and the n-of-2-at-2022 example, each as
+    printed; `year.rs` holds `Year::series` and `PRECEDING_YEAR` as cited.
+  - `canonical-concepts-open-questions.md`, answer 6: its four quotations as
+    printed, and "must not take one period's declared total as a
+    perpetuity" for the valuation section.
+  - `how-analyze-computes-and-writes-a-figure.md`: the root as what a
+    compound growth rate needs, the index from a constant, a setting or a
+    count, the two exclusions sentence, and rounding ties away from zero.
+  - `what-analyze-takes-and-returns.md`: the three items the record places
+    under the method version, as printed.
+  - The code: `negative_dividends_declared_per_share` is defined once in
+    `dividend_streak.rs` with the meaning quoted, and
+    `zero_dividends_declared_per_share` belongs to
+    `dividend_coverage_per_share.rs`, so the new condition's name collides
+    with neither. The suspension fixture's seven years in
+    `tests/dividend_streak.rs` are the record's figures, 2024 a silent zero.
+  - The arithmetic, each reproduced: 1.1 to the fifth, 1.2 to the fifth and
+    the special it implies, the mean of changes at `0.21` with 2022 doubled,
+    the fifth root of two and the 26% and -4% it gives a 10% grower, the
+    square root of four thirds to 34 digits with 491 following, five thirds
+    rounded then less one at 33 digits, and every fixture row under n of 2,
+    1 and 5.
+  - The alternatives as argued: the mean of changes, the regression and the
+    median, the raising streak, leaving the rate out of M5, the size test,
+    a zero computing year as a condition, two unreachable conditions, the
+    coverage metric's zero, trailing averages, and the shortened window.
+- **Verdict and why:** accepted. The form is the one the arithmetic record
+  already anticipated, and the record takes it for the right reason: with
+  two reads, the n - 1 years between cannot move the rate, so the exposure
+  answer 6 hands M5 is confined to the two ends, each with its direction
+  named, instead of spread over every window as the mean would spread it.
+  `-1` at a computing-year zero is the formula's own value and errs the way
+  the catalogue asks a wrong zero to err; a condition there would hide the
+  suspension the streak shows as `0`. The root's two exclusions are met as
+  every metric meets the zero divisor, by naming the input condition that
+  reaches it, and nothing the metric can never give is listed. No constant,
+  no invented setting, no new reason, no operation outside the table.
+- **What would have changed it:** a seventh reason; a changed byte of
+  `canonical-concepts` v2 or `analyze-store` v1; an operation outside the
+  table, which the regression would have needed; a window shortened at a
+  gap or a figure substituted; a size threshold marking a special; the
+  root's index from a count or a literal; a quotation not found as printed;
+  or a passage of the chapter stating the form for dividends, which was
+  looked for and not found, the chapter stating it for earnings and
+  revenues alone. Flagged for the human beside the tier: the end-year error
+  has no fix at v2, and a large special at the base year reads as a cut in
+  one window of the n + 1 that hold it; `-1` at a silence zero at the
+  computing year is a cut never made where the silence is wrong; and the
+  form is applied to dividends on the record's own reasoning, not a
+  source's.
