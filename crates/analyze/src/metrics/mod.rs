@@ -27,6 +27,7 @@ mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
 mod dividend_payout_per_share;
 mod dividend_streak;
+mod free_cash_flow;
 mod gross_margin;
 mod interest_coverage;
 mod liabilities_to_assets;
