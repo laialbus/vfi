@@ -4,22 +4,17 @@
 //!
 //! All three are flows `canonical-concepts` v2 states at a duration and
 //! applies to every kind of filer, so the metric reads one row and no other
-//! period. `capital_expenditure` is a magnitude, positive when cash was spent,
-//! so free cash flow is the difference and not a sum. It is no metric of the
-//! method and is handed over nowhere. Neither term contributes nothing where
-//! it is absent: an `Unknown` capital expenditure makes the payout absent
-//! naming it. A negative free cash flow is a value that gives a negative
-//! figure.
+//! period. Free cash flow is formed in [`super::free_cash_flow`], and the
+//! payout is read at every duration, with no year test. An `Unknown` capital
+//! expenditure makes the payout absent naming it. A negative free cash flow
+//! is a value that gives a negative figure.
 
 use vfi_contracts::analyze_store::Reasons;
 use vfi_contracts::canonical_concepts::Concept;
 
+use super::free_cash_flow::{ZERO_FREE_CASH_FLOW, free_cash_flow};
 use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
-
-/// Operating cash flow less capital expenditure is zero, and no fraction of
-/// zero is defined.
-const ZERO_FREE_CASH_FLOW: &str = "zero_free_cash_flow";
 
 pub(super) const DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW: Derivation = Derivation {
     entry: Entry {
@@ -44,7 +39,7 @@ fn dividend_payout_on_free_cash_flow(computing: &Computing) -> Result<Number, Re
     let [dividends_paid, operating_cash_flow, capital_expenditure] =
         read(computing, &DIVIDEND_PAYOUT_ON_FREE_CASH_FLOW)?;
     dividends_paid
-        .divided(&operating_cash_flow.minus(&capital_expenditure))
+        .divided(&free_cash_flow(&operating_cash_flow, &capital_expenditure))
         .ok_or_else(|| declined(ZERO_FREE_CASH_FLOW))
 }
 
