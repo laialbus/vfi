@@ -332,5 +332,14 @@ fn adding_the_metric_adds_no_setting_and_keeps_the_version() {
         .iter()
         .map(|setting| (&*setting.name, &*setting.value))
         .collect();
-    assert_eq!(recorded, [("dividend_streak_years", "10")]);
+    assert_eq!(
+        recorded,
+        [
+            ("dividend_streak_years", "10"),
+            ("discounted_cash_flow_discount_rate", "0.0772"),
+            ("discounted_cash_flow_growth_rate", "0.02"),
+            ("discounted_cash_flow_years", "5"),
+            ("discounted_cash_flow_terminal_growth_rate", "0.02"),
+        ]
+    );
 }

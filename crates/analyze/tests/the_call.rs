@@ -112,13 +112,35 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
             .map(|setting| (setting.name.to_string(), setting.value.to_string()))
             .collect::<Vec<_>>()
     };
-    let named = |value: &str| vec![("dividend_streak_years".to_owned(), value.to_owned())];
+    let named = |values: [&str; 5]| {
+        [
+            "dividend_streak_years",
+            "discounted_cash_flow_discount_rate",
+            "discounted_cash_flow_growth_rate",
+            "discounted_cash_flow_years",
+            "discounted_cash_flow_terminal_growth_rate",
+        ]
+        .into_iter()
+        .zip(values)
+        .map(|(name, value)| (name.to_owned(), value.to_owned()))
+        .collect::<Vec<_>>()
+    };
 
-    assert_eq!(recorded(&Settings::preset()), named("10"));
-    let two = Settings::preset()
+    assert_eq!(
+        recorded(&Settings::preset()),
+        named(["10", "0.0772", "0.02", "5", "0.02"])
+    );
+    let handed = Settings::preset()
         .with_dividend_streak_years(2)
-        .expect("two is a positive integer");
-    assert_eq!(recorded(&two), named("2"));
+        .and_then(|settings| settings.with_discounted_cash_flow_discount_rate("0.1"))
+        .and_then(|settings| settings.with_discounted_cash_flow_growth_rate("-0.05"))
+        .and_then(|settings| settings.with_discounted_cash_flow_years(12))
+        .and_then(|settings| settings.with_discounted_cash_flow_terminal_growth_rate("0.015"))
+        .expect("each value is inside its domain");
+    assert_eq!(
+        recorded(&handed),
+        named(["2", "0.1", "-0.05", "12", "0.015"])
+    );
 }
 
 #[test]
@@ -128,6 +150,78 @@ fn a_setting_outside_its_domain_is_refused_before_analyze_runs() {
         .expect_err("zero is not a positive integer");
     assert_eq!(refused.value(), "0");
     assert_eq!(refused.domain(), "the positive integers");
+}
+
+#[test]
+fn a_discounted_cash_flow_setting_outside_its_domain_is_refused_naming_it_and_the_value() {
+    let above_zero = "rates above zero, each a decimal of no more significant digits than a figure is written to";
+    let above_minus_one = "rates above minus one, each a decimal of no more significant digits than a figure is written to";
+    let thirty_five_digits = "0.12345678901234567890123456789012345";
+    let preset = Settings::preset;
+
+    let refusals = [
+        (
+            preset().with_discounted_cash_flow_discount_rate("0"),
+            above_zero,
+            "0",
+        ),
+        (
+            preset().with_discounted_cash_flow_discount_rate("-0.01"),
+            above_zero,
+            "-0.01",
+        ),
+        (
+            preset().with_discounted_cash_flow_discount_rate(thirty_five_digits),
+            above_zero,
+            thirty_five_digits,
+        ),
+        (
+            preset().with_discounted_cash_flow_discount_rate("7.72%"),
+            above_zero,
+            "7.72%",
+        ),
+        (
+            preset().with_discounted_cash_flow_growth_rate("-1"),
+            above_minus_one,
+            "-1",
+        ),
+        (
+            preset().with_discounted_cash_flow_growth_rate(thirty_five_digits),
+            above_minus_one,
+            thirty_five_digits,
+        ),
+        (
+            preset().with_discounted_cash_flow_years(0),
+            "the positive integers",
+            "0",
+        ),
+        (
+            preset().with_discounted_cash_flow_terminal_growth_rate("-1"),
+            above_minus_one,
+            "-1",
+        ),
+        (
+            preset().with_discounted_cash_flow_terminal_growth_rate(thirty_five_digits),
+            above_minus_one,
+            thirty_five_digits,
+        ),
+    ];
+    for (outcome, domain, value) in refusals {
+        let refused = outcome.expect_err("the value is outside the domain");
+        assert_eq!((refused.domain(), refused.value()), (domain, value));
+    }
+}
+
+#[test]
+fn a_discount_rate_not_above_the_terminal_growth_rate_is_admitted_by_each_constructor() {
+    let settings = Settings::preset()
+        .with_discounted_cash_flow_terminal_growth_rate("0.08")
+        .expect("a rate above minus one");
+    assert!(
+        settings
+            .with_discounted_cash_flow_discount_rate("0.03")
+            .is_ok()
+    );
 }
 
 #[test]

@@ -10,8 +10,10 @@ use std::fmt;
 
 use vfi_contracts::analyze_store::Setting;
 
+use discounted_cash_flow::{DiscountRate, ForecastYears, GrowthRate, TerminalGrowthRate};
 use dividend_streak::DividendStreakYears;
 
+mod discounted_cash_flow;
 mod dividend_streak;
 
 /// A setting's value as the characters analyze writes it, which is how the
@@ -61,6 +63,10 @@ settings! {
     #[derive(Clone, Debug, Eq, PartialEq)]
     pub struct Settings {
         dividend_streak_years: DividendStreakYears,
+        discounted_cash_flow_discount_rate: DiscountRate,
+        discounted_cash_flow_growth_rate: GrowthRate,
+        discounted_cash_flow_years: ForecastYears,
+        discounted_cash_flow_terminal_growth_rate: TerminalGrowthRate,
     }
 }
 
@@ -70,6 +76,10 @@ impl Settings {
     pub fn preset() -> Self {
         Settings {
             dividend_streak_years: DividendStreakYears::PRESET,
+            discounted_cash_flow_discount_rate: DiscountRate::preset(),
+            discounted_cash_flow_growth_rate: GrowthRate::preset(),
+            discounted_cash_flow_years: ForecastYears::PRESET,
+            discounted_cash_flow_terminal_growth_rate: TerminalGrowthRate::preset(),
         }
     }
 
