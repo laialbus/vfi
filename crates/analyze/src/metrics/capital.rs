@@ -70,7 +70,7 @@ pub(super) fn total_debt(short_term_debt: &Reads, long_term_debt: &Reads) -> Rea
 /// debt in analysis from both cash concepts beside the debt. Damodaran,
 /// cited at [`invested_capital`], nets cash and names no marketable
 /// securities beside it, so the second netting is that record's.
-fn net_debt(
+pub(super) fn net_debt(
     short_term_debt: &Reads,
     long_term_debt: &Reads,
     cash_and_equivalents: &Reads,

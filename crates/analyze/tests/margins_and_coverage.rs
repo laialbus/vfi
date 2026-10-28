@@ -369,7 +369,8 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "return_on_invested_capital",
             "retention_per_share",
             "sustainable_growth_on_common_equity",
-            "dividend_streak"
+            "dividend_streak",
+            "discounted_cash_flow_value_per_share"
         ]
     );
 }

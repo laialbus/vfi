@@ -21,6 +21,7 @@ mod cash_ratio;
 mod common_shareholder;
 mod current_ratio;
 mod debt_to_equity;
+mod discounted_cash_flow_value_per_share;
 mod dividend_coverage;
 mod dividend_coverage_per_share;
 mod dividend_payout_on_earnings;
@@ -68,6 +69,7 @@ const DERIVATIONS: &[Derivation] = &[
     retention_per_share::RETENTION_PER_SHARE,
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
     dividend_streak::DIVIDEND_STREAK,
+    discounted_cash_flow_value_per_share::DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
@@ -147,6 +149,9 @@ enum Unit {
     Multiple,
     /// A count of whole years: `3` is three years.
     Years,
+    /// Currency per one share, in the currency the filer reports in: `80` is
+    /// eighty of that currency for each share.
+    CurrencyPerShare,
 }
 
 /// One of the two shapes a period takes.
