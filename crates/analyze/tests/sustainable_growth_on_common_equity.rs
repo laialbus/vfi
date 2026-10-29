@@ -359,6 +359,7 @@ fn adding_the_metric_adds_no_setting_and_keeps_the_version() {
             ("discounted_cash_flow_growth_rate", "0.02"),
             ("discounted_cash_flow_years", "5"),
             ("discounted_cash_flow_terminal_growth_rate", "0.02"),
+            ("dividend_growth_years", "5"),
         ]
     );
 }

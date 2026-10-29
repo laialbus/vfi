@@ -11,9 +11,11 @@ use std::fmt;
 use vfi_contracts::analyze_store::Setting;
 
 use discounted_cash_flow::{DiscountRate, ForecastYears, GrowthRate, TerminalGrowthRate};
+use dividend_growth_rate::DividendGrowthYears;
 use dividend_streak::DividendStreakYears;
 
 mod discounted_cash_flow;
+mod dividend_growth_rate;
 mod dividend_streak;
 
 /// A setting's value as the characters analyze writes it, which is how the
@@ -67,6 +69,7 @@ settings! {
         discounted_cash_flow_growth_rate: GrowthRate,
         discounted_cash_flow_years: ForecastYears,
         discounted_cash_flow_terminal_growth_rate: TerminalGrowthRate,
+        dividend_growth_years: DividendGrowthYears,
     }
 }
 
@@ -80,6 +83,7 @@ impl Settings {
             discounted_cash_flow_growth_rate: GrowthRate::preset(),
             discounted_cash_flow_years: ForecastYears::PRESET,
             discounted_cash_flow_terminal_growth_rate: TerminalGrowthRate::preset(),
+            dividend_growth_years: DividendGrowthYears::PRESET,
         }
     }
 

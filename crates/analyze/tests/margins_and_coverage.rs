@@ -370,7 +370,8 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "retention_per_share",
             "sustainable_growth_on_common_equity",
             "dividend_streak",
-            "discounted_cash_flow_value_per_share"
+            "discounted_cash_flow_value_per_share",
+            "dividend_growth_rate"
         ]
     );
 }
@@ -392,6 +393,7 @@ fn adding_the_metrics_adds_no_setting_and_keeps_the_version() {
             ("discounted_cash_flow_growth_rate", "0.02"),
             ("discounted_cash_flow_years", "5"),
             ("discounted_cash_flow_terminal_growth_rate", "0.02"),
+            ("dividend_growth_years", "5"),
         ]
     );
 }

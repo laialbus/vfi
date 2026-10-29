@@ -112,13 +112,14 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
             .map(|setting| (setting.name.to_string(), setting.value.to_string()))
             .collect::<Vec<_>>()
     };
-    let named = |values: [&str; 5]| {
+    let named = |values: [&str; 6]| {
         [
             "dividend_streak_years",
             "discounted_cash_flow_discount_rate",
             "discounted_cash_flow_growth_rate",
             "discounted_cash_flow_years",
             "discounted_cash_flow_terminal_growth_rate",
+            "dividend_growth_years",
         ]
         .into_iter()
         .zip(values)
@@ -128,7 +129,7 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
 
     assert_eq!(
         recorded(&Settings::preset()),
-        named(["10", "0.0772", "0.02", "5", "0.02"])
+        named(["10", "0.0772", "0.02", "5", "0.02", "5"])
     );
     let handed = Settings::preset()
         .with_dividend_streak_years(2)
@@ -136,10 +137,11 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
         .and_then(|settings| settings.with_discounted_cash_flow_growth_rate("-0.05"))
         .and_then(|settings| settings.with_discounted_cash_flow_years(12))
         .and_then(|settings| settings.with_discounted_cash_flow_terminal_growth_rate("0.015"))
+        .and_then(|settings| settings.with_dividend_growth_years(3))
         .expect("each value is inside its domain");
     assert_eq!(
         recorded(&handed),
-        named(["2", "0.1", "-0.05", "12", "0.015"])
+        named(["2", "0.1", "-0.05", "12", "0.015", "3"])
     );
 }
 
