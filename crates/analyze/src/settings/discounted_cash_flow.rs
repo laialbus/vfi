@@ -238,34 +238,18 @@ impl Settings {
         Ok(self)
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "the discounted cash flow is not computed yet")
-    )]
     pub(crate) fn discounted_cash_flow_discount_rate(&self) -> &Number {
         &self.discounted_cash_flow_discount_rate.0
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "the discounted cash flow is not computed yet")
-    )]
     pub(crate) fn discounted_cash_flow_growth_rate(&self) -> &Number {
         &self.discounted_cash_flow_growth_rate.0
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "the discounted cash flow is not computed yet")
-    )]
     pub(crate) fn discounted_cash_flow_years(&self) -> NonZeroUsize {
         self.discounted_cash_flow_years.0
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "the discounted cash flow is not computed yet")
-    )]
     pub(crate) fn discounted_cash_flow_terminal_growth_rate(&self) -> &Number {
         &self.discounted_cash_flow_terminal_growth_rate.0
     }

@@ -608,7 +608,8 @@ mod tests {
                 "return_on_capital_employed",
                 "return_on_invested_capital",
                 "sustainable_growth_on_common_equity",
-                "dividend_streak"
+                "dividend_streak",
+                "discounted_cash_flow_value_per_share"
             ]
         );
     }
