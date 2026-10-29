@@ -1,9 +1,9 @@
 # The share-basis rule compares dates through the one ordering in `date.rs`, which now serves the alone clause and that rule alone; a date the rule compares that is outside the grammar declines under one condition defined beside the rule
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-10-24, by `M5-48`
-- **Decided:**
+- **Decided:** 2026-10-26, by the decider
 - **Touches:** one sentence of the accepted
   `which-duration-precedes-a-duration.md`, said of the ordering it adds to
   `date.rs`: "It is used by the alone clause and by nothing else. It never
@@ -446,7 +446,54 @@ none of them.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it supersedes one sentence
+  of an accepted record, as `sources-a-task-can-read.md` did, and fixes the
+  characters of one `declined` condition, which crosses `analyze-store` v1
+  as an open string. It edits no anchor, no protected path, no gate, no
+  contract byte, no schema and no milestone scope, and asks for no allowlist
+  entry. Flagged for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Every quotation, as printed: the series record's sentence; the
+    discounted cash flow record's open item and the four sentences it says
+    of it, and its "split dated 2024-12-31 itself" test; the period record's
+    "never beside it" and "its own task's"; the analyze record's covered
+    range, the absence that does not widen it, the two clauses, "the one
+    function every price-dependent metric calls", "an instant's date or a
+    duration's end", "no covered range" and "the share-basis rule below
+    included"; `price-provider.md`'s "up to the valuation date"; and
+    `fetch-analyze` v1's "a date asked as the caller named it, everything
+    else as the source published it".
+  - The code: `date.rs` line 7 reads "for nothing else" as the record
+    says; `Date::on_or_before` is defined once, and its one caller outside
+    tests is the alone clause at `year.rs` line 145.
+  - The task's acceptance, item by item, against the record: the four
+    comparisons and the first clause's none; the three choices weighed and
+    what of the old sentence still holds; the condition within the six
+    reasons, defined once, listed by each caller's entry, with the one-price
+    and no-price cases; E, one day, and the split dated the earlier; the
+    rule's place left to the implementing task within the discounted cash
+    flow record's three limits; the proof, which carries the four tests that
+    record lists, the valuation date alone, the one-price crossing, E after
+    T, one test per kind of unreadable date and order independence; what no
+    check can see; the tier; the nine alternatives, the three required
+    among them; nothing proved narrower.
+  - Tiingo's end-of-day page, fetched in this run: it renders by script and
+    the copy carries no field table, so the "date" description is the
+    proposer's reading alone. The record names the gap itself.
+- **Verdict and why:** accepted. One ordering with its two uses named is
+  the one-source-of-truth invariant applied; a second definition is a
+  relation nothing would check, and comparing characters orders `2025-6-30`
+  after `2025-12-31`, the wrong number that looks right. The condition is a
+  `declined` one inside the six reasons, so the frozen bytes stand, and it
+  is defined once and listed as the series record's four are. The old
+  sentence loses exactly one clause, "never picks the latest", and the record
+  says which and why instead of reading around it.
+- **What would have changed it:** a seventh reason or a fourth
+  `basis_unproven` witness; a changed byte of `fetch-analyze` v1 or
+  `analyze-store` v1; a second ordering or a character comparison; a price
+  skipped when forming the range; a sentence superseded without being named;
+  or a quotation not found as printed. Flagged for the human beside the
+  tier: the source's date characters are unread, and if they are outside the
+  grammar every price-dependent metric is absent while every gate stays
+  green; and the ADR README's supersession table lacks this record's row,
+  which no task owns.
