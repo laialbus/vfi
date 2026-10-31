@@ -35,6 +35,10 @@ mod interest_coverage;
 mod liabilities_to_assets;
 mod net_margin;
 mod operating_margin;
+mod piotroski;
+mod piotroski_f_accrual;
+mod piotroski_f_cfo;
+mod piotroski_f_roa;
 mod quick_ratio;
 mod reading;
 mod retention_per_share;
@@ -72,6 +76,9 @@ const DERIVATIONS: &[Derivation] = &[
     dividend_streak::DIVIDEND_STREAK,
     discounted_cash_flow_value_per_share::DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
     dividend_growth_rate::DIVIDEND_GROWTH_RATE,
+    piotroski_f_roa::PIOTROSKI_F_ROA,
+    piotroski_f_cfo::PIOTROSKI_F_CFO,
+    piotroski_f_accrual::PIOTROSKI_F_ACCRUAL,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
@@ -154,6 +161,9 @@ enum Unit {
     /// Currency per one share, in the currency the filer reports in: `80` is
     /// eighty of that currency for each share.
     CurrencyPerShare,
+    /// A count of Piotroski's signals that hold: `7` is seven, and a single
+    /// signal is `1` or `0`. It is never `0.7` and never a percentage.
+    Signals,
 }
 
 /// One of the two shapes a period takes.
