@@ -24,6 +24,7 @@ mod debt_to_equity;
 mod discounted_cash_flow_value_per_share;
 mod dividend_coverage;
 mod dividend_coverage_per_share;
+mod dividend_growth_rate;
 mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
 mod dividend_payout_per_share;
@@ -70,6 +71,7 @@ const DERIVATIONS: &[Derivation] = &[
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
     dividend_streak::DIVIDEND_STREAK,
     discounted_cash_flow_value_per_share::DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
+    dividend_growth_rate::DIVIDEND_GROWTH_RATE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over

@@ -10,6 +10,8 @@
 //! is computed under as one [`Computing`], whose rows only this module reads,
 //! so no metric finds a row itself.
 
+use std::ops::ControlFlow;
+
 use vfi_contracts::analyze_store::{Reason, Reasons};
 use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
 
@@ -281,6 +283,32 @@ pub(super) fn yearly<'a>(
 ) -> impl Iterator<Item = Result<Number, Reason>> + use<'a> {
     year.series(back)
         .map(move |found| found.and_then(|row| input(row, concept)))
+}
+
+/// What `concept` states at `year` and at the last year of its series `back`
+/// years back, in that order; or a reason for each of the two reads that
+/// states none, in that order. Every year between is found by the series and
+/// none is read. The series is walked no further than the first year it does
+/// not find, whose `no_period` is then the last year's one reason, however
+/// many years beyond it are missing.
+pub(super) fn first_and_last(
+    year: &Year<'_, '_>,
+    concept: Concept,
+    back: usize,
+) -> Result<(Number, Number), Reasons> {
+    let mut series = year.series(back);
+    let first = series.next().expect("a series begins at its own year");
+    let last = match series.try_fold(first.clone(), |_, found| match found {
+        Ok(_) => ControlFlow::Continue(found),
+        Err(_) => ControlFlow::Break(found),
+    }) {
+        ControlFlow::Continue(found) | ControlFlow::Break(found) => found,
+    };
+    match [first, last].map(|found| found.and_then(|row| input(row, concept))) {
+        [Ok(first), Ok(last)] => Ok((first, last)),
+        [Err(reason), Ok(_)] | [Ok(_), Err(reason)] => Err(Reasons::of(reason, Vec::new())),
+        [Err(first), Err(last)] => Err(Reasons::of(first, vec![last])),
+    }
 }
 
 /// The sum of `numbers` divided by how many were summed, the count starting
@@ -609,7 +637,8 @@ mod tests {
                 "return_on_invested_capital",
                 "sustainable_growth_on_common_equity",
                 "dividend_streak",
-                "discounted_cash_flow_value_per_share"
+                "discounted_cash_flow_value_per_share",
+                "dividend_growth_rate"
             ]
         );
     }

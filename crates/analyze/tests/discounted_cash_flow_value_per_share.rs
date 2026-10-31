@@ -450,6 +450,7 @@ fn the_premises_record_the_settings_the_value_was_computed_under() {
             ("discounted_cash_flow_growth_rate", "0.1"),
             ("discounted_cash_flow_years", "2"),
             ("discounted_cash_flow_terminal_growth_rate", "0"),
+            ("dividend_growth_years", "5"),
         ]
     );
 }

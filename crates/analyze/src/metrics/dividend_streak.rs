@@ -21,8 +21,10 @@ use crate::arithmetic::Number;
 use crate::date::START_NOT_A_DATE;
 
 /// A year read declared a negative dividend per common share, and no streak
-/// of paying years is defined across it.
-const NEGATIVE_DIVIDENDS_DECLARED_PER_SHARE: &str = "negative_dividends_declared_per_share";
+/// of paying years is defined across it, nor any rate of growth from or to
+/// it. The dividend growth rate reaches this one definition.
+pub(super) const NEGATIVE_DIVIDENDS_DECLARED_PER_SHARE: &str =
+    "negative_dividends_declared_per_share";
 
 pub(super) const DIVIDEND_STREAK: Derivation = Derivation {
     entry: Entry {
