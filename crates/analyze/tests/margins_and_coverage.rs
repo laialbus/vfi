@@ -374,7 +374,11 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "dividend_growth_rate",
             "piotroski_f_roa",
             "piotroski_f_cfo",
-            "piotroski_f_accrual"
+            "piotroski_f_accrual",
+            "piotroski_f_delta_roa",
+            "piotroski_f_delta_margin",
+            "piotroski_f_delta_turn",
+            "piotroski_eq_offer"
         ]
     );
 }
