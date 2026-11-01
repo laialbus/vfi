@@ -371,7 +371,10 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "sustainable_growth_on_common_equity",
             "dividend_streak",
             "discounted_cash_flow_value_per_share",
-            "dividend_growth_rate"
+            "dividend_growth_rate",
+            "piotroski_f_roa",
+            "piotroski_f_cfo",
+            "piotroski_f_accrual"
         ]
     );
 }

@@ -76,10 +76,6 @@ pub(super) enum Reading {
     )]
     Closing,
     /// The balance at the instant the duration opens at.
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "no metric reads the opening balance alone yet")
-    )]
     Opening,
     /// The mean of the balances at the instants the duration opens and closes
     /// at.
@@ -638,7 +634,10 @@ mod tests {
                 "sustainable_growth_on_common_equity",
                 "dividend_streak",
                 "discounted_cash_flow_value_per_share",
-                "dividend_growth_rate"
+                "dividend_growth_rate",
+                "piotroski_f_roa",
+                "piotroski_f_cfo",
+                "piotroski_f_accrual"
             ]
         );
     }
