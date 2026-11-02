@@ -9,11 +9,6 @@
 //! history is labelled a year. The year before is found by equality of
 //! characters, and nothing is ordered to find it.
 
-#![cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric reads the year before's instants yet")
-)]
-
 use std::iter;
 
 use vfi_contracts::analyze_store::Reason;
@@ -61,7 +56,12 @@ pub(in crate::metrics) fn year<'c, 'a>(
         .map_err(|condition| Reason::declined(condition.into()))
 }
 
-impl<'a> Year<'_, 'a> {
+impl<'c, 'a> Year<'c, 'a> {
+    /// The row computed at, the history beside it, and the settings.
+    pub(in crate::metrics) fn computing(&self) -> &'c Computing<'a> {
+        self.computing
+    }
+
     /// This year and the `back` years before it, in series order, each next
     /// year the year before the last one found. Where the chain finds no
     /// year, that year and every one beyond it give `no_period` with

@@ -36,8 +36,12 @@ mod liabilities_to_assets;
 mod net_margin;
 mod operating_margin;
 mod piotroski;
+mod piotroski_eq_offer;
 mod piotroski_f_accrual;
 mod piotroski_f_cfo;
+mod piotroski_f_delta_margin;
+mod piotroski_f_delta_roa;
+mod piotroski_f_delta_turn;
 mod piotroski_f_roa;
 mod quick_ratio;
 mod reading;
@@ -79,6 +83,10 @@ const DERIVATIONS: &[Derivation] = &[
     piotroski_f_roa::PIOTROSKI_F_ROA,
     piotroski_f_cfo::PIOTROSKI_F_CFO,
     piotroski_f_accrual::PIOTROSKI_F_ACCRUAL,
+    piotroski_f_delta_roa::PIOTROSKI_F_DELTA_ROA,
+    piotroski_f_delta_margin::PIOTROSKI_F_DELTA_MARGIN,
+    piotroski_f_delta_turn::PIOTROSKI_F_DELTA_TURN,
+    piotroski_eq_offer::PIOTROSKI_EQ_OFFER,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
