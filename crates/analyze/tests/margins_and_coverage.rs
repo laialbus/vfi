@@ -378,7 +378,9 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "piotroski_f_delta_roa",
             "piotroski_f_delta_margin",
             "piotroski_f_delta_turn",
-            "piotroski_eq_offer"
+            "piotroski_eq_offer",
+            "piotroski_f_delta_lever",
+            "piotroski_f_delta_liquid"
         ]
     );
 }
