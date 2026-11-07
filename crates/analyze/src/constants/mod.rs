@@ -4,3 +4,4 @@
 pub(crate) mod annual_period;
 pub(crate) mod calendar;
 pub(crate) mod figure;
+pub(crate) mod piotroski;

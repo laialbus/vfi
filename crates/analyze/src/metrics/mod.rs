@@ -45,6 +45,7 @@ mod piotroski_f_delta_margin;
 mod piotroski_f_delta_roa;
 mod piotroski_f_delta_turn;
 mod piotroski_f_roa;
+mod piotroski_f_score;
 mod quick_ratio;
 mod reading;
 mod retention_per_share;
@@ -91,6 +92,7 @@ const DERIVATIONS: &[Derivation] = &[
     piotroski_eq_offer::PIOTROSKI_EQ_OFFER,
     piotroski_f_delta_lever::PIOTROSKI_F_DELTA_LEVER,
     piotroski_f_delta_liquid::PIOTROSKI_F_DELTA_LIQUID,
+    piotroski_f_score::PIOTROSKI_F_SCORE,
 ];
 
 /// Revenue is zero, and no fraction of zero is defined. Every metric over
