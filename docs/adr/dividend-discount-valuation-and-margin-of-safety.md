@@ -1,9 +1,9 @@
 # The dividend discount value per share is the mean of `dividend_discount_base_years` years' declared dividends, grown once at a growth setting and divided by a required return less that rate; its margin of safety is that value less the valuation date's close, as a fraction of the value
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-03, by `M5-56`
-- **Decided:**
+- **Decided:** 2026-11-06, by the decider
 - **Touches:** the dividend-based valuation that GOALS.md's fifth M5 criterion
   names, and that `discounted-cash-flow-and-margin-of-safety.md` (Accepted) and
   `dividend-growth-rate.md` (Accepted) each leave to a record of its own. It
@@ -942,7 +942,78 @@ none of them.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of two metrics that cross `analyze-store` v1 as characters, names
+  three settings that every result records, and adds one `declined`
+  condition, all inside analyze. It edits no anchor, no protected path, no
+  gate, no contract byte, no schema and no milestone scope, and asks for no
+  allowlist entry. Flagged for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - GOALS.md's fifth M5 criterion ends in "dividend-based valuation", and the
+    discounted cash flow and growth rate records each leave this valuation
+    to "a record of its own", as the record quotes them.
+  - `canonical-concepts-open-questions.md`, answer 6: the input is the total,
+    regular and special together, and the valuation "must not take one
+    period's declared total as a perpetuity". The mean over a window is a
+    form that sentence allows; the record states what the mean does with an
+    excess, in both directions, and does not claim it removes one.
+  - `dividend-growth-rate.md` (Accepted, Structural): its warning about a
+    rate "carried into a perpetuity" is the record's first reason for a
+    setting alone, and its refusals of "trimming the largest figure" and a
+    median are what reject the lower-of-years and median bases. Its sentence
+    that a condition "the metric never gives tells a reader something false"
+    is why `non_positive_value_per_share` is not listed, and the argument
+    that it cannot arise holds: every read is positive once the two dividend
+    conditions pass, and r − g is positive once the third does.
+  - `discounted-cash-flow-and-margin-of-safety.md` (Accepted, Structural):
+    the margin's form and denominator are adopted by name, the joint-domain
+    argument is adopted by name, the FOMC statement is the same source for a
+    growth preset of `0.02`, and `non_positive_close` is reached from where
+    M5-55 will define it. The accepted entry on main lists its own
+    conditions and then the four year conditions, which is the order this
+    record gives for both entries.
+  - `share-basis-rule-dates.md` (Accepted): the margin lists
+    `share_basis_date_not_a_date` after the four year conditions and calls
+    the one rule function with E the end of Y; the value calls no rule and
+    lists nothing.
+  - `what-analyze-takes-and-returns.md`: six closed reasons and no seventh;
+    `at_valuation_date` is read by its place so `date_not_asked` has no
+    witness, as the discounted cash flow record already said of its margin.
+  - `common-shareholder-forms.md`: `per_share` on the value, `common` on
+    neither, the margin named for the value it is built on.
+  - On main, `negative_dividends_declared_per_share` is defined once in
+    `dividend_streak.rs` and `zero_dividends_declared_per_share` once in
+    `dividend_coverage_per_share.rs`, the latter private, so the record's
+    "widens the constant's visibility and defines no second one" names a
+    real edit for the implementing task.
+  - The hand-worked figures, each reproduced: `51` at the presets, `44.1`
+    off them, 41.1330… and 41.1526… for Consolidated Edison, the margins
+    `0.25`, `0` and `-0.25`, `51` with the excess at 2024 and at 2021 and
+    85.56… for Y alone, `51` with a zero inside the window, the four
+    suspension-fixture values, the multipliers 16.94 and 16.01 and their
+    5.8%, the grower lag 0.9615 and 0.8340, and the split example's 1.4.
+  - The alternatives as argued, the six the task required among them.
+  - Not checked here: the open sources were not re-opened in this run. The
+    quotations are taken as the proposer found them, at the pages named, and
+    the proposer's note that the survey's digest differs from the task's at
+    four of sixty-four characters is carried as a flag, not resolved.
+- **Verdict and why:** Accepted. The record makes the three choices the task
+  left to it, the base, the growth read and the required return's row, each
+  with a reason a reader can weigh and a direction a reader can see, and it
+  names the one exposure it cannot close, a split inside the window, with a
+  pinned test rather than a reading of the rule that would stretch the
+  accepted analyze record. Its base is the conservative form on every path
+  but the special dividend, where it removes nothing but divides by n; that
+  is the honest account of what answer 6 leaves possible under v2. Four
+  points stand flagged for the human who reviews Structural acceptances: the
+  open split exposure; a zero at Y as a condition where the growth rate
+  record chose a figure at its own zero; the "Total Market" row for the
+  required return against the discounted cash flow record's row without
+  financials; and the survey's digest.
+- **What would have changed it:** a source opened in the run stating the
+  form otherwise than the record quotes it; a base form that compared a
+  year's figure with its neighbours, which the growth rate record refuses; a
+  reading of the share-basis rule at the window's earliest year, which
+  changes an accepted record's E without saying so; a growth read of the
+  computed rate without an answer to that record's warning; or a condition
+  listed that the derivation cannot give.
