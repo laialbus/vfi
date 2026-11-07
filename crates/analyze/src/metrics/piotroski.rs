@@ -38,8 +38,16 @@
 //! year's ROA. If ΔROA > 0, the indicator variable F_ΔROA equals one, zero
 //! otherwise." §2.3.2, pp. 7–8: "I assume that an increase in leverage, a
 //! deterioration of liquidity, or the use of external financing is a bad
-//! signal about financial risk." and "I define the indicator variable
-//! EQ_OFFER to equal one if the firm did not issue common equity in the year
+//! signal about financial risk.", "I measure ΔLEVER as the historical change
+//! in the ratio of total long-term debt to average total assets, and view an
+//! increase (decrease) in financial leverage as a negative (positive)
+//! signal.", "I define the indicator variable F_ΔLEVER to equal one (zero) if
+//! the firm's leverage ratio fell (rose) in the year preceding portfolio
+//! formation.", "where I define the current ratio as the ratio of current
+//! assets to current liabilities at fiscal year-end. I assume that an
+//! improvement in liquidity (i.e., ΔLIQUID > 0) is a good signal", "The
+//! indicator variable F_ΔLIQUID equals one if the firm's liquidity improved,
+//! zero otherwise." and "I define the indicator variable EQ_OFFER to equal one if the firm did not issue common equity in the year
 //! preceding portfolio formation, zero otherwise." §2.3.3, p. 8: "I define
 //! ΔMARGIN as the firm's current gross margin ratio (gross margin scaled by
 //! total sales) less the prior year's gross margin ratio.", "The indicator
@@ -61,9 +69,12 @@ use std::cmp::Ordering;
 
 use vfi_contracts::analyze_store::Reasons;
 
-use super::reading::read_with_the_year_before;
 use super::reading::year::year;
-use super::{Computing, Derivation, ZERO_REVENUE, declined, read};
+use super::reading::{read_averaged_with_the_year_before, read_with_the_year_before};
+use super::{
+    Computing, Derivation, ZERO_AVERAGE_TOTAL_ASSETS, ZERO_CURRENT_LIABILITIES, ZERO_REVENUE,
+    declined, read,
+};
 use crate::arithmetic::Number;
 
 /// Total assets at the instant the year opens at are zero, and no term scaled
@@ -76,6 +87,14 @@ pub(super) const ZERO_PRECEDING_OPENING_TOTAL_ASSETS: &str = "zero_preceding_ope
 
 /// Revenue over the year before is zero, and no fraction of it is defined.
 pub(super) const ZERO_PRECEDING_REVENUE: &str = "zero_preceding_revenue";
+
+/// The average of total assets at the instants the year before opens and
+/// closes at is zero, and the year before's leverage is not defined.
+pub(super) const ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS: &str = "zero_preceding_average_total_assets";
+
+/// Current liabilities at the instant the year before closes at are zero, and
+/// the year before's current ratio is not defined.
+pub(super) const ZERO_PRECEDING_CURRENT_LIABILITIES: &str = "zero_preceding_current_liabilities";
 
 /// The numbers `derivation`'s inputs state at the year `computing` is at, each
 /// read as the derivation names; or the year test's one reason, and no read
@@ -100,6 +119,17 @@ pub(super) fn over_a_year_and_the_year_before<const N: usize>(
 ) -> Result<([Number; N], [Number; N]), Reasons> {
     let year = year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
     read_with_the_year_before(&year, derivation)
+}
+
+/// As [`over_a_year_and_the_year_before`], for a derivation that averages a
+/// balance at each year: the balance at the instant the year opens at is read
+/// once, and stands in the year's mean and in the year before's.
+pub(super) fn over_a_year_and_the_year_before_averaged<const N: usize>(
+    computing: &Computing,
+    derivation: &Derivation,
+) -> Result<([Number; N], [Number; N]), Reasons> {
+    let year = year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
+    read_averaged_with_the_year_before(&year, derivation)
 }
 
 /// F_ROA: one where ROA is above zero, and zero otherwise.
@@ -203,6 +233,62 @@ pub(super) fn f_delta_turn(
     Ok(rose(&turnover_now, &turnover_before))
 }
 
+/// F_ΔLEVER: one where ΔLEVER, the year's leverage less the year before's, is
+/// below zero, and zero otherwise.
+///
+/// An unchanged ratio gives zero. §2.3.2 says "fell (rose)" and names no third
+/// case, and the record decides it for three reasons. Every other signal gives
+/// its one only on a strict move in the good direction. §2.3, p. 6, "An
+/// indicator variable for the signal is equal to one (zero) if the signal's
+/// realization is good (bad).", and an unchanged ratio is not an improvement.
+/// And it never awards a point the copy does not state.
+///
+/// Table 1 (continued), "Variable definitions", p. 13, states a term
+/// `canonical-concepts` v2 cannot carry: "The debt-to-asset ratio is defined
+/// as the firm's total long-term debt (including the portion of long-term debt
+/// classified as current) scaled by average total assets." `long_term_debt`
+/// excludes the current portion, so reading it alone flatters a filer that
+/// reclassifies debt to current, whose leverage falls where the copy's term is
+/// unchanged. `short_term_debt` cannot stand in: it holds the current portion
+/// together with notes payable, commercial paper and current finance lease
+/// obligations, so adding it would move the ratio on short-term funding the
+/// copy's term excludes.
+pub(super) fn f_delta_lever(
+    long_term_debt: &Number,
+    average_total_assets: &Number,
+    preceding_long_term_debt: &Number,
+    preceding_average_total_assets: &Number,
+) -> Result<Number, Reasons> {
+    let leverage_now = defined(
+        leverage(long_term_debt, average_total_assets),
+        ZERO_AVERAGE_TOTAL_ASSETS,
+    )?;
+    let leverage_before = defined(
+        leverage(preceding_long_term_debt, preceding_average_total_assets),
+        ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS,
+    )?;
+    Ok(fell(&leverage_now, &leverage_before))
+}
+
+/// F_ΔLIQUID: one where ΔLIQUID, the current ratio at the year's close less
+/// the same at the year before's, is above zero, and zero otherwise.
+pub(super) fn f_delta_liquid(
+    current_assets: &Number,
+    current_liabilities: &Number,
+    preceding_current_assets: &Number,
+    preceding_current_liabilities: &Number,
+) -> Result<Number, Reasons> {
+    let ratio_now = defined(
+        current_ratio(current_assets, current_liabilities),
+        ZERO_CURRENT_LIABILITIES,
+    )?;
+    let ratio_before = defined(
+        current_ratio(preceding_current_assets, preceding_current_liabilities),
+        ZERO_PRECEDING_CURRENT_LIABILITIES,
+    )?;
+    Ok(rose(&ratio_now, &ratio_before))
+}
+
 /// EQ_OFFER: one where the diluted weighted average share count over the
 /// year is not above the same over the year before, and zero where it is
 /// above. It divides nothing and has no condition.
@@ -245,6 +331,19 @@ fn margin(gross_profit: &Number, revenue: &Number) -> Option<Number> {
     gross_profit.divided(revenue)
 }
 
+/// Leverage: long-term debt at the instant a year closes at, divided by the
+/// average of total assets at the instants it opens and closes at, or none
+/// where that average is zero.
+fn leverage(long_term_debt: &Number, average_total_assets: &Number) -> Option<Number> {
+    long_term_debt.divided(average_total_assets)
+}
+
+/// The current ratio: current assets divided by current liabilities, each at
+/// the instant a year closes at, or none where those liabilities are zero.
+fn current_ratio(current_assets: &Number, current_liabilities: &Number) -> Option<Number> {
+    current_assets.divided(current_liabilities)
+}
+
 /// `term`, or the one reason `condition` where it is undefined. A term is
 /// formed alike at either year, and the condition names whose divisor is
 /// zero.
@@ -258,6 +357,12 @@ fn rose(now: &Number, before: &Number) -> Number {
     indicator(now.minus(before).sign() == Ordering::Greater)
 }
 
+/// One where `now` less `before` is below zero, and zero otherwise, so an
+/// unchanged term gives zero.
+fn fell(now: &Number, before: &Number) -> Number {
+    indicator(now.minus(before).sign() == Ordering::Less)
+}
+
 /// One where the signal's realization is good, and zero where it is not.
 fn indicator(good: bool) -> Number {
     if good { Number::one() } else { Number::zero() }
@@ -268,11 +373,13 @@ mod tests {
     use vfi_contracts::analyze_store::{Reason, Reasons};
 
     use super::{
-        ZERO_OPENING_TOTAL_ASSETS, ZERO_PRECEDING_OPENING_TOTAL_ASSETS, ZERO_PRECEDING_REVENUE,
-        eq_offer, f_accrual, f_cfo, f_delta_margin, f_delta_roa, f_delta_turn, f_roa,
+        ZERO_OPENING_TOTAL_ASSETS, ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS,
+        ZERO_PRECEDING_CURRENT_LIABILITIES, ZERO_PRECEDING_OPENING_TOTAL_ASSETS,
+        ZERO_PRECEDING_REVENUE, eq_offer, f_accrual, f_cfo, f_delta_lever, f_delta_liquid,
+        f_delta_margin, f_delta_roa, f_delta_turn, f_roa,
     };
     use crate::arithmetic::Number;
-    use crate::metrics::ZERO_REVENUE;
+    use crate::metrics::{ZERO_AVERAGE_TOTAL_ASSETS, ZERO_CURRENT_LIABILITIES, ZERO_REVENUE};
 
     fn number(characters: &str) -> Number {
         Number::read(characters).expect("a decimal")
@@ -303,6 +410,106 @@ mod tests {
             "zero_preceding_opening_total_assets"
         );
         assert_eq!(ZERO_PRECEDING_REVENUE, "zero_preceding_revenue");
+        assert_eq!(
+            ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS,
+            "zero_preceding_average_total_assets"
+        );
+        assert_eq!(
+            ZERO_PRECEDING_CURRENT_LIABILITIES,
+            "zero_preceding_current_liabilities"
+        );
+    }
+
+    #[test]
+    fn leverage_gives_one_only_where_the_ratio_fell() {
+        let [debt_before, average_before, average] = ["270", "900", "1100"].map(number);
+        assert_eq!(
+            f_delta_lever(&number("220"), &average, &debt_before, &average_before),
+            signal("1")
+        );
+        assert_eq!(
+            f_delta_lever(&number("330"), &average, &debt_before, &average_before),
+            signal("0")
+        );
+        assert_eq!(
+            f_delta_lever(&number("340"), &average, &debt_before, &average_before),
+            signal("0")
+        );
+        let zero = Number::zero();
+        assert_eq!(
+            f_delta_lever(&zero, &average, &zero, &average_before),
+            signal("0")
+        );
+    }
+
+    #[test]
+    fn liquidity_gives_one_only_where_the_ratio_rose() {
+        let [liabilities, assets_before] = ["200", "300"].map(number);
+        assert_eq!(
+            f_delta_liquid(&number("360"), &liabilities, &assets_before, &liabilities),
+            signal("1")
+        );
+        assert_eq!(
+            f_delta_liquid(&assets_before, &liabilities, &assets_before, &liabilities),
+            signal("0")
+        );
+        assert_eq!(
+            f_delta_liquid(&number("280"), &liabilities, &assets_before, &liabilities),
+            signal("0")
+        );
+    }
+
+    #[test]
+    fn a_negative_figure_gives_its_balance_comparison() {
+        let [average, average_before] = ["1100", "900"].map(number);
+        assert_eq!(
+            f_delta_lever(&number("-220"), &average, &number("270"), &average_before),
+            signal("1")
+        );
+        assert_eq!(
+            f_delta_lever(
+                &number("220"),
+                &number("-1100"),
+                &number("270"),
+                &average_before
+            ),
+            signal("1")
+        );
+        assert_eq!(
+            f_delta_liquid(&number("-1"), &number("200"), &number("-2"), &number("200")),
+            signal("1")
+        );
+    }
+
+    #[test]
+    fn each_balance_signal_asks_the_years_condition_first() {
+        let zero = Number::zero();
+        let [debt, average] = ["220", "1100"].map(number);
+        assert_eq!(
+            f_delta_lever(&debt, &zero, &debt, &average),
+            declined(ZERO_AVERAGE_TOTAL_ASSETS)
+        );
+        assert_eq!(
+            f_delta_lever(&debt, &average, &debt, &zero),
+            declined(ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS)
+        );
+        assert_eq!(
+            f_delta_lever(&debt, &zero, &debt, &zero),
+            declined(ZERO_AVERAGE_TOTAL_ASSETS)
+        );
+        let [assets, liabilities] = ["360", "200"].map(number);
+        assert_eq!(
+            f_delta_liquid(&assets, &zero, &assets, &liabilities),
+            declined(ZERO_CURRENT_LIABILITIES)
+        );
+        assert_eq!(
+            f_delta_liquid(&assets, &liabilities, &assets, &zero),
+            declined(ZERO_PRECEDING_CURRENT_LIABILITIES)
+        );
+        assert_eq!(
+            f_delta_liquid(&assets, &zero, &assets, &zero),
+            declined(ZERO_CURRENT_LIABILITIES)
+        );
     }
 
     #[test]

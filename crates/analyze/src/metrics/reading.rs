@@ -71,10 +71,6 @@ impl<'a> Computing<'a> {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub(super) enum Reading {
     /// The balance at the instant the duration closes at.
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "no metric reads the closing balance alone yet")
-    )]
     Closing,
     /// The balance at the instant the duration opens at.
     Opening,
@@ -155,6 +151,19 @@ impl Reads {
         mean(self.numbers.iter().cloned())
     }
 
+    /// The number the input states at the year before, as
+    /// [`read_averaged_with_the_year_before`] read it, `year` being what it
+    /// states at the year after. An averaged balance closes the year before
+    /// at the instant `year` opens at, whose read stands in the mean.
+    fn mean_before(&self, year: &Reads) -> Number {
+        match self.reading {
+            Some(Reading::Averaged) => {
+                mean(self.numbers.iter().chain(year.numbers.first()).cloned())
+            }
+            _ => self.mean(),
+        }
+    }
+
     /// `operation` taken read by read over `self` and `other`, which were read
     /// at the same rows: a term two inputs form at each row, before any mean.
     pub(super) fn with(&self, other: &Reads, operation: fn(&Number, &Number) -> Number) -> Reads {
@@ -224,14 +233,39 @@ pub(super) fn read_with_the_year_before<const N: usize>(
     year: &Year,
     derivation: &Derivation,
 ) -> Result<([Number; N], [Number; N]), Reasons> {
-    match (
+    let (this, before): ([Reads; N], [Reads; N]) = both_years(
         reads_except(At::Computing(year.computing()), derivation, None),
         reads_except(At::YearBefore(year), derivation, None),
-    ) {
-        (Ok(this), Ok(before)) => Ok((
-            this.map(|reads| reads.mean()),
-            before.map(|reads| reads.mean()),
-        )),
+    )?;
+    Ok((
+        this.map(|reads| reads.mean()),
+        before.map(|reads| reads.mean()),
+    ))
+}
+
+/// As [`read_with_the_year_before`], for a derivation that averages a balance
+/// at each year. The instant the year before closes at is the instant `year`
+/// opens at, one date and one row, so that balance is read once, at `year`,
+/// and stands in both means: a missing row there gives one reason and not
+/// two. The year before reads only the instant it opens at for that balance,
+/// and every other input as [`read_with_the_year_before`] reads it.
+pub(super) fn read_averaged_with_the_year_before<const N: usize>(
+    year: &Year,
+    derivation: &Derivation,
+) -> Result<([Number; N], [Number; N]), Reasons> {
+    let (this, before): ([Reads; N], [Reads; N]) = both_years(
+        reads_except(At::Computing(year.computing()), derivation, None),
+        reads_except(At::YearBeforeAveraged(year), derivation, None),
+    )?;
+    let before = std::array::from_fn(|at| before[at].mean_before(&this[at]));
+    Ok((this.map(|reads| reads.mean()), before))
+}
+
+/// What each year's reads give, or every reason either gives, the year's
+/// before the year before's.
+fn both_years<T>(this: Result<T, Reasons>, before: Result<T, Reasons>) -> Result<(T, T), Reasons> {
+    match (this, before) {
+        (Ok(this), Ok(before)) => Ok((this, before)),
         (Err(reasons), Ok(_)) | (Ok(_), Err(reasons)) => Err(reasons),
         (Err(this), Err(before)) => {
             let mut reasons = this.each().chain(before.each()).cloned();
@@ -242,11 +276,13 @@ pub(super) fn read_with_the_year_before<const N: usize>(
 }
 
 /// Where an input is read: at the period computed at, or at the year before
-/// the year computed at.
+/// the year computed at, with or without the closing instant of an averaged
+/// balance, which [`read_averaged_with_the_year_before`] reads at the year.
 #[derive(Clone, Copy)]
 enum At<'y, 'c, 'a> {
     Computing(&'c Computing<'a>),
     YearBefore(&'y Year<'c, 'a>),
+    YearBeforeAveraged(&'y Year<'c, 'a>),
 }
 
 impl<'a> At<'_, '_, 'a> {
@@ -255,7 +291,15 @@ impl<'a> At<'_, '_, 'a> {
     fn row(self) -> Result<&'a Row, Reason> {
         match self {
             At::Computing(computing) => Ok(computing.row),
-            At::YearBefore(year) => year.before(),
+            At::YearBefore(year) | At::YearBeforeAveraged(year) => year.before(),
+        }
+    }
+
+    /// The instants `reading` reads here, in read order.
+    fn seeks(self, reading: Reading) -> &'static [Seek] {
+        match (self, reading) {
+            (At::YearBeforeAveraged(_), Reading::Averaged) => Reading::Opening.seeks(),
+            _ => reading.seeks(),
         }
     }
 
@@ -265,8 +309,12 @@ impl<'a> At<'_, '_, 'a> {
     fn instant(self, seek: Seek) -> Result<&'a Row, Reason> {
         match (self, seek) {
             (At::Computing(computing), seek) => seek.row(computing),
-            (At::YearBefore(year), Seek::Opening) => year.opening_of_before(),
-            (At::YearBefore(year), Seek::Closing) => year.closing_of_before(),
+            (At::YearBefore(year) | At::YearBeforeAveraged(year), Seek::Opening) => {
+                year.opening_of_before()
+            }
+            (At::YearBefore(year) | At::YearBeforeAveraged(year), Seek::Closing) => {
+                year.closing_of_before()
+            }
         }
     }
 }
@@ -315,8 +363,8 @@ fn balance(
     reading: Reading,
     nothing: Option<Concept>,
 ) -> Result<Vec<Number>, Vec<Reason>> {
-    let (balances, absent): (Vec<_>, Vec<_>) = reading
-        .seeks()
+    let (balances, absent): (Vec<_>, Vec<_>) = at
+        .seeks(reading)
         .iter()
         .map(|seek| {
             at.instant(*seek)
@@ -419,7 +467,8 @@ mod tests {
         PRECEDING_YEAR, year,
     };
     use super::{
-        CLOSING_INSTANT, Computing, OPENING_INSTANT, Reading, Seek, read, read_with_the_year_before,
+        CLOSING_INSTANT, Computing, OPENING_INSTANT, Reading, Seek, read,
+        read_averaged_with_the_year_before, read_with_the_year_before,
     };
     use crate::arithmetic::Number;
     use crate::date::START_NOT_A_DATE;
@@ -689,6 +738,87 @@ mod tests {
         );
     }
 
+    /// What `reading` reads at the year 2024 and at the year before it, with
+    /// an averaged balance read once at the instant 2024 opens at, in
+    /// `history`, which holds 2024 first.
+    fn read_averaged_under(
+        reading: Reading,
+        history: &[Row],
+    ) -> Result<([Number; 2], [Number; 2]), Reasons> {
+        let settings = Settings::preset();
+        let computing = Computing::at(&history[0], history, &settings);
+        let year = year(&computing).expect("2024 is a year");
+        read_averaged_with_the_year_before(&year, &over_total_assets(reading))
+    }
+
+    #[test]
+    fn the_read_at_the_years_opening_stands_in_both_means() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(duration("2023-01-01", "2023-12-31"), "20"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2023-12-31"), "100"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        assert_eq!(
+            read_averaged_under(Reading::Averaged, &history),
+            Ok((numbers(["10", "110"]), numbers(["20", "90"])))
+        );
+    }
+
+    #[test]
+    fn only_an_averaged_balance_shares_the_read() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(duration("2023-01-01", "2023-12-31"), "20"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2023-12-31"), "100"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        for (reading, this, before) in [
+            (Reading::Opening, "100", "80"),
+            (Reading::Closing, "120", "100"),
+        ] {
+            assert_eq!(
+                read_averaged_under(reading, &history),
+                Ok((numbers(["10", this]), numbers(["20", before]))),
+                "{reading:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn a_missing_opening_of_the_year_gives_one_reason_and_not_two() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(duration("2023-01-01", "2023-12-31"), "20"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        assert_eq!(
+            read_averaged_under(Reading::Averaged, &history),
+            Err(Reasons::of(
+                Reason::no_period(history[0].period().clone(), OPENING_INSTANT.into()),
+                Vec::new()
+            ))
+        );
+    }
+
+    #[test]
+    fn a_missing_year_before_gives_preceding_year_for_the_reads_made_at_it() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(instant("2023-12-31"), "100"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        let preceding_year =
+            || Reason::no_period(history[0].period().clone(), PRECEDING_YEAR.into());
+        assert_eq!(
+            read_averaged_under(Reading::Averaged, &history),
+            Err(Reasons::of(preceding_year(), vec![preceding_year()]))
+        );
+    }
+
     #[test]
     fn every_balance_a_duration_metric_reads_has_a_reading_and_no_other_input_has_one() {
         for derivation in DERIVATIONS {
@@ -782,7 +912,9 @@ mod tests {
                 "piotroski_f_delta_roa",
                 "piotroski_f_delta_margin",
                 "piotroski_f_delta_turn",
-                "piotroski_eq_offer"
+                "piotroski_eq_offer",
+                "piotroski_f_delta_lever",
+                "piotroski_f_delta_liquid"
             ]
         );
     }
