@@ -164,6 +164,37 @@ impl Reads {
         }
     }
 
+    /// The number the input states at the instant the duration opens at: the
+    /// first read of a balance read there.
+    pub(super) fn opening(&self) -> Number {
+        assert!(
+            matches!(self.reading, Some(Reading::Opening | Reading::Averaged)),
+            "only a balance read at the opening instant states a number there"
+        );
+        self.numbers
+            .first()
+            .cloned()
+            .expect("a reading reads at least one instant")
+    }
+
+    /// The reads of the year before as the year before's own reading would
+    /// give them, `year` being the reads at the year after. An averaged
+    /// balance closes the year before at the instant `year` opens at, whose
+    /// read is added after the year before's own.
+    fn closed_at(self, year: &Reads) -> Reads {
+        match self.reading {
+            Some(Reading::Averaged) => Reads {
+                reading: self.reading,
+                numbers: self
+                    .numbers
+                    .into_iter()
+                    .chain(year.numbers.first().cloned())
+                    .collect(),
+            },
+            _ => self,
+        }
+    }
+
     /// `operation` taken read by read over `self` and `other`, which were read
     /// at the same rows: a term two inputs form at each row, before any mean.
     pub(super) fn with(&self, other: &Reads, operation: fn(&Number, &Number) -> Number) -> Reads {
@@ -261,6 +292,42 @@ pub(super) fn read_averaged_with_the_year_before<const N: usize>(
     Ok((this.map(|reads| reads.mean()), before))
 }
 
+/// As [`read_averaged_with_the_year_before`], for a derivation that forms
+/// more than one term of an input at each year: each input's reads are given
+/// read by read, with an averaged balance's reads at the year before closed at
+/// the read made at the instant `year` opens at, so that its mean is the year
+/// before's mean and its opening the year before's own. `this_year_alone` is
+/// read at `year` and not at the year before, where no term reads it, so the
+/// year before gives `M` reads, one fewer than the `N` the entry lists.
+pub(super) fn reads_once_with_the_year_before<const N: usize, const M: usize>(
+    year: &Year,
+    derivation: &Derivation,
+    this_year_alone: Concept,
+) -> Result<([Reads; N], [Reads; M]), Reasons> {
+    let read_before = |(concept, _): &(Concept, Option<Reading>)| *concept != this_year_alone;
+    let (this, before) = both_years(
+        reads_of(At::Computing(year.computing()), inputs(derivation), None),
+        reads_of(
+            At::YearBeforeAveraged(year),
+            inputs(derivation).filter(read_before),
+            None,
+        ),
+    )?;
+    let before: Vec<Reads> = inputs(derivation)
+        .zip(&this)
+        .filter(|(input, _)| read_before(input))
+        .zip(before)
+        .map(|((_, year), before)| before.closed_at(year))
+        .collect();
+    Ok((
+        this.try_into()
+            .expect("a metric takes the reads of each input its entry lists"),
+        before
+            .try_into()
+            .expect("the year before reads every input but the one it does not"),
+    ))
+}
+
 /// What each year's reads give, or every reason either gives, the year's
 /// before the year before's.
 fn both_years<T>(this: Result<T, Reasons>, before: Result<T, Reasons>) -> Result<(T, T), Reasons> {
@@ -324,34 +391,46 @@ fn reads_except<const N: usize>(
     derivation: &Derivation,
     nothing: Option<Concept>,
 ) -> Result<[Reads; N], Reasons> {
-    let (stated, absent): (Vec<_>, Vec<_>) = derivation
+    Ok(reads_of(at, inputs(derivation), nothing)?
+        .try_into()
+        .expect("a metric takes a number for each input its entry lists"))
+}
+
+/// `derivation`'s inputs, each with its reading, in the entry's order.
+fn inputs(derivation: &Derivation) -> impl Iterator<Item = (Concept, Option<Reading>)> + '_ {
+    derivation
         .entry
         .inputs
         .iter()
-        .zip(derivation.readings)
+        .copied()
+        .zip(derivation.readings.iter().copied())
+}
+
+/// What each of `inputs` reads give here, in their order; or a reason for
+/// each read that states none, in read order.
+fn reads_of(
+    at: At,
+    inputs: impl Iterator<Item = (Concept, Option<Reading>)>,
+    nothing: Option<Concept>,
+) -> Result<Vec<Reads>, Reasons> {
+    let (stated, absent): (Vec<_>, Vec<_>) = inputs
         .map(|(concept, reading)| {
             match reading {
                 None => at
                     .row()
-                    .and_then(|row| input_or_nothing(row, *concept, nothing))
+                    .and_then(|row| input_or_nothing(row, concept, nothing))
                     .map(|number| vec![number])
                     .map_err(|reason| vec![reason]),
-                Some(reading) => balance(at, *concept, *reading, nothing),
+                Some(reading) => balance(at, concept, reading, nothing),
             }
-            .map(|numbers| Reads {
-                reading: *reading,
-                numbers,
-            })
+            .map(|numbers| Reads { reading, numbers })
         })
         .partition(Result::is_ok);
     let mut reasons = absent.into_iter().filter_map(Result::err).flatten();
     if let Some(first) = reasons.next() {
         return Err(Reasons::of(first, reasons.collect()));
     }
-    let stated: Vec<Reads> = stated.into_iter().filter_map(Result::ok).collect();
-    Ok(stated
-        .try_into()
-        .expect("a metric takes a number for each input its entry lists"))
+    Ok(stated.into_iter().filter_map(Result::ok).collect())
 }
 
 /// The balances `concept` states at each instant `reading` reads, in read
@@ -467,8 +546,9 @@ mod tests {
         PRECEDING_YEAR, year,
     };
     use super::{
-        CLOSING_INSTANT, Computing, OPENING_INSTANT, Reading, Seek, read,
+        CLOSING_INSTANT, Computing, OPENING_INSTANT, Reading, Reads, Seek, read,
         read_averaged_with_the_year_before, read_with_the_year_before,
+        reads_once_with_the_year_before,
     };
     use crate::arithmetic::Number;
     use crate::date::START_NOT_A_DATE;
@@ -819,6 +899,74 @@ mod tests {
         );
     }
 
+    /// The reads at the year 2024 and at the year before it, each made once,
+    /// with net income read at the year alone, in `history`, which holds 2024
+    /// first.
+    fn reads_once_under(history: &[Row]) -> Result<([Reads; 2], [Reads; 1]), Reasons> {
+        let settings = Settings::preset();
+        let computing = Computing::at(&history[0], history, &settings);
+        let year = year(&computing).expect("2024 is a year");
+        reads_once_with_the_year_before(
+            &year,
+            &over_total_assets(Reading::Averaged),
+            Concept::NetIncome,
+        )
+    }
+
+    #[test]
+    fn each_read_is_given_alone_and_the_year_befores_average_closes_at_the_years_opening() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(duration("2023-01-01", "2023-12-31"), "20"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2023-12-31"), "100"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        let ([net_income, total_assets], [preceding_total_assets]) =
+            reads_once_under(&history).expect("every read states a number");
+        let [ten, eighty, ninety, hundred, hundred_and_ten] =
+            ["10", "80", "90", "100", "110"].map(|amount| Number::read(amount).expect("a decimal"));
+        assert_eq!(net_income.mean(), ten);
+        assert_eq!(total_assets.opening(), hundred);
+        assert_eq!(total_assets.mean(), hundred_and_ten);
+        assert_eq!(preceding_total_assets.opening(), eighty);
+        assert_eq!(preceding_total_assets.mean(), ninety);
+    }
+
+    #[test]
+    fn an_input_read_at_the_year_alone_gives_no_reason_at_the_year_before() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2023-12-31"), "100"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        assert_eq!(
+            reads_once_under(&history).map(|_| ()),
+            Err(Reasons::of(
+                Reason::no_period(history[0].period().clone(), PRECEDING_YEAR.into()),
+                Vec::new()
+            ))
+        );
+    }
+
+    #[test]
+    fn a_missing_opening_of_the_year_is_read_once_for_both_years() {
+        let history = [
+            row(duration("2024-01-01", "2024-12-31"), "10"),
+            row(duration("2023-01-01", "2023-12-31"), "20"),
+            row(instant("2022-12-31"), "80"),
+            row(instant("2024-12-31"), "120"),
+        ];
+        assert_eq!(
+            reads_once_under(&history).map(|_| ()),
+            Err(Reasons::of(
+                Reason::no_period(history[0].period().clone(), OPENING_INSTANT.into()),
+                Vec::new()
+            ))
+        );
+    }
+
     #[test]
     fn every_balance_a_duration_metric_reads_has_a_reading_and_no_other_input_has_one() {
         for derivation in DERIVATIONS {
@@ -914,7 +1062,8 @@ mod tests {
                 "piotroski_f_delta_turn",
                 "piotroski_eq_offer",
                 "piotroski_f_delta_lever",
-                "piotroski_f_delta_liquid"
+                "piotroski_f_delta_liquid",
+                "piotroski_f_score"
             ]
         );
     }

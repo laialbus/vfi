@@ -68,14 +68,19 @@
 use std::cmp::Ordering;
 
 use vfi_contracts::analyze_store::Reasons;
+use vfi_contracts::canonical_concepts::Concept;
 
 use super::reading::year::year;
-use super::reading::{read_averaged_with_the_year_before, read_with_the_year_before};
+use super::reading::{
+    Reads, read_averaged_with_the_year_before, read_with_the_year_before,
+    reads_once_with_the_year_before,
+};
 use super::{
     Computing, Derivation, ZERO_AVERAGE_TOTAL_ASSETS, ZERO_CURRENT_LIABILITIES, ZERO_REVENUE,
     declined, read,
 };
 use crate::arithmetic::Number;
+use crate::constants::piotroski::PIOTROSKI_SIGNALS;
 
 /// Total assets at the instant the year opens at are zero, and no term scaled
 /// by them is defined. It names that instant, and not the year's close.
@@ -130,6 +135,21 @@ pub(super) fn over_a_year_and_the_year_before_averaged<const N: usize>(
 ) -> Result<([Number; N], [Number; N]), Reasons> {
     let year = year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
     read_averaged_with_the_year_before(&year, derivation)
+}
+
+/// What each of `derivation`'s inputs' reads give at the year `computing` is
+/// at, then at the year before it, each read once and given read by read as
+/// [`reads_once_with_the_year_before`] gives them, `this_year_alone` read at
+/// the year alone; or the year test's one reason, and no read made, where the
+/// duration is not a year; or a reason for each read that states none, the
+/// year's reads before the year before's.
+pub(super) fn over_a_year_and_the_year_before_read_once<const N: usize, const M: usize>(
+    computing: &Computing,
+    derivation: &Derivation,
+    this_year_alone: Concept,
+) -> Result<([Reads; N], [Reads; M]), Reasons> {
+    let year = year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
+    reads_once_with_the_year_before(&year, derivation, this_year_alone)
 }
 
 /// F_ROA: one where ROA is above zero, and zero otherwise.
@@ -307,6 +327,23 @@ pub(super) fn eq_offer(
     indicator(diluted_shares_weighted_average <= preceding_diluted_shares_weighted_average)
 }
 
+/// F_SCORE: the count of `signals` that are one, the nine in §2.3.4's order,
+/// from zero to `PIOTROSKI_SIGNALS`; or, where a signal is undefined, the one
+/// condition the first such signal gives. The count starts at zero and steps
+/// by one, and is never a fraction.
+pub(super) fn f_score(
+    signals: [Result<Number, Reasons>; PIOTROSKI_SIGNALS],
+) -> Result<Number, Reasons> {
+    if let Some(reasons) = signals.iter().find_map(|signal| signal.as_ref().err()) {
+        return Err(reasons.clone());
+    }
+    let held: [bool; PIOTROSKI_SIGNALS] = signals.map(|signal| signal == Ok(Number::one()));
+    Ok(held
+        .iter()
+        .filter(|held| **held)
+        .fold(Number::zero(), |count, _| count.plus(&Number::one())))
+}
+
 /// ROA: net income over a year, divided by total assets at the instant it
 /// opens at, or none where they are zero.
 fn roa(net_income: &Number, opening_total_assets: &Number) -> Option<Number> {
@@ -371,15 +408,21 @@ fn indicator(good: bool) -> Number {
 #[cfg(test)]
 mod tests {
     use vfi_contracts::analyze_store::{Reason, Reasons};
+    use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row, Rule, SetBy};
 
     use super::{
         ZERO_OPENING_TOTAL_ASSETS, ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS,
         ZERO_PRECEDING_CURRENT_LIABILITIES, ZERO_PRECEDING_OPENING_TOTAL_ASSETS,
         ZERO_PRECEDING_REVENUE, eq_offer, f_accrual, f_cfo, f_delta_lever, f_delta_liquid,
-        f_delta_margin, f_delta_roa, f_delta_turn, f_roa,
+        f_delta_margin, f_delta_roa, f_delta_turn, f_roa, f_score,
     };
     use crate::arithmetic::Number;
-    use crate::metrics::{ZERO_AVERAGE_TOTAL_ASSETS, ZERO_CURRENT_LIABILITIES, ZERO_REVENUE};
+    use crate::constants::piotroski::PIOTROSKI_SIGNALS;
+    use crate::metrics::reading::Computing;
+    use crate::metrics::{
+        DERIVATIONS, Shape, Unit, ZERO_AVERAGE_TOTAL_ASSETS, ZERO_CURRENT_LIABILITIES, ZERO_REVENUE,
+    };
+    use crate::settings::Settings;
 
     fn number(characters: &str) -> Number {
         Number::read(characters).expect("a decimal")
@@ -667,5 +710,223 @@ mod tests {
             f_accrual(&number("60"), &number("90"), &zero),
             zero_opening()
         );
+    }
+
+    #[test]
+    fn the_score_counts_the_signals_that_are_one() {
+        let one = || signal("1");
+        let zero = || signal("0");
+        assert_eq!(
+            f_score([(); PIOTROSKI_SIGNALS].map(|()| one())),
+            signal("9")
+        );
+        assert_eq!(
+            f_score([(); PIOTROSKI_SIGNALS].map(|()| zero())),
+            signal("0")
+        );
+        assert_eq!(
+            f_score([
+                one(),
+                zero(),
+                one(),
+                one(),
+                zero(),
+                one(),
+                one(),
+                zero(),
+                one()
+            ]),
+            signal("6")
+        );
+    }
+
+    #[test]
+    fn the_score_gives_the_first_condition_its_signals_give() {
+        let one = || signal("1");
+        assert_eq!(
+            f_score([
+                one(),
+                one(),
+                one(),
+                one(),
+                declined(ZERO_REVENUE),
+                one(),
+                one(),
+                declined(ZERO_CURRENT_LIABILITIES),
+                one()
+            ]),
+            declined(ZERO_REVENUE)
+        );
+    }
+
+    #[test]
+    fn the_count_is_nine_and_stands_in_constants() {
+        assert_eq!(PIOTROSKI_SIGNALS, 9);
+    }
+
+    fn value(amount: &str) -> Resolution {
+        Resolution::Value {
+            amount: amount.into(),
+            set_by: SetBy::Asserted {
+                rule: Rule {
+                    registry: "1".into(),
+                    id: "asserted".into(),
+                },
+                filing: "0000320193-25-000079".into(),
+            },
+        }
+    }
+
+    fn calendar(year: &str) -> Period {
+        Period::Duration {
+            start: format!("{year}-01-01").into(),
+            end: format!("{year}-12-31").into(),
+        }
+    }
+
+    fn instant(at: &str) -> Period {
+        Period::Instant { at: at.into() }
+    }
+
+    /// The record's worked history, the year 2024 first, with `change`'s
+    /// concept at its period stated as its amount. Every concept the record
+    /// does not name is `7`.
+    fn worked(change: (Period, Concept, &str)) -> Vec<Row> {
+        let stated: [(Period, &[(Concept, &str)]); 5] = [
+            (
+                calendar("2024"),
+                &[
+                    (Concept::NetIncome, "60"),
+                    (Concept::OperatingCashFlow, "90"),
+                    (Concept::GrossProfit, "352"),
+                    (Concept::Revenue, "1100"),
+                    (Concept::DilutedSharesWeightedAverage, "100"),
+                ],
+            ),
+            (
+                calendar("2023"),
+                &[
+                    (Concept::NetIncome, "40"),
+                    (Concept::GrossProfit, "240"),
+                    (Concept::Revenue, "800"),
+                    (Concept::DilutedSharesWeightedAverage, "100"),
+                ],
+            ),
+            (instant("2022-12-31"), &[(Concept::TotalAssets, "800")]),
+            (
+                instant("2023-12-31"),
+                &[
+                    (Concept::TotalAssets, "1000"),
+                    (Concept::LongTermDebt, "270"),
+                    (Concept::CurrentAssets, "300"),
+                    (Concept::CurrentLiabilities, "200"),
+                ],
+            ),
+            (
+                instant("2024-12-31"),
+                &[
+                    (Concept::TotalAssets, "1200"),
+                    (Concept::LongTermDebt, "220"),
+                    (Concept::CurrentAssets, "360"),
+                    (Concept::CurrentLiabilities, "200"),
+                ],
+            ),
+        ];
+        let (changed, changed_concept, changed_amount) = change;
+        stated
+            .into_iter()
+            .map(|(period, given)| {
+                let resolutions = std::array::from_fn(|at| {
+                    let concept = Concept::ALL[at];
+                    let amount = if period == changed && concept == changed_concept {
+                        changed_amount
+                    } else {
+                        given
+                            .iter()
+                            .find(|(named, _)| *named == concept)
+                            .map_or("7", |(_, amount)| amount)
+                    };
+                    value(amount)
+                });
+                Row::at(period, resolutions)
+            })
+            .collect()
+    }
+
+    #[test]
+    fn every_piotroski_entry_is_a_count_of_signals() {
+        let piotroski: Vec<&str> = DERIVATIONS
+            .iter()
+            .filter(|derivation| derivation.entry.name.starts_with("piotroski_"))
+            .map(|derivation| {
+                assert_eq!(
+                    derivation.entry.unit,
+                    Unit::Signals,
+                    "{}",
+                    derivation.entry.name
+                );
+                derivation.entry.name
+            })
+            .collect();
+        assert_eq!(piotroski.len(), PIOTROSKI_SIGNALS + 1);
+        assert!(piotroski.contains(&"piotroski_f_score"));
+    }
+
+    #[test]
+    fn every_derivation_that_gives_one_of_the_eight_conditions_lists_it() {
+        let cases = [
+            (
+                (instant("2023-12-31"), Concept::TotalAssets, "0"),
+                ZERO_OPENING_TOTAL_ASSETS,
+            ),
+            (
+                (instant("2022-12-31"), Concept::TotalAssets, "0"),
+                ZERO_PRECEDING_OPENING_TOTAL_ASSETS,
+            ),
+            ((calendar("2024"), Concept::Revenue, "0"), ZERO_REVENUE),
+            (
+                (calendar("2023"), Concept::Revenue, "0"),
+                ZERO_PRECEDING_REVENUE,
+            ),
+            (
+                (instant("2024-12-31"), Concept::TotalAssets, "-1000"),
+                ZERO_AVERAGE_TOTAL_ASSETS,
+            ),
+            (
+                (instant("2022-12-31"), Concept::TotalAssets, "-1000"),
+                ZERO_PRECEDING_AVERAGE_TOTAL_ASSETS,
+            ),
+            (
+                (instant("2024-12-31"), Concept::CurrentLiabilities, "0"),
+                ZERO_CURRENT_LIABILITIES,
+            ),
+            (
+                (instant("2023-12-31"), Concept::CurrentLiabilities, "0"),
+                ZERO_PRECEDING_CURRENT_LIABILITIES,
+            ),
+        ];
+        let settings = Settings::preset();
+        for (change, condition) in cases {
+            let history = worked(change);
+            let computing = Computing::at(&history[0], &history, &settings);
+            let declined = Reason::declined(condition.into());
+            let gave: Vec<&str> = DERIVATIONS
+                .iter()
+                .filter(|derivation| derivation.entry.stated_at == Shape::Duration)
+                .filter(|derivation| {
+                    (derivation.derived)(&computing)
+                        .is_err_and(|reasons| reasons.each().any(|reason| *reason == declined))
+                })
+                .map(|derivation| {
+                    assert!(
+                        derivation.entry.conditions.contains(&condition),
+                        "{} gives {condition} and does not list it",
+                        derivation.entry.name
+                    );
+                    derivation.entry.name
+                })
+                .collect();
+            assert!(gave.contains(&"piotroski_f_score"), "{condition}");
+        }
     }
 }
