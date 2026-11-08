@@ -22,6 +22,7 @@ use crate::date::{START_NOT_A_DATE, day_before};
 use crate::settings::Settings;
 use year::Year;
 
+pub(super) mod price;
 pub(super) mod year;
 
 /// The `sought_by` of a read whose duration's opening instant the history
