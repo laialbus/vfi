@@ -1,10 +1,13 @@
 //! The one reader of a date in the derivation. It reads a date, steps it back
 //! one day and writes it in the grammar it was read in. Why a metric reads a
 //! date, and only so, is `docs/adr/which-other-period-a-metric-reads.md`'s,
-//! under the method version. Whether a date ends its month, whether two dates
-//! are a year apart in one month, and whether one date is on or before
-//! another are `docs/adr/which-duration-precedes-a-duration.md`'s, for the
-//! test of whether a duration is a year and for nothing else.
+//! under the method version. Whether a date ends its month and whether two
+//! dates are a year apart in one month are
+//! `docs/adr/which-duration-precedes-a-duration.md`'s, for the test of whether
+//! a duration is a year and for nothing else. Whether one date is on or before
+//! another is that record's and `docs/adr/share-basis-rule-dates.md`'s: the
+//! ordering is used by that record's alone clause and by the share-basis rule
+//! with its covered range, and by nothing else.
 
 use crate::constants::calendar::{
     CENTURY_DIVISOR, DAY_DIGITS, LEAP_CENTURY_DIVISOR, LEAP_DIVISOR, MONTH_DIGITS, MONTH_LENGTHS,
@@ -120,9 +123,14 @@ impl Date {
     /// same year and an earlier month, or the same month and an earlier or
     /// the same day.
     ///
-    /// The one ordering of dates in the derivation. It is for whether two
-    /// durations share a day and for nothing else: it never seeks a row,
-    /// never sorts and never picks the latest.
+    /// The one ordering of dates in the derivation, used by the alone clause
+    /// of `docs/adr/which-duration-precedes-a-duration.md` and by the
+    /// share-basis rule of `docs/adr/what-analyze-takes-and-returns.md` with
+    /// its covered range, and by nothing else. It never seeks a row and never
+    /// sorts. It picks the earliest and the latest only among the trading
+    /// dates of one crossing's prices, and the earlier and the later only of
+    /// a figure's period end and a close's trading date. It picks no period,
+    /// row or date of the history.
     pub(crate) fn on_or_before(self, other: Date) -> bool {
         (self.year, self.month, self.day) <= (other.year, other.month, other.day)
     }
