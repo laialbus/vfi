@@ -97,7 +97,7 @@ mod tests {
 
     fn formed(row: &Row) -> Result<Box<str>, Reasons> {
         let history = std::slice::from_ref(row);
-        (FREE_CASH_FLOW.derived)(&Computing::at(row, history, &Settings::preset()))
+        (FREE_CASH_FLOW.derived)(&Computing::at(row, history, None, &Settings::preset()))
             .map(|number| number.written())
     }
 

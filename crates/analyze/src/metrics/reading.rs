@@ -15,6 +15,7 @@ use std::ops::ControlFlow;
 
 use vfi_contracts::analyze_store::{Reason, Reasons};
 use vfi_contracts::canonical_concepts::{Concept, Period, Resolution, Row};
+use vfi_contracts::fetch_analyze::Crossing;
 
 use super::Derivation;
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
@@ -33,20 +34,28 @@ const OPENING_INSTANT: &str = "opening_instant";
 /// does not hold.
 const CLOSING_INSTANT: &str = "closing_instant";
 
-/// The row a metric computes at, the history beside it, and the settings
-/// it is computed under.
+/// The row a metric computes at, the history beside it, the crossing `analyze`
+/// was handed, or none, and the settings it is computed under.
 pub(super) struct Computing<'a> {
     row: &'a Row,
     history: &'a [Row],
+    crossing: Option<&'a Crossing>,
     settings: &'a Settings,
 }
 
 impl<'a> Computing<'a> {
-    /// At `row`, one of `history`'s periods, under `settings`.
-    pub(super) fn at(row: &'a Row, history: &'a [Row], settings: &'a Settings) -> Self {
+    /// At `row`, one of `history`'s periods, beside `crossing`, under
+    /// `settings`.
+    pub(super) fn at(
+        row: &'a Row,
+        history: &'a [Row],
+        crossing: Option<&'a Crossing>,
+        settings: &'a Settings,
+    ) -> Self {
         Computing {
             row,
             history,
+            crossing,
             settings,
         }
     }
@@ -607,7 +616,7 @@ mod tests {
     /// The two numbers `reading` reads at the duration `history` holds first.
     fn read_under(reading: Reading, history: &[Row]) -> Result<[Number; 2], Reasons> {
         read(
-            &Computing::at(&history[0], history, &Settings::preset()),
+            &Computing::at(&history[0], history, None, &Settings::preset()),
             &over_total_assets(reading),
         )
     }
@@ -752,7 +761,7 @@ mod tests {
         history: &[Row],
     ) -> Result<([Number; 2], [Number; 2]), Reasons> {
         let settings = Settings::preset();
-        let computing = Computing::at(&history[0], history, &settings);
+        let computing = Computing::at(&history[0], history, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         read_with_the_year_before(&year, &over_total_assets(reading))
     }
@@ -827,7 +836,7 @@ mod tests {
         history: &[Row],
     ) -> Result<([Number; 2], [Number; 2]), Reasons> {
         let settings = Settings::preset();
-        let computing = Computing::at(&history[0], history, &settings);
+        let computing = Computing::at(&history[0], history, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         read_averaged_with_the_year_before(&year, &over_total_assets(reading))
     }
@@ -905,7 +914,7 @@ mod tests {
     /// first.
     fn reads_once_under(history: &[Row]) -> Result<([Reads; 2], [Reads; 1]), Reasons> {
         let settings = Settings::preset();
-        let computing = Computing::at(&history[0], history, &settings);
+        let computing = Computing::at(&history[0], history, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         reads_once_with_the_year_before(
             &year,
@@ -1024,7 +1033,7 @@ mod tests {
             row(instant("2023-12-31"), "7"),
         ];
         let settings = Settings::preset();
-        let computing = Computing::at(&history[0], &history, &settings);
+        let computing = Computing::at(&history[0], &history, None, &settings);
         let declined = Reason::declined(START_NOT_A_DATE.into());
         let gave: Vec<&str> = DERIVATIONS
             .iter()
@@ -1054,6 +1063,7 @@ mod tests {
                 "sustainable_growth_on_common_equity",
                 "dividend_streak",
                 "discounted_cash_flow_value_per_share",
+                "discounted_cash_flow_margin_of_safety",
                 "dividend_growth_rate",
                 "piotroski_f_roa",
                 "piotroski_f_cfo",

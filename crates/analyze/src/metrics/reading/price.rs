@@ -13,6 +13,7 @@ use std::iter;
 use vfi_contracts::analyze_store::{CoveredRange, Prices, Reason};
 use vfi_contracts::fetch_analyze::{Answer, Crossing, Splits};
 
+use super::Computing;
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 use crate::date::Date;
 
@@ -20,10 +21,6 @@ use crate::date::Date;
 /// that is outside the grammar. It is `declined` because the price was
 /// answered and the rule is undefined at a date that states no day, as
 /// `docs/adr/share-basis-rule-dates.md` names it.
-#[cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric reads a price before the margin")
-)]
 pub(in crate::metrics) const SHARE_BASIS_DATE_NOT_A_DATE: &str = "share_basis_date_not_a_date";
 
 /// Nothing where a close traded `trading_date` can be put beside a figure
@@ -42,10 +39,6 @@ pub(in crate::metrics) const SHARE_BASIS_DATE_NOT_A_DATE: &str = "share_basis_da
 /// The close traded `trading_date` is a price in `crossing`, so a covered
 /// range exists. `docs/adr/share-basis-rule-dates.md` fixes the comparisons
 /// and that each clause reads its dates before comparing any.
-#[cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric reads a price before the margin")
-)]
 pub(in crate::metrics) fn share_basis(
     crossing: &Crossing,
     trading_date: &str,
@@ -123,10 +116,6 @@ pub(in crate::metrics) fn share_basis(
 ///
 /// The answer is read by its place in the crossing, so `date_not_asked` has
 /// no witness here. No other date, adjusted close or stand-in is read.
-#[cfg_attr(
-    not(test),
-    expect(dead_code, reason = "no metric reads a price before the margin")
-)]
 pub(in crate::metrics) fn close_at_valuation_date(
     crossing: Option<&Crossing>,
     period_end: &str,
@@ -144,6 +133,15 @@ pub(in crate::metrics) fn close_at_valuation_date(
             share_basis(crossing, trading_date, period_end)?;
             Number::read(close).ok_or_else(|| Reason::declined(INPUT_NOT_A_DECIMAL.into()))
         }
+    }
+}
+
+impl Computing<'_> {
+    /// The close at the valuation date, to be put beside a figure over the
+    /// duration computed at. The crossing is private to `reading`, so a metric
+    /// reaches it through this and in no other way.
+    pub(in crate::metrics) fn close_at_valuation_date(&self) -> Result<Number, Reason> {
+        close_at_valuation_date(self.crossing, self.duration().1)
     }
 }
 

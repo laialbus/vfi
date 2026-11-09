@@ -269,7 +269,7 @@ mod tests {
             .find(|row| *row.period() == duration(start, end))
             .expect("the duration is in the history");
         let settings = Settings::preset();
-        let computing = Computing::at(at, rows, &settings);
+        let computing = Computing::at(at, rows, None, &settings);
         match year(&computing) {
             Ok(year) => Answer::Year(year.before().map(|row| row.period().clone())),
             Err(reason) => Answer::Not(reason),
@@ -420,7 +420,7 @@ mod tests {
         let history = durations(&[("2024-01-01", "2024-12-31")]);
         let rows = history.periods();
         let settings = Settings::preset();
-        let computing = Computing::at(&rows[0], rows, &settings);
+        let computing = Computing::at(&rows[0], rows, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         assert_eq!(
             year.before(),
@@ -599,7 +599,7 @@ mod tests {
         );
         let rows = history.periods();
         let settings = Settings::preset();
-        let computing = Computing::at(&rows[0], rows, &settings);
+        let computing = Computing::at(&rows[0], rows, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         [year.closing_of_before(), year.opening_of_before()]
             .map(|read| read.map(|row| row.period().clone()))
@@ -644,7 +644,7 @@ mod tests {
         ]);
         let rows = history.periods();
         let settings = Settings::preset();
-        let computing = Computing::at(&rows[0], rows, &settings);
+        let computing = Computing::at(&rows[0], rows, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         let missing = || {
             Err(Reason::no_period(
@@ -662,7 +662,7 @@ mod tests {
         let history = durations(years);
         let rows = history.periods();
         let settings = Settings::preset();
-        let computing = Computing::at(&rows[0], rows, &settings);
+        let computing = Computing::at(&rows[0], rows, None, &settings);
         let year = year(&computing).expect("2022 is a year");
         year.series(2)
             .map(|read| read.map(|row| row.period().clone()))
@@ -728,7 +728,7 @@ mod tests {
         let history = durations(&[YEAR_2024, YEAR_2023, YEAR_2023]);
         let rows = history.periods();
         let settings = Settings::preset();
-        let computing = Computing::at(&rows[0], rows, &settings);
+        let computing = Computing::at(&rows[0], rows, None, &settings);
         let year = year(&computing).expect("2024 is a year");
         assert!(std::ptr::eq(
             year.before().expect("2023 is the year before"),
