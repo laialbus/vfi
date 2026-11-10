@@ -76,7 +76,7 @@ pub fn analyze(
 
     let premises =
         Premises::under(VERSION, settings.used()).expect("a field is declared once in a struct");
-    let results = results(&history, settings);
+    let results = results(&history, prices.as_ref(), settings);
     let prices = match prices {
         Some(crossing) => Prices::Asked { crossing },
         None => Prices::NotAsked {},
@@ -87,18 +87,21 @@ pub fn analyze(
 }
 
 /// The results at each period the history holds, each once, holding every
-/// metric stated at that period, under `settings`.
+/// metric stated at that period, beside `crossing`, under `settings`.
 ///
 /// The history states each period once. A period it repeated would still be
 /// one period, and is taken at its first row.
-fn results(history: &History, settings: &Settings) -> Vec<Results> {
+fn results(history: &History, crossing: Option<&Crossing>, settings: &Settings) -> Vec<Results> {
     let rows = history.periods();
     rows.iter()
         .enumerate()
         .filter(|(at, row)| !rows[..*at].iter().any(|seen| seen.period() == row.period()))
         .map(|(_, row)| {
-            Results::at(row.period().clone(), metrics::at(row, rows, settings))
-                .expect("no two entries share a name")
+            Results::at(
+                row.period().clone(),
+                metrics::at(row, rows, crossing, settings),
+            )
+            .expect("no two entries share a name")
         })
         .collect()
 }

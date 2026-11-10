@@ -10,6 +10,7 @@
 
 use vfi_contracts::analyze_store::{Metric, Outcome, Reason, Reasons};
 use vfi_contracts::canonical_concepts::{Concept, Period, Row};
+use vfi_contracts::fetch_analyze::Crossing;
 
 use crate::arithmetic::{INPUT_NOT_A_DECIMAL, Number};
 use crate::settings::Settings;
@@ -21,6 +22,7 @@ mod cash_ratio;
 mod common_shareholder;
 mod current_ratio;
 mod debt_to_equity;
+mod discounted_cash_flow_margin_of_safety;
 mod discounted_cash_flow_value_per_share;
 mod dividend_coverage;
 mod dividend_coverage_per_share;
@@ -82,6 +84,7 @@ const DERIVATIONS: &[Derivation] = &[
     sustainable_growth_on_common_equity::SUSTAINABLE_GROWTH_ON_COMMON_EQUITY,
     dividend_streak::DIVIDEND_STREAK,
     discounted_cash_flow_value_per_share::DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
+    discounted_cash_flow_margin_of_safety::DISCOUNTED_CASH_FLOW_MARGIN_OF_SAFETY,
     dividend_growth_rate::DIVIDEND_GROWTH_RATE,
     piotroski_f_roa::PIOTROSKI_F_ROA,
     piotroski_f_cfo::PIOTROSKI_F_CFO,
@@ -198,10 +201,16 @@ impl Shape {
 
 /// Every metric stated at `row`'s period, each once, by its entry's name, with
 /// its outcome there: its number written once, or the reasons it has none.
-/// `history` is every row the history holds, `row` among them, and every
-/// metric is computed under `settings`.
-pub(crate) fn at(row: &Row, history: &[Row], settings: &Settings) -> Vec<Metric> {
-    let computing = Computing::at(row, history, settings);
+/// `history` is every row the history holds, `row` among them, `crossing` is
+/// the crossing `analyze` was handed, or none, and every metric is computed
+/// under `settings`.
+pub(crate) fn at(
+    row: &Row,
+    history: &[Row],
+    crossing: Option<&Crossing>,
+    settings: &Settings,
+) -> Vec<Metric> {
+    let computing = Computing::at(row, history, crossing, settings);
     DERIVATIONS
         .iter()
         .filter(|derivation| derivation.entry.stated_at.holds(row.period()))

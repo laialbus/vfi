@@ -908,7 +908,7 @@ mod tests {
         let settings = Settings::preset();
         for (change, condition) in cases {
             let history = worked(change);
-            let computing = Computing::at(&history[0], &history, &settings);
+            let computing = Computing::at(&history[0], &history, None, &settings);
             let declined = Reason::declined(condition.into());
             let gave: Vec<&str> = DERIVATIONS
                 .iter()

@@ -70,17 +70,18 @@ use crate::date::START_NOT_A_DATE;
 /// Free cash flow over the year is zero or below. Grown at a positive rate an
 /// outflow is a larger outflow for ever, and a zero flow is worth nothing, so
 /// neither is a valuation.
-const NON_POSITIVE_FREE_CASH_FLOW: &str = "non_positive_free_cash_flow";
+pub(super) const NON_POSITIVE_FREE_CASH_FLOW: &str = "non_positive_free_cash_flow";
 
 /// The discount rate less the terminal growth rate is zero or below. At zero
 /// the perpetuity divides by zero, and below it the perpetuity has no finite
 /// sum.
-const DISCOUNT_RATE_NOT_ABOVE_TERMINAL_GROWTH: &str = "discount_rate_not_above_terminal_growth";
+pub(super) const DISCOUNT_RATE_NOT_ABOVE_TERMINAL_GROWTH: &str =
+    "discount_rate_not_above_terminal_growth";
 
 /// The diluted shares weighted over the year are zero or below. Zero is a
 /// zero divisor, and a negative count is no count and would turn the value's
 /// sign.
-const NON_POSITIVE_DILUTED_SHARES: &str = "non_positive_diluted_shares";
+pub(super) const NON_POSITIVE_DILUTED_SHARES: &str = "non_positive_diluted_shares";
 
 pub(super) const DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE: Derivation = Derivation {
     entry: Entry {
