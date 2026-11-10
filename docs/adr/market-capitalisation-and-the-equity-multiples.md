@@ -1,9 +1,9 @@
 # Market capitalisation is the valuation date's close times common shares outstanding, formed once and handed over nowhere; price/earnings sets the close over a year's diluted earnings per share, and price/book, price/sales and price/free cash flow set market capitalisation over common equity at an instant or a year's revenue or free cash flow; each declines at a zero or negative denominator
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-07, by `M5-58`
-- **Decided:**
+- **Decided:** 2026-11-08, by the decider
 - **Touches:** the valuation multiples that GOALS.md's fourth M5 criterion
   names, for the four whose numerator is the market value of equity, and the
   market capitalisation three of them share. It fixes the names and meanings
@@ -1098,7 +1098,68 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of four metrics that cross `analyze-store` v1 as characters, adds
+  five `declined` conditions under the accepted reason, and places one term
+  in a module of its own, all inside analyze. It edits no anchor, no
+  protected path, no gate, no contract byte, no schema and no milestone
+  scope, and asks for no allowlist entry. Flagged for later human review, as
+  the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - GOALS.md's fourth M5 criterion names "valuation multiples", and no
+    accepted record forms one. `canonical-concepts.md` names
+    `shares_outstanding` for market capitalisation and the diluted figure for
+    price/earnings, which is what the record reads for each.
+  - `common-shareholder-forms.md` (Accepted): `price_to_common_book` and its
+    common form are taken as fixed, its naming rule gives
+    `price_to_earnings_per_share` its `per_share` and the two totals neither
+    word, and `zero_common_equity` is reached from where that record defines
+    it. The negative-equity question that record left to "its own task" is
+    decided here with the chapter's page 5 against its page 2.
+  - `what-analyze-takes-and-returns.md` (Accepted): the share-basis rule
+    reaches every metric through `shares_outstanding` or a per-share
+    denominator, as the record says, and its example "P/E on non-positive
+    earnings" is the record's condition. `share-basis-rule-dates.md`
+    (Accepted) fixes E as the duration's end, and the record follows it
+    without proposing a change.
+  - `which-other-period-a-metric-reads.md` (Accepted): the record reads the
+    averaging sentence as reaching the count, the reading the discounted cash
+    flow record's review called "as written" for net debt. It names the
+    closing-count reading as the one the term wants and leaves it to a
+    superseding record. That is the right shape: no accepted sentence is
+    narrowed here.
+  - `discounted-cash-flow-and-margin-of-safety.md` (Accepted): free cash flow
+    is read from its one module, `non_positive_close` is reached from beside
+    that margin, and the price read's order of reasons is the same.
+  - The five reached constants exist on main under the characters the record
+    names: `ZERO_EARNINGS_PER_SHARE_DILUTED` beside
+    `dividend_payout_per_share`, `ZERO_COMMON_EQUITY`, `ZERO_REVENUE` in
+    `mod.rs`, `ZERO_FREE_CASH_FLOW`, and `non_positive_close` where M5-55
+    will define it. `Unit` carries no currency, as the record says.
+  - The proof's figures re-derive by hand: `15`, `3`, `0.5`, `12`, `2.75`,
+    `0.4125` and `9.9`, the `0.55` and `13.2` the closing count alone would
+    give, and `not_covered` at 2023-12-31 under the preset crossing.
+  - Every quotation and digest the task names is present; the four sha256
+    digests match the task's.
+  - The alternatives as argued: the diluted count, net income, total equity,
+    a past close per period, a signed negative multiple, enterprise value
+    here, and deferral past the provider are each rejected on a quoted
+    source or an accepted record. The two "not rejected on its merits" items
+    are the open questions, correctly left to records of their own.
+- **Verdict and why:** Accepted. It decides what the four multiples are from
+  the sources it opened, reuses every term and condition already defined
+  rather than forming a second, and is honest about the two places where an
+  accepted sentence gives a worse answer than the term wants, pinning the
+  cost in a test instead of editing the sentence. A negative denominator as
+  a condition for all four is a choice a human may want to revisit, since it
+  absents every loss year; the record's reason, that a signed multiple sorts
+  the worst filer first, is the one that holds for a screening tool.
+- **What would have changed it:** a metric here forming market capitalisation
+  itself, or a second `const` for a reached condition; a form a quoted page
+  states otherwise; the averaged count presented as the count the term wants
+  rather than as the rule's cost; or any edit to the period or share-basis
+  sentence instead of an open question.
+- **Flagged for the human:** the two open questions the record names, the
+  averaging sentence's reach over a count the price multiplies and the
+  opening count the rule does not see; a negative denominator as a condition
+  for all four; and price/sales read over a year on chapter 20's page 4.
