@@ -386,6 +386,9 @@ fn the_setting_arrives_last_among_the_premises_and_the_version_stays() {
             ("discounted_cash_flow_years", "5"),
             ("discounted_cash_flow_terminal_growth_rate", "0.02"),
             ("dividend_growth_years", "3"),
+            ("dividend_discount_required_return", "0.0802"),
+            ("dividend_discount_growth_rate", "0.02"),
+            ("dividend_discount_base_years", "5"),
         ]
     );
 }

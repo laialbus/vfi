@@ -2,27 +2,22 @@
 //! preset and the preset's reason is
 //! `docs/adr/discounted-cash-flow-and-margin-of-safety.md`'s.
 //!
-//! A rate is handed as characters and read by the one reader, so a value
-//! outside the reading grammar is outside the domain, as is one that the one
-//! writer could not write back as itself.
-//!
 //! That the discount rate is above the terminal growth rate is not a domain.
 //! Each constructor sees one value, so the metric asks it, as the `declined`
 //! condition `discount_rate_not_above_terminal_growth`.
 
-use std::cmp::Ordering;
 use std::num::NonZeroUsize;
 
-use super::{Refused, Settings, Written};
+use super::{Refused, Settings, Written, read_above_minus_one, read_above_zero};
 use crate::arithmetic::Number;
 
 /// `discounted_cash_flow_discount_rate`: the annual rate each year's flow and
 /// the terminal value are discounted at, the return required of the capital
 /// the flow serves.
 ///
-/// Unit: a rate per year, a fraction of one. Domain: [`ABOVE_ZERO`]. At zero
-/// or below, a later flow is worth at least as much as an earlier one, which
-/// is no required return.
+/// Unit: a rate per year, a fraction of one. Domain: [`super::ABOVE_ZERO`].
+/// At zero or below, a later flow is worth at least as much as an earlier
+/// one, which is no required return.
 ///
 /// Preset: [`DiscountRate::PRESET`], `0.0772`, the cost of capital of the
 /// United States market outside financial firms. A filer valued at the preset
@@ -46,9 +41,9 @@ pub(crate) struct DiscountRate(Number);
 /// `discounted_cash_flow_growth_rate`: the annual rate the base flow grows at
 /// in each forecast year.
 ///
-/// Unit: a rate per year, a fraction of one. Domain: [`ABOVE_MINUS_ONE`]. At
-/// minus one every later flow is zero, and below it the flows alternate in
-/// sign. Neither is a rate of growth.
+/// Unit: a rate per year, a fraction of one. Domain:
+/// [`super::ABOVE_MINUS_ONE`]. At minus one every later flow is zero, and
+/// below it the flows alternate in sign. Neither is a rate of growth.
 ///
 /// Preset: [`GrowthRate::PRESET`], `0.02`, the terminal growth rate's preset.
 /// No source fixes it, so this is the record's own decision: "No source fixes
@@ -78,8 +73,8 @@ pub(crate) struct ForecastYears(NonZeroUsize);
 /// `discounted_cash_flow_terminal_growth_rate`: the annual rate the flow grows
 /// at for ever after the forecast.
 ///
-/// Unit: a rate per year, a fraction of one. Domain: [`ABOVE_MINUS_ONE`], for
-/// the growth rate's reason.
+/// Unit: a rate per year, a fraction of one. Domain:
+/// [`super::ABOVE_MINUS_ONE`], for the growth rate's reason.
 ///
 /// Preset: [`TerminalGrowthRate::PRESET`], `0.02`, the inflation the Federal
 /// Reserve takes as its goal. A perpetuity growing at expected inflation grows
@@ -99,14 +94,6 @@ pub(crate) struct ForecastYears(NonZeroUsize);
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub(crate) struct TerminalGrowthRate(Number);
 
-/// The values `discounted_cash_flow_discount_rate` admits.
-const ABOVE_ZERO: &str =
-    "rates above zero, each a decimal of no more significant digits than a figure is written to";
-
-/// The values `discounted_cash_flow_growth_rate` and
-/// `discounted_cash_flow_terminal_growth_rate` admit.
-const ABOVE_MINUS_ONE: &str = "rates above minus one, each a decimal of no more significant digits than a figure is written to";
-
 /// The values `discounted_cash_flow_years` admits.
 const POSITIVE_INTEGERS: &str = "the positive integers";
 
@@ -114,7 +101,7 @@ impl DiscountRate {
     const PRESET: &'static str = "0.0772";
 
     fn read(rate: &str) -> Result<DiscountRate, Refused> {
-        read_rate(rate, ABOVE_ZERO, |rate| rate.sign() == Ordering::Greater).map(DiscountRate)
+        read_above_zero(rate).map(DiscountRate)
     }
 
     pub(super) fn preset() -> DiscountRate {
@@ -126,7 +113,7 @@ impl GrowthRate {
     const PRESET: &'static str = "0.02";
 
     pub(super) fn preset() -> GrowthRate {
-        GrowthRate(read_growth(GrowthRate::PRESET).expect("the preset is above minus one"))
+        GrowthRate(read_above_minus_one(GrowthRate::PRESET).expect("the preset is above minus one"))
     }
 }
 
@@ -140,28 +127,10 @@ impl TerminalGrowthRate {
 
     pub(super) fn preset() -> TerminalGrowthRate {
         TerminalGrowthRate(
-            read_growth(TerminalGrowthRate::PRESET).expect("the preset is above minus one"),
+            read_above_minus_one(TerminalGrowthRate::PRESET)
+                .expect("the preset is above minus one"),
         )
     }
-}
-
-/// The rate the characters state, or refused where they are outside the
-/// reading grammar, have more significant digits than a figure is written to,
-/// or state a rate that `admits` does not.
-fn read_rate(
-    rate: &str,
-    domain: &'static str,
-    admits: fn(&Number) -> bool,
-) -> Result<Number, Refused> {
-    Number::read(rate)
-        .filter(|read| read.within_significant_digits() && admits(read))
-        .ok_or_else(|| Refused::of(domain, rate))
-}
-
-fn read_growth(rate: &str) -> Result<Number, Refused> {
-    read_rate(rate, ABOVE_MINUS_ONE, |rate| {
-        Number::one().plus(rate).sign() == Ordering::Greater
-    })
 }
 
 /// Every rate is within `SIGNIFICANT_DIGITS`, so the value written is the
@@ -214,7 +183,7 @@ impl Settings {
         mut self,
         rate: &str,
     ) -> Result<Settings, Refused> {
-        self.discounted_cash_flow_growth_rate = GrowthRate(read_growth(rate)?);
+        self.discounted_cash_flow_growth_rate = GrowthRate(read_above_minus_one(rate)?);
         Ok(self)
     }
 
@@ -234,7 +203,8 @@ impl Settings {
         mut self,
         rate: &str,
     ) -> Result<Settings, Refused> {
-        self.discounted_cash_flow_terminal_growth_rate = TerminalGrowthRate(read_growth(rate)?);
+        self.discounted_cash_flow_terminal_growth_rate =
+            TerminalGrowthRate(read_above_minus_one(rate)?);
         Ok(self)
     }
 
@@ -257,9 +227,9 @@ impl Settings {
 
 #[cfg(test)]
 mod tests {
-    use super::{ABOVE_MINUS_ONE, ABOVE_ZERO, POSITIVE_INTEGERS};
+    use super::POSITIVE_INTEGERS;
     use crate::arithmetic::Number;
-    use crate::settings::{Refused, Settings};
+    use crate::settings::{ABOVE_MINUS_ONE, ABOVE_ZERO, Refused, Settings};
 
     const THIRTY_FIVE_DIGITS: &str = "0.12345678901234567890123456789012345";
 
