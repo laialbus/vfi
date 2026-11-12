@@ -26,6 +26,7 @@ mod discounted_cash_flow_margin_of_safety;
 mod discounted_cash_flow_value_per_share;
 mod dividend_coverage;
 mod dividend_coverage_per_share;
+mod dividend_discount_value_per_share;
 mod dividend_growth_rate;
 mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
@@ -86,6 +87,7 @@ const DERIVATIONS: &[Derivation] = &[
     discounted_cash_flow_value_per_share::DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
     discounted_cash_flow_margin_of_safety::DISCOUNTED_CASH_FLOW_MARGIN_OF_SAFETY,
     dividend_growth_rate::DIVIDEND_GROWTH_RATE,
+    dividend_discount_value_per_share::DIVIDEND_DISCOUNT_VALUE_PER_SHARE,
     piotroski_f_roa::PIOTROSKI_F_ROA,
     piotroski_f_cfo::PIOTROSKI_F_CFO,
     piotroski_f_accrual::PIOTROSKI_F_ACCRUAL,

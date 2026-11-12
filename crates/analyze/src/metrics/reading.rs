@@ -11,6 +11,7 @@
 //! is computed under as one [`Computing`], whose rows only this module reads,
 //! so no metric finds a row itself.
 
+use std::num::NonZeroUsize;
 use std::ops::ControlFlow;
 
 use vfi_contracts::analyze_store::{Reason, Reasons};
@@ -480,6 +481,25 @@ pub(super) fn yearly<'a>(
         .map(move |found| found.and_then(|row| input(row, concept)))
 }
 
+/// What `concept` states at each of the `years` years ending at `year`, in
+/// series order; or, where any read states none, a reason for each read that
+/// states none, in read order. Every read is made, none stops another, and
+/// two reads that give the same reason give it twice. The window is `years`
+/// reads whatever they give: it is never shortened to the years found.
+pub(super) fn over_years(
+    year: &Year<'_, '_>,
+    concept: Concept,
+    years: NonZeroUsize,
+) -> Result<Vec<Number>, Reasons> {
+    let (stated, absent): (Vec<_>, Vec<_>) =
+        yearly(year, concept, years.get() - 1).partition(Result::is_ok);
+    let mut reasons = absent.into_iter().filter_map(Result::err);
+    if let Some(first) = reasons.next() {
+        return Err(Reasons::of(first, reasons.collect()));
+    }
+    Ok(stated.into_iter().filter_map(Result::ok).collect())
+}
+
 /// What `concept` states at `year` and at the last year of its series `back`
 /// years back, in that order; or a reason for each of the two reads that
 /// states none, in that order. Every year between is found by the series and
@@ -508,7 +528,7 @@ pub(super) fn first_and_last(
 
 /// The sum of `numbers` divided by how many were summed, the count starting
 /// at zero and stepping by one.
-fn mean(numbers: impl Iterator<Item = Number>) -> Number {
+pub(super) fn mean(numbers: impl Iterator<Item = Number>) -> Number {
     let (sum, count) = numbers.fold((Number::zero(), Number::zero()), |(sum, count), number| {
         (sum.plus(&number), count.plus(&Number::one()))
     });
@@ -1065,6 +1085,7 @@ mod tests {
                 "discounted_cash_flow_value_per_share",
                 "discounted_cash_flow_margin_of_safety",
                 "dividend_growth_rate",
+                "dividend_discount_value_per_share",
                 "piotroski_f_roa",
                 "piotroski_f_cfo",
                 "piotroski_f_accrual",
