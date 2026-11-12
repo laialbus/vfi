@@ -112,7 +112,7 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
             .map(|setting| (setting.name.to_string(), setting.value.to_string()))
             .collect::<Vec<_>>()
     };
-    let named = |values: [&str; 6]| {
+    let named = |values: [&str; 9]| {
         [
             "dividend_streak_years",
             "discounted_cash_flow_discount_rate",
@@ -120,6 +120,9 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
             "discounted_cash_flow_years",
             "discounted_cash_flow_terminal_growth_rate",
             "dividend_growth_years",
+            "dividend_discount_required_return",
+            "dividend_discount_growth_rate",
+            "dividend_discount_base_years",
         ]
         .into_iter()
         .zip(values)
@@ -129,7 +132,9 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
 
     assert_eq!(
         recorded(&Settings::preset()),
-        named(["10", "0.0772", "0.02", "5", "0.02", "5"])
+        named([
+            "10", "0.0772", "0.02", "5", "0.02", "5", "0.0802", "0.02", "5"
+        ])
     );
     let handed = Settings::preset()
         .with_dividend_streak_years(2)
@@ -138,10 +143,15 @@ fn the_premises_are_the_version_and_each_setting_by_name_with_the_value_handed()
         .and_then(|settings| settings.with_discounted_cash_flow_years(12))
         .and_then(|settings| settings.with_discounted_cash_flow_terminal_growth_rate("0.015"))
         .and_then(|settings| settings.with_dividend_growth_years(3))
+        .and_then(|settings| settings.with_dividend_discount_required_return("0.09"))
+        .and_then(|settings| settings.with_dividend_discount_growth_rate("0.035"))
+        .and_then(|settings| settings.with_dividend_discount_base_years(7))
         .expect("each value is inside its domain");
     assert_eq!(
         recorded(&handed),
-        named(["2", "0.1", "-0.05", "12", "0.015", "3"])
+        named([
+            "2", "0.1", "-0.05", "12", "0.015", "3", "0.09", "0.035", "7"
+        ])
     );
 }
 
@@ -224,6 +234,106 @@ fn a_discount_rate_not_above_the_terminal_growth_rate_is_admitted_by_each_constr
             .with_discounted_cash_flow_discount_rate("0.03")
             .is_ok()
     );
+}
+
+#[test]
+fn a_dividend_discount_setting_outside_its_domain_is_refused_naming_it_and_the_value() {
+    let above_zero = "rates above zero, each a decimal of no more significant digits than a figure is written to";
+    let above_minus_one = "rates above minus one, each a decimal of no more significant digits than a figure is written to";
+    let from_two = "the integers from two up";
+    let thirty_five_digits = "0.12345678901234567890123456789012345";
+    let preset = Settings::preset;
+
+    let refusals = [
+        (
+            preset().with_dividend_discount_required_return("0"),
+            above_zero,
+            "0",
+        ),
+        (
+            preset().with_dividend_discount_required_return("-0.01"),
+            above_zero,
+            "-0.01",
+        ),
+        (
+            preset().with_dividend_discount_required_return(thirty_five_digits),
+            above_zero,
+            thirty_five_digits,
+        ),
+        (
+            preset().with_dividend_discount_required_return("8.02%"),
+            above_zero,
+            "8.02%",
+        ),
+        (
+            preset().with_dividend_discount_growth_rate("-1"),
+            above_minus_one,
+            "-1",
+        ),
+        (
+            preset().with_dividend_discount_growth_rate(thirty_five_digits),
+            above_minus_one,
+            thirty_five_digits,
+        ),
+        (preset().with_dividend_discount_base_years(0), from_two, "0"),
+        (preset().with_dividend_discount_base_years(1), from_two, "1"),
+    ];
+    for (outcome, domain, value) in refusals {
+        let refused = outcome.expect_err("the value is outside the domain");
+        assert_eq!((refused.domain(), refused.value()), (domain, value));
+    }
+}
+
+#[test]
+fn a_dividend_discount_setting_inside_its_domain_is_the_value_recorded() {
+    let recorded = |settings: Settings| {
+        analyze(history(), None, &settings)
+            .expect("no crossing is handed")
+            .premises()
+            .settings()
+            .iter()
+            .rev()
+            .take(3)
+            .map(|setting| (setting.name.to_string(), setting.value.to_string()))
+            .collect::<Vec<_>>()
+    };
+    let named = |required: &str, growth: &str, years: &str| {
+        vec![
+            ("dividend_discount_base_years".to_owned(), years.to_owned()),
+            (
+                "dividend_discount_growth_rate".to_owned(),
+                growth.to_owned(),
+            ),
+            (
+                "dividend_discount_required_return".to_owned(),
+                required.to_owned(),
+            ),
+        ]
+    };
+
+    let widest = Settings::preset()
+        .with_dividend_discount_base_years(u16::MAX)
+        .expect("the largest u16 is inside the domain");
+    assert_eq!(recorded(widest), named("0.0802", "0.02", "65535"));
+    let fewest = Settings::preset()
+        .with_dividend_discount_base_years(2)
+        .expect("two is inside the domain");
+    assert_eq!(recorded(fewest), named("0.0802", "0.02", "2"));
+}
+
+#[test]
+fn a_required_return_not_above_the_growth_rate_is_admitted_in_either_order() {
+    for growth in ["0.0802", "0.09"] {
+        let one_way = Settings::preset()
+            .with_dividend_discount_required_return("0.0802")
+            .and_then(|settings| settings.with_dividend_discount_growth_rate(growth))
+            .expect("each value is inside its domain");
+        let other_way = Settings::preset()
+            .with_dividend_discount_growth_rate(growth)
+            .and_then(|settings| settings.with_dividend_discount_required_return("0.0802"))
+            .expect("each value is inside its domain");
+        assert_eq!(one_way, other_way);
+    }
 }
 
 #[test]

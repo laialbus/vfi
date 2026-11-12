@@ -715,6 +715,9 @@ fn the_premises_are_the_six_settings_under_method_version_one() {
             ("discounted_cash_flow_years", "2"),
             ("discounted_cash_flow_terminal_growth_rate", "0"),
             ("dividend_growth_years", "5"),
+            ("dividend_discount_required_return", "0.0802"),
+            ("dividend_discount_growth_rate", "0.02"),
+            ("dividend_discount_base_years", "5"),
         ]
     );
 }
