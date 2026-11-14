@@ -16,8 +16,11 @@ use vfi_contracts::canonical_concepts::Concept;
 use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
 
-/// Dividends declared per share are zero, and nothing is a multiple of zero.
-const ZERO_DIVIDENDS_DECLARED_PER_SHARE: &str = "zero_dividends_declared_per_share";
+/// Dividends declared per share are zero at the period the metric is stated
+/// at. Nothing is a multiple of zero, and a year that declared nothing shows
+/// no dividend to value as continuing. The dividend discount value reaches
+/// this one definition.
+pub(super) const ZERO_DIVIDENDS_DECLARED_PER_SHARE: &str = "zero_dividends_declared_per_share";
 
 pub(super) const DIVIDEND_COVERAGE_PER_SHARE: Derivation = Derivation {
     entry: Entry {

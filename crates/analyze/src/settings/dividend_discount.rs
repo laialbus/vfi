@@ -193,26 +193,14 @@ impl Settings {
         Ok(self)
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "no metric reads the required return yet")
-    )]
     pub(crate) fn dividend_discount_required_return(&self) -> &Number {
         &self.dividend_discount_required_return.0
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "no metric reads the dividend's growth rate yet")
-    )]
     pub(crate) fn dividend_discount_growth_rate(&self) -> &Number {
         &self.dividend_discount_growth_rate.0
     }
 
-    #[cfg_attr(
-        not(test),
-        expect(dead_code, reason = "no metric reads the base years yet")
-    )]
     pub(crate) fn dividend_discount_base_years(&self) -> NonZeroU16 {
         self.dividend_discount_base_years.0
     }
