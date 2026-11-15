@@ -116,7 +116,8 @@ use crate::date::START_NOT_A_DATE;
 /// The required return less the growth rate is zero or below. At equality the
 /// divisor is zero, and below it the chapter's page 4 says "the value per
 /// share becomes negative".
-const REQUIRED_RETURN_NOT_ABOVE_GROWTH_RATE: &str = "required_return_not_above_growth_rate";
+pub(super) const REQUIRED_RETURN_NOT_ABOVE_GROWTH_RATE: &str =
+    "required_return_not_above_growth_rate";
 
 pub(super) const DIVIDEND_DISCOUNT_VALUE_PER_SHARE: Derivation = Derivation {
     entry: Entry {
