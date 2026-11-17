@@ -16,6 +16,9 @@ const VALUE: &str = "discounted_cash_flow_value_per_share";
 
 const MARGIN: &str = "discounted_cash_flow_margin_of_safety";
 
+/// The other metric that reads a price.
+const DIVIDEND_DISCOUNT_MARGIN: &str = "dividend_discount_margin_of_safety";
+
 const OPENING: &str = "2023-12-31";
 
 const E: &str = "2024-12-31";
@@ -678,13 +681,13 @@ fn an_instant_carries_no_margin() {
 }
 
 #[test]
-fn the_crossing_moves_no_other_metric_and_is_handed_on_as_it_came() {
+fn the_crossing_moves_no_metric_but_the_two_that_read_a_price_and_is_handed_on_as_it_came() {
     let others = |hand_over: &HandOver| {
         hand_over
             .results()
             .iter()
             .flat_map(|results| results.metrics())
-            .filter(|metric| &*metric.name != MARGIN)
+            .filter(|metric| ![MARGIN, DIVIDEND_DISCOUNT_MARGIN].contains(&&*metric.name))
             .map(|metric| (metric.name.clone(), metric.outcome.clone()))
             .collect::<Vec<_>>()
     };

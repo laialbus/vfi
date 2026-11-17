@@ -40,7 +40,7 @@ const NON_POSITIVE_VALUE_PER_SHARE: &str = "non_positive_value_per_share";
 
 /// The close is zero or below. Over a zero or negative close the form gives
 /// its most flattering figures.
-const NON_POSITIVE_CLOSE: &str = "non_positive_close";
+pub(super) const NON_POSITIVE_CLOSE: &str = "non_positive_close";
 
 pub(super) const DISCOUNTED_CASH_FLOW_MARGIN_OF_SAFETY: Derivation = Derivation {
     entry: Entry {
@@ -88,13 +88,7 @@ fn discounted_cash_flow_margin_of_safety(computing: &Computing) -> Result<Number
             if value.sign() != Ordering::Greater {
                 return Err(declined(NON_POSITIVE_VALUE_PER_SHARE));
             }
-            if close.sign() != Ordering::Greater {
-                return Err(declined(NON_POSITIVE_CLOSE));
-            }
-            Ok(value
-                .minus(&close)
-                .divided(&value)
-                .expect("the value is above zero"))
+            margin_of_safety(&value, &close)
         }
         (value, close) => {
             let mut reasons = value
@@ -108,6 +102,19 @@ fn discounted_cash_flow_margin_of_safety(computing: &Computing) -> Result<Number
             Err(Reasons::of(first, reasons.collect()))
         }
     }
+}
+
+/// The form, written once for every margin of safety: `value` less `close`,
+/// over `value`, or [`NON_POSITIVE_CLOSE`] where `close` is zero or below.
+/// `value` is above zero, which the caller shows before asking.
+pub(super) fn margin_of_safety(value: &Number, close: &Number) -> Result<Number, Reasons> {
+    if close.sign() != Ordering::Greater {
+        return Err(declined(NON_POSITIVE_CLOSE));
+    }
+    Ok(value
+        .minus(close)
+        .divided(value)
+        .expect("the value is above zero"))
 }
 
 #[cfg(test)]
