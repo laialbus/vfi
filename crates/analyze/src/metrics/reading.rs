@@ -1087,6 +1087,7 @@ mod tests {
                 "dividend_growth_rate",
                 "dividend_discount_value_per_share",
                 "dividend_discount_margin_of_safety",
+                "price_to_earnings_per_share",
                 "piotroski_f_roa",
                 "piotroski_f_cfo",
                 "piotroski_f_accrual",

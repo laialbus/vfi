@@ -50,6 +50,7 @@ mod piotroski_f_delta_roa;
 mod piotroski_f_delta_turn;
 mod piotroski_f_roa;
 mod piotroski_f_score;
+mod price_to_earnings_per_share;
 mod quick_ratio;
 mod reading;
 mod retention_per_share;
@@ -90,6 +91,7 @@ const DERIVATIONS: &[Derivation] = &[
     dividend_growth_rate::DIVIDEND_GROWTH_RATE,
     dividend_discount_value_per_share::DIVIDEND_DISCOUNT_VALUE_PER_SHARE,
     dividend_discount_margin_of_safety::DIVIDEND_DISCOUNT_MARGIN_OF_SAFETY,
+    price_to_earnings_per_share::PRICE_TO_EARNINGS_PER_SHARE,
     piotroski_f_roa::PIOTROSKI_F_ROA,
     piotroski_f_cfo::PIOTROSKI_F_CFO,
     piotroski_f_accrual::PIOTROSKI_F_ACCRUAL,

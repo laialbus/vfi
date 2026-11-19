@@ -24,8 +24,11 @@ const VALUE: &str = "dividend_discount_value_per_share";
 
 const MARGIN: &str = "dividend_discount_margin_of_safety";
 
-/// The other metric that reads a price.
-const DISCOUNTED_CASH_FLOW_MARGIN: &str = "discounted_cash_flow_margin_of_safety";
+/// The other metrics that read a price.
+const OTHERS_PRICED: [&str; 2] = [
+    "discounted_cash_flow_margin_of_safety",
+    "price_to_earnings_per_share",
+];
 
 const ZERO: &str = "zero_dividends_declared_per_share";
 
@@ -559,13 +562,13 @@ fn the_margin_is_stated_at_every_duration_and_at_no_instant() {
 }
 
 #[test]
-fn the_crossing_moves_no_metric_but_the_two_that_read_a_price_and_is_handed_on_as_it_came() {
+fn the_crossing_moves_no_metric_but_those_that_read_a_price_and_is_handed_on_as_it_came() {
     let others = |hand_over: &HandOver| {
         hand_over
             .results()
             .iter()
             .flat_map(|results| results.metrics())
-            .filter(|metric| ![MARGIN, DISCOUNTED_CASH_FLOW_MARGIN].contains(&&*metric.name))
+            .filter(|metric| &*metric.name != MARGIN && !OTHERS_PRICED.contains(&&*metric.name))
             .map(|metric| (metric.name.clone(), metric.outcome.clone()))
             .collect::<Vec<_>>()
     };
