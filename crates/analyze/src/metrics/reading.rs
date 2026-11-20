@@ -206,6 +206,23 @@ impl Reads {
         }
     }
 
+    /// `operation` taken at each read, in read order: a term the input forms
+    /// with a number read once, at each row the input was read at and before
+    /// any mean; or what `operation` refuses the first read it refuses with.
+    pub(super) fn each<E>(
+        &self,
+        operation: impl Fn(&Number) -> Result<Number, E>,
+    ) -> Result<Reads, E> {
+        Ok(Reads {
+            reading: self.reading,
+            numbers: self
+                .numbers
+                .iter()
+                .map(operation)
+                .collect::<Result<_, _>>()?,
+        })
+    }
+
     /// `operation` taken read by read over `self` and `other`, which were read
     /// at the same rows: a term two inputs form at each row, before any mean.
     pub(super) fn with(&self, other: &Reads, operation: fn(&Number, &Number) -> Number) -> Reads {
