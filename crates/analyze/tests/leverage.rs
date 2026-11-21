@@ -342,7 +342,8 @@ fn an_instant_carries_each_metric_by_its_entrys_name_in_order() {
             "liabilities_to_assets",
             "current_ratio",
             "quick_ratio",
-            "cash_ratio"
+            "cash_ratio",
+            "price_to_common_book"
         ]
     );
 }

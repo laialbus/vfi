@@ -11,6 +11,7 @@
 use std::iter;
 
 use vfi_contracts::analyze_store::{CoveredRange, Prices, Reason};
+use vfi_contracts::canonical_concepts::Period;
 use vfi_contracts::fetch_analyze::{Answer, Crossing, Splits};
 
 use super::Computing;
@@ -137,11 +138,18 @@ pub(in crate::metrics) fn close_at_valuation_date(
 }
 
 impl Computing<'_> {
-    /// The close at the valuation date, to be put beside a figure over the
-    /// duration computed at. The crossing is private to `reading`, so a metric
-    /// reaches it through this and in no other way.
+    /// The close at the valuation date, to be put beside a figure at the
+    /// period computed at: E is a duration's end, as
+    /// `docs/adr/share-basis-rule-dates.md` fixes it, and an instant's date,
+    /// as `docs/adr/market-capitalisation-and-the-equity-multiples.md` does.
+    /// The crossing is private to `reading`, so a metric reaches it through
+    /// this and in no other way.
     pub(in crate::metrics) fn close_at_valuation_date(&self) -> Result<Number, Reason> {
-        close_at_valuation_date(self.crossing, self.duration().1)
+        let period_end = match self.row.period() {
+            Period::Duration { end, .. } => end,
+            Period::Instant { at } => at,
+        };
+        close_at_valuation_date(self.crossing, period_end)
     }
 }
 

@@ -356,7 +356,8 @@ fn each_period_holds_its_results_and_the_metrics_stated_at_it() {
             "liabilities_to_assets",
             "current_ratio",
             "quick_ratio",
-            "cash_ratio"
+            "cash_ratio",
+            "price_to_common_book"
         ]
     );
     assert!(names(1).contains(&"gross_margin"), "{:?}", names(1));
