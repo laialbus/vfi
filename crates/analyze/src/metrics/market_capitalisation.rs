@@ -1,8 +1,8 @@
 //! Market capitalisation, formed once, here: the unadjusted close at the
 //! valuation date times common shares outstanding. Every metric that reads it
 //! reads it from this module, and none writes the product itself:
-//! `price_to_common_book`, and price/sales, price/free cash flow, enterprise
-//! value and Altman's X₄ when they are built. What it is, and
+//! `price_to_common_book` and `price_to_sales`, and price/free cash flow,
+//! enterprise value and Altman's X₄ when they are built. What it is, and
 //! which metrics read it, is
 //! `docs/adr/market-capitalisation-and-the-equity-multiples.md`'s, under the
 //! method version.
