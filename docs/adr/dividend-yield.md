@@ -1,9 +1,9 @@
 # The dividend yield is a year's dividends declared per common share over the unadjusted close at the valuation date, stated at each year beside that one close; a year that declared nothing yields zero, and a negative dividend or a close of zero or below declines
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-20, by `M5-67`
-- **Decided:**
+- **Decided:** 2026-11-20, by the decider
 - **Touches:** the yield that GOALS.md's fifth M5 criterion names in "yield
   and relative yield", and the yield alone. It fixes the name and meaning of
   one metric, which cross `analyze-store` v1 as characters, and no byte of
@@ -785,7 +785,66 @@ invariant, and edits none of them.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the name and meaning
+  of one metric that crosses `analyze-store` v1 as characters, and a formula
+  under the method version, all inside analyze. It edits no anchor, no
+  protected path, no gate, no contract byte, no schema and no milestone
+  scope, and adds no condition, reason, setting or constant. Leaving
+  relative yield to its own record defers a record, not GOALS.md's scope.
+  Flagged for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Every quotation of an accepted record against main, whitespace collapsed:
+    the catalogue and open-questions records on the concept, the provider
+    record's four sentences, the common-shareholder record's list and naming
+    rule, the analyze record, the share-basis, series, discounted cash flow
+    and arithmetic records. The v2 fields were read in the contract file:
+    `flow`, `currency_per_share`, `as_presented`, all five kinds, and both
+    arms of the conditional silence.
+  - `negative_dividends_declared_per_share` stands once, beside the streak,
+    under the words quoted, and `non_positive_close` once, beside the
+    discounted cash flow margin. Each is already `pub(super)`, so the record
+    is right that no visibility widens. The share-basis record says the year
+    test gives `end_not_a_date` before E reaches the rule.
+  - The chapter was downloaded whole again in the deciding run: 4,678,827
+    bytes at the sha256 the record names. Each quotation was found in the
+    half-sheet of the printed page named. Page 16's cells are as quoted, and
+    $0.35 over $32.28 and over $22.69 give its 1.08% and 1.54%. The edition
+    page arrived in part on each of three tries, both sentences in each part.
+  - The proof re-derives by hand: `0.025`, `0.02`, one thirtieth as `0.0`
+    and thirty-four `3`s at the arithmetic record's precision, `0.00625` as
+    the quarter's figure never written, `not_covered` for 2023 under the
+    preset crossing, and the split dated 2024-12-31 against 2024-12-30.
+  - No accepted record fixes another name for the yield, and none is
+    contradicted. The condition order, the dividend's before the close's, is
+    the order both margins ask in; the multiples ask the close first where it
+    is the numerator.
+  - The alternatives as argued: the total form, `divCash`, the adjusted
+    close, a quarter times four, every duration, a zero as a condition and a
+    negative as a figure are each rejected on a quoted source or an accepted
+    record. The year's own close is correctly left as "not rejected on its
+    merits".
+- **Verdict and why:** Accepted. The form is one line of a source the run
+  opened, and everything else is reached rather than made: the price read,
+  the two conditions, the year test. The record's one hard place is the
+  chapter's own table, which sets each past year's dividend over that year's
+  closing price, and it handled that the right way: it quoted the table,
+  kept the close the provider record fixes, and named the question instead
+  of narrowing "for relative yield only". For the latest year the two
+  readings meet in the margin note's "current price"; for an older year the
+  figure is that year's dividend at today's price, which is what every
+  price-dependent metric on main already states at a past period. A zero as
+  a figure is the chapter's own count and agrees with the streak; a negative
+  as a condition keeps one input from being usable in one column and
+  undefined in three.
+- **What would have changed it:** a page of the chapter stating the form
+  itself over another price or another dividend than quoted; a second
+  definition of either condition, or a new one; the past period ends read
+  here against the provider record's sentence; a form for relative yield, or
+  anything attributed to the book no run can open; or a quotation of an
+  accepted record that main does not carry.
+- **Flagged for the human:** a past year's yield stated beside the
+  valuation date's close and not that year's own, against the chapter's
+  Illustration 10.1; the name `dividend_yield_per_share`, where
+  `dividend_growth_rate` and `dividend_streak` read the same concept without
+  `per_share`; a negative dividend as a condition and a zero as the figure
+  `0`; and the fiscal year read as the chapter's "Annual".
