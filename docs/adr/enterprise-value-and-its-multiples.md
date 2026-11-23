@@ -1,9 +1,9 @@
 # Enterprise value is market capitalisation plus net debt, formed once and handed over nowhere, counting neither the preferred claim nor non-controlling interests; EV/EBIT sets it over a year's operating income and EV/EBITDA over that plus depreciation and amortisation, and each declines at an enterprise value or a denominator of zero or below
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-21, by `M5-66`
-- **Decided:**
+- **Decided:** 2026-11-21, by the decider
 - **Touches:** the valuation multiples that GOALS.md's fourth M5 criterion
   names, for the two whose numerator is the value of the firm, and the
   enterprise value they share. It fixes the names and meanings of two metrics
@@ -1279,7 +1279,77 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of two metrics that cross `analyze-store` v1 as characters, two
+  terms later metrics may share, and their forms under the method version,
+  all inside analyze. It edits no anchor, no protected path, no gate, no
+  contract byte, no schema and no milestone scope, and adds no reason,
+  setting or constant. Leaving EV/sales and enterprise value as a metric to
+  later records defers records, not GOALS.md's scope. Flagged for later human
+  review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Every quotation of an accepted record against main, whitespace collapsed;
+    the period record's rule matches apart from its bold markers. Each record
+    named reads Accepted. The v2 fields were read in the contract file:
+    `applies_to` and `silence` for the eight concepts as the record lists
+    them, and measure `balance` for the five it averages.
+  - The code it leans on: `net_debt` once in `capital.rs`, `non_positive_close`
+    once beside the discounted cash flow margin,
+    `non_positive_shares_outstanding` once beside the term, `Unit` with five
+    values and no currency, and nothing under `crates/analyze/src` reading
+    `depreciation_and_amortization`. A missing opening instant gives one
+    `no_period` per averaged balance on main, as
+    `tests/return_on_invested_capital.rs` pins, so the order of reasons the
+    proof states is the order the reader already gives.
+  - Both copies were downloaded whole again in the deciding run: 198,889 and
+    1,602,127 bytes at the sha256 digests the record names. All eighteen
+    quotations of the chapter and all six of the survey were found at the
+    page named. Page 46's equation extracts as the record describes, page 48
+    works it as `1529 + 500 0` over `500`, and page 55 names three variants
+    with `Value/EBIT` first.
+  - The proof re-derives by hand: `8.5` and `6.8`; the other three readings
+    of the instants; `8.625`/`6.9` and `8.5625`/`6.85` for the exception;
+    averages of 0, −100 and 100 for the three cash cases; `34`, `68`,
+    `zero_ebitda` and `negative_ebitda` for the operating income cases; and
+    `7.1875`/`5.75` against `9.25`/`7.4` for the exposure.
+  - No accepted record is contradicted. The common-shareholder record's
+    sentence on `preferred_equity` is left unused and the open-questions
+    record's admission unchanged. The capital record's one exception is
+    applied to the one concept and state it names.
+  - The alternatives as argued: the counted preferred claim in both its
+    forms, the closing instants, mixed instants, cash alone, the term as a
+    metric, EBITDA inside the multiple, EV/EBIT left out, EV/sales, the two
+    signed figures and the wait for the provider. Those that need an accepted
+    record to change are marked "not rejected on its merits" and not decided
+    here, which is the right place to leave them.
+- **Verdict and why:** Accepted. The form is the chapter's printed numerator
+  built from two terms main already forms once, and the record adds one
+  addition for each new term and nothing else. Where the sources are silent
+  it says so and takes the choice that keeps one reading across main. Leaving
+  the preferred claim out matches the bridge, so the market's value of
+  operations and the model's are bridged by the same claims. Averaging the
+  balances matches the bridge and the averaged count, so one sentence is not
+  read two ways. The record is plain that the second of these is the worse
+  answer for a value set beside today's close, and its own table shows what
+  the closing reading would give. I would rather have that named cost under
+  one consistent rule than a better figure reached by reading an accepted
+  rule narrowly in one record. Declining at an enterprise value of zero or
+  below is the one decision with no precedent on main. It holds because the
+  term stays signed for any later reader, and a signed multiple among such
+  filers ranks the better earner as the dearer.
+- **What would have changed it:** a page of either copy that puts the
+  preferred claim or non-controlling interests in the numerator, or states
+  the multiple at a negative enterprise value or denominator; an accepted
+  record that already read the averaging sentence at closing for a balance
+  the close is set beside; a silence for `preferred_equity` other than
+  `unknown`; a figure in the proof that did not re-derive; a quotation of an
+  accepted record that main does not carry; or a metric on main already
+  forming enterprise value or EBITDA.
+- **Flagged for the human:** the preferred claim and non-controlling
+  interests left out, both making the multiples read low; a filer priced at
+  or below its net cash absent from both multiples and found only by its
+  reason; the period record's averaging sentence, met now by a third metric
+  family, each record naming the same superseding record and none licensed
+  to write it; `short_term_investments` netted against the chapter's one
+  word "Cash"; and "Value" in "Value/EBIT" read as page 46's enterprise
+  value, with EV/EBIT's year taken from EV/EBITDA's.
