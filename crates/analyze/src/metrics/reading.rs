@@ -1106,6 +1106,7 @@ mod tests {
                 "dividend_discount_margin_of_safety",
                 "price_to_earnings_per_share",
                 "price_to_sales",
+                "price_to_free_cash_flow",
                 "piotroski_f_roa",
                 "piotroski_f_cfo",
                 "piotroski_f_accrual",
