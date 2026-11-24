@@ -61,7 +61,7 @@ use vfi_contracts::canonical_concepts::Concept;
 
 use super::discounted_cash_flow_margin_of_safety::NON_POSITIVE_CLOSE;
 use super::dividend_payout_per_share::ZERO_EARNINGS_PER_SHARE_DILUTED;
-use super::reading::price::SHARE_BASIS_DATE_NOT_A_DATE;
+use super::reading::price::{SHARE_BASIS_DATE_NOT_A_DATE, beside_the_close};
 use super::reading::year::{END_NOT_A_DATE, NOT_A_YEAR, OVERLAPS_ANOTHER_YEAR, year};
 use super::{Computing, Derivation, Entry, Shape, Unit, declined, read};
 use crate::arithmetic::Number;
@@ -101,33 +101,19 @@ pub(super) const PRICE_TO_EARNINGS_PER_SHARE: Derivation = Derivation {
 /// order and the one division.
 fn price_to_earnings_per_share(computing: &Computing) -> Result<Number, Reasons> {
     year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
-    match (
+    let ([earnings_per_share_diluted], close) = beside_the_close(
         read(computing, &PRICE_TO_EARNINGS_PER_SHARE),
         computing.close_at_valuation_date(),
-    ) {
-        (Ok([earnings_per_share_diluted]), Ok(close)) => {
-            if close.sign() != Ordering::Greater {
-                return Err(declined(NON_POSITIVE_CLOSE));
-            }
-            match earnings_per_share_diluted.sign() {
-                Ordering::Equal => Err(declined(ZERO_EARNINGS_PER_SHARE_DILUTED)),
-                Ordering::Less => Err(declined(NEGATIVE_EARNINGS_PER_SHARE_DILUTED)),
-                Ordering::Greater => Ok(close
-                    .divided(&earnings_per_share_diluted)
-                    .expect("the figure is above zero")),
-            }
-        }
-        (figure, close) => {
-            let mut reasons = figure
-                .err()
-                .into_iter()
-                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
-                .chain(close.err());
-            let first = reasons
-                .next()
-                .expect("the figure or the price read is absent");
-            Err(Reasons::of(first, reasons.collect()))
-        }
+    )?;
+    if close.sign() != Ordering::Greater {
+        return Err(declined(NON_POSITIVE_CLOSE));
+    }
+    match earnings_per_share_diluted.sign() {
+        Ordering::Equal => Err(declined(ZERO_EARNINGS_PER_SHARE_DILUTED)),
+        Ordering::Less => Err(declined(NEGATIVE_EARNINGS_PER_SHARE_DILUTED)),
+        Ordering::Greater => Ok(close
+            .divided(&earnings_per_share_diluted)
+            .expect("the figure is above zero")),
     }
 }
 

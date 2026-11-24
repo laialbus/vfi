@@ -28,7 +28,7 @@ use super::discounted_cash_flow_value_per_share::{
     DISCOUNT_RATE_NOT_ABOVE_TERMINAL_GROWTH, DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE,
     NON_POSITIVE_DILUTED_SHARES, NON_POSITIVE_FREE_CASH_FLOW,
 };
-use super::reading::price::SHARE_BASIS_DATE_NOT_A_DATE;
+use super::reading::price::{SHARE_BASIS_DATE_NOT_A_DATE, beside_the_close};
 use super::reading::year::{END_NOT_A_DATE, NOT_A_YEAR, OVERLAPS_ANOTHER_YEAR, year};
 use super::{Computing, Derivation, Entry, Shape, Unit, declined};
 use crate::arithmetic::Number;
@@ -80,28 +80,14 @@ pub(super) const DISCOUNTED_CASH_FLOW_MARGIN_OF_SAFETY: Derivation = Derivation 
 /// and the price read side by side, then the two conditions in order.
 fn discounted_cash_flow_margin_of_safety(computing: &Computing) -> Result<Number, Reasons> {
     year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
-    match (
+    let (value, close) = beside_the_close(
         (DISCOUNTED_CASH_FLOW_VALUE_PER_SHARE.derived)(computing),
         computing.close_at_valuation_date(),
-    ) {
-        (Ok(value), Ok(close)) => {
-            if value.sign() != Ordering::Greater {
-                return Err(declined(NON_POSITIVE_VALUE_PER_SHARE));
-            }
-            margin_of_safety(&value, &close)
-        }
-        (value, close) => {
-            let mut reasons = value
-                .err()
-                .into_iter()
-                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
-                .chain(close.err());
-            let first = reasons
-                .next()
-                .expect("the value or the price read is absent");
-            Err(Reasons::of(first, reasons.collect()))
-        }
+    )?;
+    if value.sign() != Ordering::Greater {
+        return Err(declined(NON_POSITIVE_VALUE_PER_SHARE));
     }
+    margin_of_safety(&value, &close)
 }
 
 /// The form, written once for every margin of safety: `value` less `close`,
