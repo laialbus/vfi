@@ -378,6 +378,7 @@ fn the_hand_over_carries_each_metric_by_its_entrys_name_in_order() {
             "price_to_earnings_per_share",
             "price_to_sales",
             "price_to_free_cash_flow",
+            "dividend_yield_per_share",
             "piotroski_f_roa",
             "piotroski_f_cfo",
             "piotroski_f_accrual",
