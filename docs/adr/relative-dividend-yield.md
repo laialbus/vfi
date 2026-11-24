@@ -1,9 +1,9 @@
 # Relative yield is a year's dividend yield over the mean of the filer's own yields at the `relative_dividend_yield_years` years before it, each of those a year's dividends declared per common share over the unadjusted close at that year's own end; a past year that declared nothing declines, and the past yield is a term stated nowhere
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-22, by `M5-69`
-- **Decided:**
+- **Decided:** 2026-11-23, by the decider
 - **Touches:** the relative yield that GOALS.md's fifth M5 criterion names in
   "yield and relative yield", and relative yield alone. It fixes the name and
   meaning of one metric, which cross `analyze-store` v1 as characters, and no
@@ -1109,7 +1109,82 @@ invariant, and edits none of them.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the name and meaning
+  of one metric that crosses `analyze-store` v1 as characters, one setting's
+  name, meaning and domain, one new condition's characters and a form under
+  the method version, all inside analyze. It edits no anchor, no protected
+  path, no gate, no contract byte, no schema and no milestone scope, and
+  adds no reason and no constant. Flagged for later human review, as the
+  tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - Every quotation of an accepted record or contract against main,
+    whitespace collapsed: all found, each record named reading Accepted. In
+    `canonical-concepts` v2 the concept applies to all five kinds and its
+    silence is conditional, in the words quoted. `analyze-store` v1 and the
+    analyze record give `date_not_asked` to a crossing that holds no answer
+    for the date, and one answer per date asked.
+  - The code it leans on: `Year::series` stops at a gap as the record says;
+    `negative_dividends_declared_per_share` is defined once beside the
+    streak and `non_positive_close` once beside the discounted cash flow
+    margin; `dividend_discount_base_years` is a `NonZeroU16`;
+    `reading/price.rs` holds the rule and the one reading at the valuation
+    date; a figure is written at 34 significant digits.
+  - The five newsletter pages were fetched whole in the deciding run, on
+    2026-11-23. All twenty-one quotations stand, the two pages the task did
+    not name included. No page states a formula, a statistic of the past
+    yields or a count of years. The data tables page ties its Undervalue and
+    Overvalue prices to a "historical high yield profile" and a "historical
+    low yield profile", which is the shape the record says it does not form.
+  - Chapter 10 was downloaded whole again: 27 sheets, 4,678,827 bytes, at
+    the sha256 the record names, the transfer resumed three times. Printed
+    pages 3, 4 and 16 carry each quotation, the illustration's title, its two
+    row labels and the five cells quoted.
+  - The proof re-derives in exact fractions: `1.25`; `1` over the close of
+    75; 1.5 ÷ 0.97 over the valuation date's close; five thirds and ten
+    ninths as written; `1.25` at a setting of 1; `1.5625` for the counted
+    zero. Each split case was walked against the third clause for its own
+    pair, the trading date `2021-12-3` against the share-basis dates
+    record's second clause, which reads every price's trading date, and each
+    order of reasons against the series record's order of reads.
+  - No accepted record is contradicted. The yield record's open question is
+    answered inside what it left open. The provider record's past period
+    ends keep their one consumer. The analyze record's "from the earlier
+    answer" is not superseded: where a past period end is the valuation
+    date, the current pair's later date lies past the covered range's end,
+    so no figure can follow from either reading of that case.
+  - The alternatives as argued: Spare's reading, one close under every
+    yield, the highest and lowest, the median, the stored past yield, every
+    year the history holds, the counted zero, the zero left out, and the
+    wait for the provider.
+- **Verdict and why:** Accepted. The provider record already fixed whose
+  reading this is and which closes it may read, and the open primary states
+  the notion and nothing that would fix a statistic. Given one close a year,
+  the newsletter's high and low yield areas cannot be formed, and a highest
+  of n year-ends would be read as if it were one. The mean claims less, is
+  moved one n-th by any one year, and the `meaning` says exactly what was
+  computed. Declining at a past year that declared nothing is the decision I
+  weighed longest, since it costs every recent initiator the metric. It
+  holds because the catalogue set this concept's silence to zero on the
+  promise that a wrong zero cannot flatter a consumer, relative yield is a
+  consumer it names, and a counted zero raises the figure. An absence that
+  names the year keeps that promise, and a figure would break it. The count
+  of years is a setting with a stated reason and no claim beyond it.
+- **What would have changed it:** a page of the primary that states a
+  statistic, a formula or a count of years; an accepted record that gives
+  the past period ends to another use or reads relative yield another way;
+  a silence test that did not name relative yield among the concept's
+  consumers, which would have let a past zero count; a wording of
+  `date_not_asked` that could be built where the crossing holds an answer
+  for the date; a figure in the proof that did not re-derive; or a quotation
+  that main or a copy does not carry.
+- **Flagged for the human:** the mean as the record's own statistic, where
+  the newsletter judges a yield against its historical high and low yield
+  areas, which need closes between period ends; a past year that declared
+  nothing as a condition, so a recent initiator or a filer that suspended
+  once is absent until n paying years stand behind the year computed at; a
+  split inside the window making the figure absent for up to n years; the
+  preset of five year-ends, not shown to span "multiple market cycles"; a
+  past period end that is the valuation date read from the crossing's one
+  answer for it; at an older year, that year's dividend at today's close set
+  against older yields at their own closes, with nothing marking its age;
+  and the name, whose words are also Spare's title.
