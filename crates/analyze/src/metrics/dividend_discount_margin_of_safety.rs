@@ -39,7 +39,7 @@ use super::dividend_discount_value_per_share::{
     DIVIDEND_DISCOUNT_VALUE_PER_SHARE, REQUIRED_RETURN_NOT_ABOVE_GROWTH_RATE,
 };
 use super::dividend_streak::NEGATIVE_DIVIDENDS_DECLARED_PER_SHARE;
-use super::reading::price::SHARE_BASIS_DATE_NOT_A_DATE;
+use super::reading::price::{SHARE_BASIS_DATE_NOT_A_DATE, beside_the_close};
 use super::reading::year::{END_NOT_A_DATE, NOT_A_YEAR, OVERLAPS_ANOTHER_YEAR, year};
 use super::{Computing, Derivation, Entry, Shape, Unit};
 use crate::arithmetic::Number;
@@ -78,28 +78,14 @@ pub(super) const DIVIDEND_DISCOUNT_MARGIN_OF_SAFETY: Derivation = Derivation {
 /// and the price read side by side, then the form and its one condition.
 fn dividend_discount_margin_of_safety(computing: &Computing) -> Result<Number, Reasons> {
     year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
-    match (
+    let (value, close) = beside_the_close(
         (DIVIDEND_DISCOUNT_VALUE_PER_SHARE.derived)(computing),
         computing.close_at_valuation_date(),
-    ) {
-        (Ok(value), Ok(close)) => {
-            if value.sign() != Ordering::Greater {
-                unreachable!("the value is above zero wherever it is a figure");
-            }
-            margin_of_safety(&value, &close)
-        }
-        (value, close) => {
-            let mut reasons = value
-                .err()
-                .into_iter()
-                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
-                .chain(close.err());
-            let first = reasons
-                .next()
-                .expect("the value or the price read is absent");
-            Err(Reasons::of(first, reasons.collect()))
-        }
+    )?;
+    if value.sign() != Ordering::Greater {
+        unreachable!("the value is above zero wherever it is a figure");
     }
+    margin_of_safety(&value, &close)
 }
 
 #[cfg(test)]

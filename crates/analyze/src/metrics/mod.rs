@@ -33,6 +33,7 @@ mod dividend_payout_on_earnings;
 mod dividend_payout_on_free_cash_flow;
 mod dividend_payout_per_share;
 mod dividend_streak;
+mod dividend_yield_per_share;
 mod free_cash_flow;
 mod gross_margin;
 mod interest_coverage;
@@ -99,6 +100,7 @@ const DERIVATIONS: &[Derivation] = &[
     price_to_common_book::PRICE_TO_COMMON_BOOK,
     price_to_sales::PRICE_TO_SALES,
     price_to_free_cash_flow::PRICE_TO_FREE_CASH_FLOW,
+    dividend_yield_per_share::DIVIDEND_YIELD_PER_SHARE,
     piotroski_f_roa::PIOTROSKI_F_ROA,
     piotroski_f_cfo::PIOTROSKI_F_CFO,
     piotroski_f_accrual::PIOTROSKI_F_ACCRUAL,

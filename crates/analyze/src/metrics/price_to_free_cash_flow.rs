@@ -88,7 +88,7 @@ use vfi_contracts::canonical_concepts::Concept;
 use super::discounted_cash_flow_margin_of_safety::NON_POSITIVE_CLOSE;
 use super::free_cash_flow::{ZERO_FREE_CASH_FLOW, free_cash_flow};
 use super::market_capitalisation::{NON_POSITIVE_SHARES_OUTSTANDING, market_capitalisation};
-use super::reading::price::SHARE_BASIS_DATE_NOT_A_DATE;
+use super::reading::price::{SHARE_BASIS_DATE_NOT_A_DATE, beside_the_close};
 use super::reading::year::{END_NOT_A_DATE, NOT_A_YEAR, OVERLAPS_ANOTHER_YEAR, year};
 use super::reading::{Reading, reads};
 use super::{Computing, Derivation, Entry, Shape, Unit, declined};
@@ -145,31 +145,18 @@ pub(super) const PRICE_TO_FREE_CASH_FLOW: Derivation = Derivation {
 /// then free cash flow's two, then the one division.
 fn price_to_free_cash_flow(computing: &Computing) -> Result<Number, Reasons> {
     year(computing).map_err(|reason| Reasons::of(reason, Vec::new()))?;
-    match (
+    let ([shares_outstanding, operating_cash_flow, capital_expenditure], close) = beside_the_close(
         reads(computing, &PRICE_TO_FREE_CASH_FLOW),
         computing.close_at_valuation_date(),
-    ) {
-        (Ok([shares_outstanding, operating_cash_flow, capital_expenditure]), Ok(close)) => {
-            let market_capitalisation = market_capitalisation(&close, &shares_outstanding)?.mean();
-            let free_cash_flow =
-                free_cash_flow(&operating_cash_flow.mean(), &capital_expenditure.mean());
-            match free_cash_flow.sign() {
-                Ordering::Equal => Err(declined(ZERO_FREE_CASH_FLOW)),
-                Ordering::Less => Err(declined(NEGATIVE_FREE_CASH_FLOW)),
-                Ordering::Greater => Ok(market_capitalisation
-                    .divided(&free_cash_flow)
-                    .expect("free cash flow is above zero")),
-            }
-        }
-        (inputs, close) => {
-            let mut reasons = inputs
-                .err()
-                .into_iter()
-                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
-                .chain(close.err());
-            let first = reasons.next().expect("a read or the price read is absent");
-            Err(Reasons::of(first, reasons.collect()))
-        }
+    )?;
+    let market_capitalisation = market_capitalisation(&close, &shares_outstanding)?.mean();
+    let free_cash_flow = free_cash_flow(&operating_cash_flow.mean(), &capital_expenditure.mean());
+    match free_cash_flow.sign() {
+        Ordering::Equal => Err(declined(ZERO_FREE_CASH_FLOW)),
+        Ordering::Less => Err(declined(NEGATIVE_FREE_CASH_FLOW)),
+        Ordering::Greater => Ok(market_capitalisation
+            .divided(&free_cash_flow)
+            .expect("free cash flow is above zero")),
     }
 }
 

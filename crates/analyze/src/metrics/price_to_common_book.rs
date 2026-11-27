@@ -75,7 +75,7 @@ use vfi_contracts::canonical_concepts::Concept;
 use super::common_shareholder::{ZERO_COMMON_EQUITY, common_equity};
 use super::discounted_cash_flow_margin_of_safety::NON_POSITIVE_CLOSE;
 use super::market_capitalisation::{NON_POSITIVE_SHARES_OUTSTANDING, market_capitalisation};
-use super::reading::price::SHARE_BASIS_DATE_NOT_A_DATE;
+use super::reading::price::{SHARE_BASIS_DATE_NOT_A_DATE, beside_the_close};
 use super::reading::reads;
 use super::{Computing, Derivation, Entry, Shape, Unit, declined};
 use crate::arithmetic::Number;
@@ -114,32 +114,18 @@ pub(super) const PRICE_TO_COMMON_BOOK: Derivation = Derivation {
 /// The three balances and the price read side by side, then the term's two
 /// conditions, then the denominator's two, then the one division.
 fn price_to_common_book(computing: &Computing) -> Result<Number, Reasons> {
-    match (
+    let ([shares_outstanding, shareholders_equity, preferred_equity], close) = beside_the_close(
         reads(computing, &PRICE_TO_COMMON_BOOK),
         computing.close_at_valuation_date(),
-    ) {
-        (Ok([shares_outstanding, shareholders_equity, preferred_equity]), Ok(close)) => {
-            let market_capitalisation = market_capitalisation(&close, &shares_outstanding)?.mean();
-            let common_equity = common_equity(&shareholders_equity, &preferred_equity).mean();
-            match common_equity.sign() {
-                Ordering::Equal => Err(declined(ZERO_COMMON_EQUITY)),
-                Ordering::Less => Err(declined(NEGATIVE_COMMON_EQUITY)),
-                Ordering::Greater => Ok(market_capitalisation
-                    .divided(&common_equity)
-                    .expect("common equity is above zero")),
-            }
-        }
-        (balances, close) => {
-            let mut reasons = balances
-                .err()
-                .into_iter()
-                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
-                .chain(close.err());
-            let first = reasons
-                .next()
-                .expect("a balance or the price read is absent");
-            Err(Reasons::of(first, reasons.collect()))
-        }
+    )?;
+    let market_capitalisation = market_capitalisation(&close, &shares_outstanding)?.mean();
+    let common_equity = common_equity(&shareholders_equity, &preferred_equity).mean();
+    match common_equity.sign() {
+        Ordering::Equal => Err(declined(ZERO_COMMON_EQUITY)),
+        Ordering::Less => Err(declined(NEGATIVE_COMMON_EQUITY)),
+        Ordering::Greater => Ok(market_capitalisation
+            .divided(&common_equity)
+            .expect("common equity is above zero")),
     }
 }
 

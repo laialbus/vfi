@@ -10,7 +10,7 @@
 
 use std::iter;
 
-use vfi_contracts::analyze_store::{CoveredRange, Prices, Reason};
+use vfi_contracts::analyze_store::{CoveredRange, Prices, Reason, Reasons};
 use vfi_contracts::canonical_concepts::Period;
 use vfi_contracts::fetch_analyze::{Answer, Crossing, Splits};
 
@@ -133,6 +133,28 @@ pub(in crate::metrics) fn close_at_valuation_date(
         } => {
             share_basis(crossing, trading_date, period_end)?;
             Number::read(close).ok_or_else(|| Reason::declined(INPUT_NOT_A_DECIMAL.into()))
+        }
+    }
+}
+
+/// What a metric's reads gave and the close, where both were given; otherwise
+/// every reason either has, the reads' in their order and then the price
+/// read's one. Both are made before this is asked, so neither stops the
+/// other, and this reads no row and no crossing.
+pub(in crate::metrics) fn beside_the_close<T>(
+    reads: Result<T, Reasons>,
+    close: Result<Number, Reason>,
+) -> Result<(T, Number), Reasons> {
+    match (reads, close) {
+        (Ok(reads), Ok(close)) => Ok((reads, close)),
+        (reads, close) => {
+            let mut reasons = reads
+                .err()
+                .into_iter()
+                .flat_map(|reasons| reasons.each().cloned().collect::<Vec<_>>())
+                .chain(close.err());
+            let first = reasons.next().expect("a read or the price read is absent");
+            Err(Reasons::of(first, reasons.collect()))
         }
     }
 }
