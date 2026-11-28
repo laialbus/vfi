@@ -25,13 +25,14 @@ const VALUE: &str = "dividend_discount_value_per_share";
 const MARGIN: &str = "dividend_discount_margin_of_safety";
 
 /// The other metrics that read a price.
-const OTHERS_PRICED: [&str; 6] = [
+const OTHERS_PRICED: [&str; 7] = [
     "discounted_cash_flow_margin_of_safety",
     "price_to_earnings_per_share",
     "price_to_common_book",
     "price_to_sales",
     "price_to_free_cash_flow",
     "dividend_yield_per_share",
+    "enterprise_value_to_ebit",
 ];
 
 const ZERO: &str = "zero_dividends_declared_per_share";
