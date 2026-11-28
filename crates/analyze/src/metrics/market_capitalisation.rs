@@ -2,8 +2,8 @@
 //! valuation date times common shares outstanding. Every metric that reads it
 //! reads it from this module, and none writes the product itself:
 //! `price_to_common_book`, `price_to_sales` and `price_to_free_cash_flow`,
-//! and enterprise value and Altman's X₄ when they are built. What it is, and
-//! which metrics read it, is
+//! enterprise value in [`super::enterprise_value`], and Altman's X₄ when it
+//! is built. What it is, and which metrics read it, is
 //! `docs/adr/market-capitalisation-and-the-equity-multiples.md`'s, under the
 //! method version.
 //!
