@@ -1,9 +1,9 @@
 # Altman's Z-score is the function his restatement prints as final, `0.012`, `0.014`, `0.033`, `0.006` and `0.999` over four ratios as percentages and a fifth as times, every balance at one year's close and the market value of equity through market capitalisation; four of the ratios are metrics beside it, and no cut-off enters analyze
 
-- **Status:** Proposed
+- **Status:** Accepted
 - **Authority:** Structural
 - **Proposed:** 2026-11-26, by `M5-72`
-- **Decided:**
+- **Decided:** 2026-11-27, by the decider
 - **Touches:** the bankruptcy score that GOALS.md's fourth M5 criterion names
   in "financial health and bankruptcy scoring", Altman's Z-score, and that
   score alone. It fixes the names and meanings of five metrics that cross
@@ -1366,7 +1366,94 @@ neither.
 
 By the decider, not the proposer.
 
-- **Authority:**
+- **Authority:** Structural, and within reach: it fixes the names and
+  meanings of five metrics that cross `analyze-store` v1 as characters, six
+  constants in one new file under `constants/`, three new conditions'
+  characters, one value of `Unit` and a form under the method version, all
+  inside analyze. `Unit` is private to the crate, so its sixth value moves
+  no contract byte. It edits no anchor, no protected path, no gate, no
+  schema and no milestone scope, and adds no reason and no setting. Flagged
+  for later human review, as the tier requires.
 - **Checked:**
-- **Verdict and why:**
-- **What would have changed it:**
+  - The copy, downloaded whole in the deciding run on 2026-11-27 from the
+    capture's URL: 54 pages, 134,818 bytes, at the sha256 the record names.
+    Its text was extracted by page with `pdfminer.six`. All 137 quoted
+    passages of it stand, whitespace collapsed, each on the page the record
+    names: the sentence that runs from page 12 to 13 and the one from page
+    22 to 25, page 24 giving no text; Table 1's ten means on page 13;
+    `2.675` on page 18 alone and `2.67` on pages 20, 22 and 23; `0.6001` on
+    page 25; `Z'>2.90` on page 26. No page prints `2.99`.
+  - The archive's index of the path, read in the deciding run: 64 captures
+    answered 200, from 2004-06-10 to 2024-07-17, 63 under the base32 SHA-1
+    of the bytes downloaded here and one, of 2008-12-05, under another. The
+    first capture after them is a redirect of 2024-09-15, as the record
+    says.
+  - Every quotation of an accepted record, 71 in all, against main,
+    whitespace collapsed: all found, each in the record named, each reading
+    Accepted. In `canonical-concepts` v2 the nine concepts' applicability,
+    silence and measure are as stated.
+  - The code it leans on: `zero_total_assets` is defined once, in
+    `liabilities_to_assets.rs`; market capitalisation is one function that
+    asks `non_positive_close` and then `non_positive_shares_outstanding`,
+    the order the score lists them in; no metric reads `retained_earnings`
+    and none forms working capital; `debt_to_equity` states `FractionOfOne`;
+    `constants/` holds one file per method.
+  - The proof, worked again by hand: `3.2145`; `3.216` under page 13's
+    form; `1.51566` with the ratios taken as fractions; `1.3345` and
+    `-0.5123` over the negative terms; `2.7945` for retained earnings read
+    as zero. Each first-that-holds case was walked against the order
+    stated, each split against the third clause for the one pair, each
+    count of `no_period` against the reads table, and the table by kind
+    against v2's applicability.
+  - No accepted record is contradicted. The period record's fourth row
+    keeps its instant, under that record's own sentence that its table
+    fixes only the instant. The open-questions record's sentence on the
+    fifth ratio holds while that ratio is a term. The analyze record's
+    "Altman's coefficients and cut-offs" says what a cut-off is and not
+    that a metric reads one, and the Piotroski record left its own cut-offs
+    out the same way. `preferred_equity` gains no consumer.
+  - The alternatives as argued: page 13's form, the score alone, all five
+    ratios stored, a metric for the score's side of a cut-off, the
+    preferred claim at its carrying amount, total debt as the fourth
+    ratio's divisor, Z" for every `operating` filer, a book value standing
+    in for the price, a signed figure over a total below zero, and leaving
+    the score out of M5.
+- **Verdict and why:** Accepted. The restatement prints one function as
+  final and another as a convenience whose last coefficient it says is
+  rounded, so a record that must take one takes the one printed without
+  qualification, and its proof shows the two apart where the copy calls
+  them identical. The capture I read as a copy the sources record admits:
+  that record bars someone else's reading of a source, and these are the
+  author's own bytes, pinned by a digest that 63 captures over twenty years
+  share, with the record saying plainly what the copy is. What decided it
+  beyond the source is the direction of each choice that is the record's
+  own. The preferred claim left out lowers the score. A total below zero
+  declines, where a signed divisor would turn three deficits into surpluses
+  inside one figure. No score is formed over fewer than five ratios, and no
+  cut-off the copy does not print enters anywhere. The fifth ratio as a
+  term is the choice I weighed longest, since it costs the stored table one
+  of the score's five addends. It holds because storing it would make an
+  accepted sentence false, and a worker's record names that question and
+  does not settle it.
+- **What would have changed it:** a copy at another digest, or a quotation
+  not on its page; a page that prints an upper bound of the zone for this
+  model, or states the percentage form otherwise; an accepted record that
+  fixes the fourth ratio's divisor to debt as a concept, or requires a
+  metric to read a cut-off; a sentence of the sources record that bars a
+  copy served by a host other than the author's; `Unit` standing in a
+  contract, which would have made its sixth value a contract change; or a
+  figure in the proof that did not re-derive.
+- **Flagged for the human:** the copy as an archive's capture of the
+  author's page, the live path answering 500; page 9's specification over
+  page 13's, the form most readers know; the fifth ratio a term, so the
+  score cannot be re-added from the stored table; the second and fourth
+  ratios stored for a bank, an insurer and an investment company, kinds the
+  function was not fitted on and that have no score; no cut-off in analyze,
+  so `1.81`, `2.675` and `2.67` are M6's to hold and cite; the preferred
+  claim left out of the fourth ratio; a total below zero as a condition,
+  where `liabilities_to_assets` gives a signed figure; every `operating`
+  filer scored by a function fitted on 66 manufacturers; the fourth ratio
+  as `FractionOfOne`, `1.2` being 120 per cent, where the price multiples
+  state `Multiple`; the new unit `DiscriminantScore`; the six constants
+  held as characters, which `literals` does not read; and each year's score
+  set beside today's close.
